@@ -13,9 +13,9 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 SECRET_KEY = 'bb68r9%%!01d8z6zz&3*4$1437l9(ydit+o@8m9qd10q0c&rva'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = int(os.environ.get("DEBUG", default=0))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 # Application definition
