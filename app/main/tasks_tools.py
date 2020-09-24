@@ -4,7 +4,7 @@ import time
 import requests
 import json
 from datetime import datetime
-from chaos.chaos_utils import Utils as utils
+from main.chaos_utils import Utils as utils
 
 
 def check_host_alive(chaos_ip, slave_ip, slave_port):

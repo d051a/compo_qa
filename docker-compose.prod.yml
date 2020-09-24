@@ -12,9 +12,10 @@ services:
     expose:
       - 8000
     env_file:
-      - envs/dev/.env.dev
+      - envs/prod/.env.prod
 #    depends_on:
 #      - db
+
 #  db:
 #    image: postgres:12.0-alpine
 #    ports:
@@ -55,7 +56,7 @@ services:
 #    depends_on:
 #      - db
     env_file:
-      - envs/dev/.env.dev
+      - envs/prod/.env.prod
 
   renderer:
     image: grafana/grafana-image-renderer:latest
@@ -70,7 +71,7 @@ services:
     volumes:
       - ./app:/app/web
     env_file:
-      - envs/dev/.env.dev
+      - envs/prod/.env.prod
     depends_on:
       - redis
 
@@ -80,7 +81,7 @@ services:
     volumes:
       - ./app:/app/web
     env_file:
-      - envs/dev/.env.dev
+      - envs/prod/.env.prod
     depends_on:
       - redis
 
@@ -90,8 +91,19 @@ services:
     ports:
       - 5555:5555
     env_file:
-      - envs/dev/.env.dev
+      - envs/prod/.env.prod
     depends_on:
       - web
       - redis
       - celery
+
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - db
+    ports:
+      - "4444:80"
+    env_file:
+      - envs/prod/.env.prod
+    volumes:
+      - ./data/pgadmin:/var/lib/pgadmin

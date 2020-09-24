@@ -3,8 +3,8 @@ import requests
 import json
 from datetime import datetime
 from conf.celery import app
-from chaos.chaos_utils import Utils as utils
-from chaos.chaos_utils import ChaosStatisctic
+from main.chaos_utils import Utils as utils
+from main.chaos_utils import ChaosStatisctic
 from main.models import NetCompilationStat, NetCompileReport, DrawImgsReport, \
     DrawImgsStat, Chaos, Statistic, MetricReport
 from main.tasks_tools import add_current_statistic_to_db, get_fact_percent, \
@@ -138,7 +138,7 @@ def drawed_images_report_generate(id_report):
     current_step = 0
 
     print('Отправка команды на отрисовку...')
-    connection = start_drawing_images(chaos_credentials)
+    start_drawing_images(chaos_credentials)
 
     while True:
         print(f'Получение новых данных c {db_chaos_object.ip} об отрисовке ценников...')

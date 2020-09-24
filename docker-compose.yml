@@ -16,7 +16,7 @@ services:
     depends_on:
       - db
   db:
-    image: postgres:12.0-alpine
+    image: postgres:11.0-alpine
     ports:
       - 5432:5432
     volumes:
@@ -95,3 +95,14 @@ services:
       - web
       - redis
       - celery
+
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - db
+    ports:
+      - "4444:80"
+    env_file:
+      - envs/dev/.env.dev
+    volumes:
+      - ./data/pgadmin:/var/lib/pgadmin

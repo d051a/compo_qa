@@ -4,12 +4,9 @@
 /staticfiles
 /mediafiles
 /data
-
-
 /app/celerybeat-schedule
 /app/celerybeat.pid
 /app/celery.log
-
 
 .DS_Store
 *.pyc

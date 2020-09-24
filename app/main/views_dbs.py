@@ -1,7 +1,7 @@
 from main.models import Statistic, \
     MetricReport, NetCompilationStat, DrawImgsStat, DrawImgsReport, NetCompileReport
 from django_datatables_view.base_datatable_view import BaseDatatableView
-from chaos.chaos_utils import Utils as utils
+from main.chaos_utils import Utils as utils
 
 
 class FilterQuerysetMixin(BaseDatatableView):
