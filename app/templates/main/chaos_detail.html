@@ -1,0 +1,144 @@
+{% extends 'base_template.html' %}
+{% load static %}
+
+{%block head%}
+{%endblock%}
+
+{%block navimenu%}
+{%endblock%}
+
+{%block header%}
+    {{ pagename }}
+{%endblock%}
+
+{%block header_end%}
+{%endblock%}
+
+{%block body%}
+    <h3>{{ object.name }} ({{ object.ip }})</h3>
+<div class = "col-md">
+    <p>
+  <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+    Посмотреть последнюю статистику
+  </a>
+
+    </p>
+    <div class="collapse" id="collapseExample">
+      <div class="card card-body">
+          <div>
+              <p>
+              <h5>Последняя статистика:</h5>
+              {{ current_stats|safe }}
+              </p>
+          </div>
+      </div>
+    </div>
+    <p></p>
+    <h5>Отчеты общей статистики (сборка сети + отрисовки):</h5>
+    <table id="all_metrics_list" class="datatable row-border" style="width:100;">
+            <thead>
+                <tr>
+                        <th>Имя</th>
+                        <th>Дата и время начала</th>
+                        <th>Дата и время окончания</th>
+                        <th>Статус</th>
+                        <th>Время выполнения</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <p></p>
+        <h5>Сборки сети:</h5>
+        <table id="report_net_compiles_list" class="datatable row-border" style="width:100;">
+            <thead>
+                <tr>
+                    <th>Имя</th>
+                    <th>Дата и время начала</th>
+                    <th>Статус</th>
+                    <th>Дата и время окончания</th>
+                    <th>Имя</th>
+                    <th>IP-адрес</th>
+                    <th>50%</th>
+                    <th>75%</th>
+                    <th>90%</th>
+                    <th>95%</th>
+                    <th>96%</th>
+                    <th>97%</th>
+                    <th>98%</th>
+                    <th>99%</th>
+                    <th>100%</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    <p></p>
+    <h5>Отрисовки ценников:</h5>
+        <form method="post" action="{% url 'main:draw_imgs_add' %}">
+                 {% csrf_token %}
+                <input id="id_chaos" type="hidden" name="chaos" value="{{ object.pk }}">
+                <button  type="submit" class="btn btn-secondary">Новая отрисовка</button>
+        </form>
+        <p></p>
+        <table id="report_drawed_list" class="datatable row-border" style="width:100;">
+            <thead>
+                <tr>
+                    <th>-</th>
+                    <th>Дата и время начала</th>
+                    <th>Статус</th>
+                    <th>Дата и время окончания</th>
+                    <th>Имя</th>
+                    <th>IP-адрес</th>
+                    <th>50%</th>
+                    <th>75%</th>
+                    <th>90%</th>
+                    <th>95%</th>
+                    <th>96%</th>
+                    <th>97%</th>
+                    <th>98%</th>
+                    <th>99%</th>
+                    <th>100%</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+<h5>Общий лог:</h5>
+    <table id="report_all_stats_list" class="datatable row-border" style="width:100;">
+            <thead>
+                <tr>
+                    <th>дата_и_время_записи</th>
+                    <th>total_nodes</th>
+                    <th>inaccessible_nodes</th>
+                    <th>total_number_routes</th>
+                    <th>maximum_road_length</th>
+                    <th>average_route_length</th>
+                    <th>accessible_nodes_percent</th>
+                    <th>elapsed_time</th>
+                    <th>total_esl</th>
+                    <th>online_esl</th>
+                    <th>images_in_transit</th>
+                    <th>images_in_draw</th>
+                    <th>images_in_resend_queue</th>
+                    <th>images_succeeded</th>
+                    <th>images_failed</th>
+                    <th>currently_scanning</th>
+                    <th>network_mode</th>
+                    <th>connects</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+</div>
+{%endblock%}
+
+{% block scripts %}
+    <input type="hidden" id="metric_reports_list_url" data-url="{% url 'main:metric_reports_list_json' %}" />
+    <input type="hidden" id="report_net_compiles_list_url" data-url="{% url 'main:net_compile_list_json' %}" />
+    <input type="hidden" id="report_drawed_imgs_list_url" data-url="{% url 'main:drawed_imgs_reports_json' %}" />
+    <input type="hidden" id="report_all_stats_list_url" data-url="{% url 'main:chaos_stats_json' %}" />
+    <input type="hidden" id="chaos_pk" data-url="{{ object.pk }}" />
+{% endblock scripts %}

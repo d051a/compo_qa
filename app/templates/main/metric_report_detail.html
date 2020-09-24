@@ -1,0 +1,124 @@
+{% extends 'base_template.html' %}
+{% load static %}
+
+{%block head%}
+<link rel="stylesheet" type="text/css" href={% static "recepients/css/jquery.dataTables.min.css"%}>
+{%endblock%}
+
+{%block navimenu%}
+{%endblock%}
+
+{%block header%}
+    {{ pagename }}
+{%endblock%}
+
+{%block header_end%}
+<a style="margin-right: 20px;" role="button" class="btn btn-secondary" href="{% url 'printenvelopsapp:registry_add' %}"><b>+</b></a>
+{%endblock%}
+
+{%block body%}
+    <h4>Общий отчет #{{ object.pk }} for {{ object.chaos.name }} ({{ object.chaos.ip }})</h4>
+<div class = "col-md-12">
+        <p>
+            <b>Дата и время начала снятия метрик:</b> {{ object.create_date_time }}<br>
+            <b>Дата и время окончания снятия метрик:</b> {{ object.date_time_finish }}<br>
+            <b>Количество сборок сети:</b> {{ object.net_compile_amount }}<br>
+            <b>Количество отрисовок ценников:</b> {{ object.draw_imgs_amount }}<br>
+            <b>Предельное время отрисовки ценников (мин):</b> {{ object.draw_imgs_limit_mins }}<br>
+            <b>Предельное время сборки сети (мин):</b> {{ object.net_compile_limit_mins }}<br>
+            <b>Фактическое количество ESL:</b> {{ object.fact_total_esl }}<br>
+            <b>Статус:</b> {{ object.status }}<br>
+        </p>
+        <form action="{% url 'main:export_report_data_to_xlsx' object.pk %}">
+            <button type="submit" class="btn btn-success">Общий отчет в Excel</button>
+        </form>
+            <p></p>
+                <h5>Отрисовки ценников:</h5>
+            <p></p>
+        <table id="report_drawed_list" class="datatable row-border" style="width:100;">
+            <thead>
+                <tr>
+                    <th>-</th>
+                    <th>Дата и время начала</th>
+                    <th>Статус</th>
+                    <th>Дата и время окончания</th>
+                    <th>Имя</th>
+                    <th>IP-адрес</th>
+                    <th>50 %</th>
+                    <th>75 %</th>
+                    <th>90 %</th>
+                    <th>95 %</th>
+                    <th>96 %</th>
+                    <th>97 %</th>
+                    <th>98 %</th>
+                    <th>99 %</th>
+                    <th>100 %</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+     <p></p>
+      <h5>Сборки сети:</h5>
+        <table id="report_net_compiles_list" class="datatable row-border" style="width:100;">
+            <thead>
+                <tr>
+                    <th>-</th>
+                    <th>Дата и время начала</th>
+                    <th>Статус</th>
+                    <th>Дата и время окончания</th>
+                    <th>Имя</th>
+                    <th>IP-адрес</th>
+                    <th>50 %</th>
+                    <th>75 %</th>
+                    <th>90 %</th>
+                    <th>95 %</th>
+                    <th>96 %</th>
+                    <th>97 %</th>
+                    <th>98 %</th>
+                    <th>99 %</th>
+                    <th>100 %</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <p></p>
+    <h5>Общий лог:</h5>
+    <table id="report_all_stats_list" class="datatable row-border" style="width:100;">
+            <thead>
+                <tr>
+                    <th>дата_и_время_записи</th>
+                    <th>total_nodes</th>
+                    <th>inaccessible_nodes</th>
+                    <th>total_number_routes</th>
+                    <th>maximum_road_length</th>
+                    <th>average_route_length</th>
+                    <th>accessible_nodes_percent</th>
+                    <th>elapsed_time</th>
+                    <th>total_esl</th>
+                    <th>online_esl</th>
+                    <th>images_in_transit</th>
+                    <th>images_in_draw</th>
+                    <th>images_in_resend_queue</th>
+                    <th>images_succeeded</th>
+                    <th>images_failed</th>
+                    <th>currently_scanning</th>
+                    <th>network_mode</th>
+                    <th>connects</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+</div>
+{%endblock%}
+
+{% block scripts %}
+    <input type="hidden" id="report_net_compiles_list_url" data-url="{% url 'main:net_compile_list_json' %}" />
+    <input type="hidden" id="report_drawed_imgs_list_url" data-url="{% url 'main:drawed_imgs_reports_json' %}" />
+    <input type="hidden" id="report_all_stats_list_url" data-url="{% url 'main:chaos_stats_json' %}" />
+    <input type="hidden" id="metric_report_pk" data-url="{{ object.pk }}" />
+    <input type="hidden" id="chaos_pk" data-url="{{ chaos_pk }}" />
+{% endblock scripts %}

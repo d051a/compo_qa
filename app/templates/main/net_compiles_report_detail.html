@@ -1,0 +1,48 @@
+{% extends 'base_template.html' %}
+{% load static %}
+
+{%block head%}
+<link rel="stylesheet" type="text/css" href={% static "recepients/css/jquery.dataTables.min.css"%}>
+{%endblock%}
+
+{%block navimenu%}
+{%endblock%}
+
+{%block header%}
+    {{ pagename }}
+{%endblock%}
+
+{%block header_end%}
+<a style="margin-right: 20px;" role="button" class="btn btn-secondary" href="{% url 'printenvelopsapp:registry_add' %}"><b>+</b></a>
+{%endblock%}
+
+{%block body%}
+    <h4>Отчет #{{ object.pk }}</h4>
+<div class = "col-md-12">
+    <div class = "col-md-12 justify-content-sm-center">
+        <p>
+            <b>Дата и время начала сборки сети:</b> {{ object.create_date_time }}<br>
+            <b>Дата и время окончания сборки сети:</b> {{ object.date_time_finish }}<br>
+            <b>Предельное время сборки сети (мин):</b> {{ object.net_compile_limit_mins }}<br>
+            <b>Статус:</b> {{ object.status }}<br>
+        </p>
+        <table id="net_compile_stats" class="datatable row-border" style="width:100;">
+            <thead>
+                <tr>
+                    <th>Затраченное время</th>
+                    <th>Онлайн ESL</th>
+                    <th>Процент сборки сети</th>
+
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+{%endblock%}
+
+{% block scripts %}
+    <input type="hidden" id="net_compile_stats_url" data-url="{% url 'main:net_compile_stats_json' %}" />
+    <input type="hidden" id="metric_report_pk" data-url="{{ object.pk }}" />
+{% endblock scripts %}

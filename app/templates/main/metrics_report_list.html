@@ -1,0 +1,46 @@
+{% extends 'base_template.html' %}
+{% load static %}
+
+{%block head%}
+{%endblock%}
+
+{%block navimenu%}
+{%endblock%}
+
+{%block header%}
+    {{ pagename }}
+{%endblock%}
+
+{%block header_end%}
+{%endblock%}
+
+{%block body%}
+
+<h3>Общие отчеты</h3>
+<div class = "col-md-12">
+    <form action="{% url 'main:metrics_add' %}">
+        <button  type="submit" class="btn btn-secondary">Новая сборка метрик</button>
+            <p></p>
+    </form>
+        <table id="all_metrics_list" class="datatable row-border" style="width:100;">
+                <thead>
+                    <tr>
+                        <th>Имя</th>
+                        <th>Дата и время начала</th>
+                        <th>Дата и время окончания</th>
+                        <th>Статус</th>
+                        <th>Время выполнения</th>
+                        <th>Имя</th>
+                        <th>IP-адрес</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+</div>
+{%endblock%}
+
+{% block scripts %}
+    <input type="hidden" id="metric_reports_list_url" data-url="{% url 'main:metric_reports_list_json' %}" />
+{% endblock scripts %}
