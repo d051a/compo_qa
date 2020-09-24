@@ -99,8 +99,6 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-    depends_on:
-      - db
     ports:
       - "4444:80"
     env_file:
