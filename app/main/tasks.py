@@ -1,13 +1,10 @@
 import time
-import requests
-import json
 from datetime import datetime
 from conf.celery import app
 from main.chaos_utils import Utils as utils
 from main.chaos_utils import ChaosStatisctic
-from main.models import NetCompilationStat, NetCompileReport, DrawImgsReport, \
-    DrawImgsStat, Chaos, Statistic, MetricReport
-from main.tasks_tools import add_current_statistic_to_db, get_fact_percent, \
+from main.models import NetCompileReport, DrawImgsReport, Chaos, MetricReport
+from main.tasks_tools import add_current_statistic_to_db, \
     add_net_compilation_statistics_to_db, set_db_object_attribute, get_default_devices, get_ips_by_names, \
     reboot_devices_list, check_all_alive, start_drawing_images, add_draw_images_statistics_to_db, \
     get_drawed_images_percent, save_draw_imgs_final_status_and_data, save_net_compilation_final_status_and_data,\
@@ -137,8 +134,9 @@ def drawed_images_report_generate(id_report):
     elapsed_mins = 0
     current_step = 0
 
-    print('Отправка команды на отрисовку...')
     start_drawing_images(chaos_credentials)
+    print('Отправка команды на отрисовку...')
+    time.sleep(120)
 
     while True:
         print(f'Получение новых данных c {db_chaos_object.ip} об отрисовке ценников...')

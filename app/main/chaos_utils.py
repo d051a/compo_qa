@@ -1,7 +1,6 @@
 import requests
 import re
 import datetime
-import time
 import paramiko
 
 
@@ -314,7 +313,7 @@ class Utils:
         return output_format.format(**d)
 
     @staticmethod
-    def get_ssh_connection(ip_address: str, username: str, password: str, port: str, connect_try=2) -> paramiko.SSHClient:
+    def get_ssh_connection(ip_address: str, username: str, password: str, port: str, connect_try=5) -> paramiko.SSHClient:
         i = 1
         while True:
             try:
@@ -327,11 +326,7 @@ class Utils:
                 print('ERROR : Authentication failed because of irrelevant details!')
             except:
                 print(f'Could not SSH to {ip_address}, waiting for it to start')
-                i += 1
-                time.sleep(1)
-                if i >= connect_try != 0:
-                    print(f'Could not connect to {ip_address} over SSH')
-                    return None
+                return None
 
     @staticmethod
     def sftp_transfer_file(ssh: paramiko.SSHClient, localpath_to_file: str, remotepath_to_file: str) -> int:
@@ -361,6 +356,15 @@ class Utils:
         except:
             print(f'Не удалось выполнить команду на удаленном устройства {ip_address}')
             return None
+
+    @staticmethod
+    def run_remote_command_no_wait(ip_address: str,
+                           user_name: str,
+                           password: str,
+                           port: str,
+                           command: str):
+        ssh_connection = Utils.get_ssh_connection(ip_address, user_name, password, port)
+        ssh_connection.exec_command(command)
 
     @staticmethod
     def copy_file_over_ssh(ip_address: str,

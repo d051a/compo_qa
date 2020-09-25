@@ -1,8 +1,7 @@
-from main.models import NetCompilationStat, NetCompileReport, DrawImgsReport, \
-    DrawImgsStat, Chaos, Statistic, MetricReport
 import time
 import requests
 import json
+from main.models import NetCompilationStat, DrawImgsStat, Statistic
 from datetime import datetime
 from main.chaos_utils import Utils as utils
 
@@ -208,12 +207,12 @@ def set_db_object_attribute(db_object, attrubute_name, value):
 
 
 def start_drawing_images(device_credentials):
-    connection = utils.run_remote_command(device_credentials['ip'],
-                                          device_credentials['login'],
-                                          device_credentials['password'],
-                                          device_credentials['port'],
-                                          f'/var/Componentality/Chaos/Highlight_ESL.py -s RBWX'
-                                          )
+    connection = utils.run_remote_command_no_wait(device_credentials['ip'],
+                                                  device_credentials['login'],
+                                                  device_credentials['password'],
+                                                  device_credentials['port'],
+                                                  f'/var/Componentality/Chaos/Highlight_ESL.py -s RBWX'
+                                                  )
     return connection
 
 
