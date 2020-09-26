@@ -46,6 +46,7 @@ class Chaos(models.Model):
     net_percent = models.CharField('Сборка сети (%)', max_length=50, blank=True, null=True)
     draw_percent = models.CharField('Отрисовка (%)', max_length=50, blank=True, null=True)
     date_time_update = models.DateTimeField('Время обновления данных', auto_now=True)
+    config = models.TextField('Конфиг хаоса', blank=True, null=True)
 
     class Meta:
         ordering = ["name"]

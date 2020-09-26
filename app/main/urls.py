@@ -32,7 +32,7 @@ urlpatterns = [
     path('net_compile_stats_json/', views_dbs.NetCompilationStatModelListJson.as_view(), name='net_compile_stats_json'),
     path('net_compile_list_json/', views_dbs.NetCompilationReportModelListJson.as_view(), name='net_compile_list_json'),
 
-
+    path('chaoses/<int:pk>/get_config/', views.get_chaos_config, name='get_chaos_config'),
 
 
 ]

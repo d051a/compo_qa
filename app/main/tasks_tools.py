@@ -93,10 +93,10 @@ def reboot_devices_list(devices_ips_ports, device_credentials):
             print(f'Инициация перезагрузки устройства: {ip_address}')
             run_command = utils.run_remote_command(ip_address, ssh_user_name, ssh_user_password, ssh_port,
                                                    f'echo {ssh_user_password}|sudo -S sudo reboot')
-            return True
         except:
             print(f'Неудалось инициировать перезагрузку устройства: {ip_address}')
             return False
+    return True
 
 
 def add_current_statistic_to_db(db_chaos_object, current_chaos_statistic_data, metric_report=None):

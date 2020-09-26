@@ -52,7 +52,7 @@ def net_compilation(id_report):
         status = 'FAIL: Не удалось инициировать перезагрузку одного или нескольких устройств'
         save_net_compilation_final_status_and_data(net_compile_report, status)
         return False
-    print('OK! инициирована перезагрузка устройства!')
+    print('OK! инициирована перезагрузка устройств!')
     time.sleep(30)
     if not check_all_alive(servers_ips_ports, chaos_credentials['ip'], 5):
         status = 'FAIL: Одного или несколько устройство недоступно после перезагрузки'

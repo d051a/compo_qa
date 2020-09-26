@@ -1,8 +1,10 @@
+import json
 from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect
 from main.models import Statistic, MetricReport, Chaos, DrawImgsReport, NetCompileReport
-
+from main.chaos_utils import Utils as utils
 from django.views.generic import DetailView, CreateView, ListView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from main.forms import ChaosForm, DrawImgsReportForm, NetCompileReportForm, MetricReportForm
 from main.tasks import drawed_images_report_generate, net_compilation, all_metrics_report_generate
 
@@ -33,6 +35,25 @@ def chaoses_list(request):
     return render(request, 'main/chaoses_list.html', {
         'pagename': 'Chaoses'
     })
+
+
+def get_chaos_config(request, pk):
+    chaos = Chaos.objects.get(pk=pk)
+    chaos_credentials = {'ip': chaos.ip,
+                         'login': chaos.login,
+                         'password': chaos.password,
+                         'port': chaos.ssh_port
+                         }
+    config_data = utils.run_remote_command(chaos_credentials['ip'],
+                                          chaos_credentials['login'],
+                                          chaos_credentials['password'],
+                                          chaos_credentials['port'],
+                                          f'cat /var/Componentality/Chaos/chaos_config.json'
+                                          )
+    config_json = json.loads(config_data[0])
+    chaos.config = config_json
+    chaos.save()
+    return HttpResponseRedirect(reverse('main:chaos_detail', args=(pk,)))
 
 
 class ChaosCreate(CreateView):

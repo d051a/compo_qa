@@ -13,9 +13,9 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 SECRET_KEY = 'bb68r9%%!01d8z6zz&3*4$1437l9(ydit+o@8m9qd10q0c&rva'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = int(os.environ.get("DEBUG", default=0))
+DEBUG = int(os.environ.get("DEBUG", default=1))
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", '127.0.0.1').split(" ")
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 # Application definition
@@ -136,22 +136,11 @@ STATICFILES_DIRS = (
     ("base_imgs", os.path.join(BASE_DIR, 'static/base/imgs')),
 )
 
-# REDIS_HOST = 'redis'
-# REDIS_PORT = '6379'
-#
-# CELERY_BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
-# CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
-# CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
-# CELERY_ACCEPT_CONTENT = ['application/json']
-# CELERY_TASK_SERIALIZER = 'json'
-# CELERY_RESULT_SERIALIZER = 'json'
-
-
 REDIS_HOST = os.environ.get("REDIS_HOST", '0.0.0.0')
 REDIS_PORT = os.environ.get("REDIS_PORT", '6379')
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://0.0.0.0:6379/0")
 CELERY_BROKER_TRANSPORT_OPTIONS = os.environ.get("CELERY_BROKER_TRANSPORT_OPTIONS", {'visibility_timeout': 3600})
-CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://0.0.0.0:6379/0")
 CELERY_ACCEPT_CONTENT = os.environ.get("CELERY_ACCEPT_CONTENT", ['application/json'])
 CELERY_TASK_SERIALIZER = os.environ.get("CELERY_TASK_SERIALIZER", 'json')
 CELERY_RESULT_SERIALIZER = os.environ.get("CELERY_RESULT_SERIALIZER", 'json')
