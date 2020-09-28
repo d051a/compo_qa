@@ -20,6 +20,7 @@ class Statistic(models.Model):
     images_failed = models.IntegerField('images_failed', null=True)
     currently_scanning = models.IntegerField('currently_scanning', null=True)
     network_mode = models.CharField('network_mode', max_length=100, null=True)
+    network_mode_percent = models.IntegerField('network_mode_percent', null=True)
     connects = models.IntegerField('connects', null=True)
     date_time = models.DateTimeField('Дата и время', auto_now_add=True, blank=True, null=True)
 

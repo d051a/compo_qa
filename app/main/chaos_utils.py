@@ -179,7 +179,18 @@ class ChaosStatisctic:
 
     @property
     def network_mode(self) -> str:
-        return self.__get_stat_attr(r'Network mode: (\w+)')
+        return self.__get_stat_attr(r'Network mode: (.*)')
+
+    @property
+    def network_mode_percent(self) -> int:
+        if self.network_mode == 'Complete':
+            return 100
+        if self.network_mode == 'Free Hunt':
+            return 66
+        if self.network_mode == 'Fast Build':
+            return 33
+        else:
+            return 0
 
     @property
     def connects(self) -> int:

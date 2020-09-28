@@ -119,6 +119,7 @@ def add_current_statistic_to_db(db_chaos_object, current_chaos_statistic_data, m
         images_failed=current_chaos_statistic_data.images_failed,
         currently_scanning=current_chaos_statistic_data.currently_scanning,
         network_mode=current_chaos_statistic_data.network_mode,
+        network_mode_percent=current_chaos_statistic_data.network_mode_percent,
         connects=current_chaos_statistic_data.connects,
     )
     db_statisctic_row.save()
