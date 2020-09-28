@@ -8,8 +8,7 @@ ENV PYTHONUNBUFFERED 1
 
 # create directory for the app user
 RUN mkdir -p /app
-# create the app user
-RUN addgroup -S app && adduser -S app -G app
+
 # create the appropriate directories
 ENV HOME=/app
 ENV APP_HOME=/app/web
@@ -33,9 +32,5 @@ COPY ./entrypoint.sh $APP_HOME
 
 # copy project
 COPY . $APP_HOME
-# chown all the files to the app user
-RUN chown -R app:app $APP_HOME
-# run entrypoint.sh
-# change to the app user
-USER app
-#ENTRYPOINT ["/app/web/entrypoint.sh"]
+
+ENTRYPOINT ["/app/web/entrypoint.sh"]

@@ -8,7 +8,7 @@ from main.tasks_tools import add_current_statistic_to_db, \
     add_net_compilation_statistics_to_db, set_db_object_attribute, get_default_devices, get_ips_by_names, \
     reboot_devices_list, check_all_alive, start_drawing_images, add_draw_images_statistics_to_db, \
     get_drawed_images_percent, save_draw_imgs_final_status_and_data, save_net_compilation_final_status_and_data,\
-    get_net_compilation_percernt
+    get_net_compilation_percernt, start_chaos_webcore, stop_chaos_webcore, reset_send_queue
 
 
 @app.task
@@ -43,22 +43,28 @@ def net_compilation(id_report):
 
     # --------перезагрузка устройств------
     server_names_ports = get_default_devices(chaos_credentials)
-    if server_names_ports is None:
+    if not server_names_ports:
         status = f'FAIL: Не удалось получить DEFAULT_RSERVERS c устройства {server_ssh_address}'
         save_net_compilation_final_status_and_data(net_compile_report, status)
         return False
     servers_ips_ports = get_ips_by_names(server_names_ports, chaos_credentials)
+    stop_chaos_webcore(chaos_credentials)
     if not reboot_devices_list(servers_ips_ports, chaos_credentials):
         status = 'FAIL: Не удалось инициировать перезагрузку одного или нескольких устройств'
         save_net_compilation_final_status_and_data(net_compile_report, status)
         return False
-    print('OK! инициирована перезагрузка устройств!')
     time.sleep(30)
     if not check_all_alive(servers_ips_ports, chaos_credentials['ip'], 5):
         status = 'FAIL: Одного или несколько устройство недоступно после перезагрузки'
         save_net_compilation_final_status_and_data(net_compile_report, status)
         return False
-    time.sleep(30)
+    # if not reboot_devices_list([f"{chaos_credentials['ip']}:19871"], chaos_credentials):
+    #     status = 'FAIL: Не удалось инициировать перезагрузку chaos'
+    #     save_net_compilation_final_status_and_data(net_compile_report, status)
+    #     return False
+    # print('OK! инициирована перезагрузка устройств!')
+    time.sleep(60)
+    start_chaos_webcore(chaos_credentials)
 
     # --------сборка сети------
     net_compilation_percernt_steps = [10, 20, 30, 40, 50, 60, 75, 90, 95, 96, 97, 98, 99, 100]
@@ -115,7 +121,7 @@ def net_compilation(id_report):
             break
 
         elapsed_mins = (utils.get_time_now() - start_time).total_seconds() / 60
-        time.sleep(10)
+        time.sleep(60)
     return True
 
 
@@ -134,9 +140,14 @@ def drawed_images_report_generate(id_report):
     elapsed_mins = 0
     current_step = 0
 
+    if not reset_send_queue(chaos_credentials['ip']):
+        status = f'FAIL: 'f'Не удалось сбросить очередь отрисовки'
+        db_draw_imgs_object.status = status
+        db_draw_imgs_object.save()
+        return False
     start_drawing_images(chaos_credentials)
     print('Отправка команды на отрисовку...')
-    time.sleep(120)
+    time.sleep(60)
 
     while True:
         print(f'Получение новых данных c {db_chaos_object.ip} об отрисовке ценников...')
@@ -188,7 +199,7 @@ def drawed_images_report_generate(id_report):
             break
 
         elapsed_mins = (utils.get_time_now() - start_time).total_seconds() / 60
-        time.sleep(30)
+        time.sleep(60)
     return True
 
 

@@ -57,7 +57,7 @@ def get_default_devices(device_credentials):
     run_command = utils.run_remote_command(device_ssh_address, ssh_user_name, ssh_user_password, ssh_port,
                                            'cat /var/Componentality/Chaos/chaos_config.json')
     if run_command == ('', ''):
-        return None
+        return False
     chaos_config = json.loads(run_command[0])
     names_ports = chaos_config['DEFAULT_RSERVERS']
     return names_ports
@@ -216,9 +216,63 @@ def start_drawing_images(device_credentials):
     return connection
 
 
+def stop_chaos_webcore(device_credentials):
+    device_ssh_address = device_credentials['ip']
+    ssh_user_name = device_credentials['login']
+    ssh_user_password = device_credentials['password']
+    ssh_port = device_credentials['port']
+    print('Инициация остановки chaos_webcore ')
+    run_command = utils.run_remote_command(device_ssh_address, ssh_user_name, ssh_user_password, ssh_port,
+                                           f'echo {ssh_user_password}|sudo -S sudo systemctl stop chaos_webcore')
+    if run_command == ('', ''):
+        print('chaos_webcore успешно остановлен')
+        return True
+    else:
+        print('chaos_webcore не остановлен. Что-то пошло не так')
+        return run_command[1]
+
+
+def start_chaos_webcore(device_credentials):
+    device_ssh_address = device_credentials['ip']
+    ssh_user_name = device_credentials['login']
+    ssh_user_password = device_credentials['password']
+    ssh_port = device_credentials['port']
+    print('Инициация запуска chaos_webcore ')
+    run_command = utils.run_remote_command(device_ssh_address, ssh_user_name, ssh_user_password, ssh_port,
+                                           f'echo {ssh_user_password}|sudo -S sudo systemctl start chaos_webcore')
+    if run_command == ('', ''):
+        print('chaos_webcore успешно запущен')
+        return True
+    else:
+        print('chaos_webcore не запущен. Что-то пошло не так')
+        return run_command[1]
+
+
+def sent_request(ip, url_path):
+    final_result = {}
+    url = f'http://{ip}:19872/{url_path}'
+    try:
+        r = requests.get(url)
+        result = r.text
+        final_result['result'] = result
+        final_result['code'] = 0
+    except requests.exceptions.ConnectionError:
+        print(f'Cannot connect {url}')
+        final_result['code'] = 503
+    except Exception as e:
+        print(e)
+        final_result['code'] = 500
+    finally:
+        return final_result
+
+
+def reset_send_queue(chaos_ip):
+    response = sent_request(chaos_ip, 'reset_send_queue')
+    if response['result'] == 'true':
+        return True
+    else:
+        return False
+
+
 if __name__ == '__main__':
-    chaos_credentials = {'ip': '172.16.26.210',
-                         'login': 'pi',
-                         'password': 'CompoM123',
-                         'port': 22,
-                         }
+    pass
