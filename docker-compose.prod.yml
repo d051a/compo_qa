@@ -3,7 +3,7 @@ services:
   web:
     build:
       context: ./app
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     command: gunicorn conf.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./staticfiles:/app/web/staticfiles
@@ -13,17 +13,6 @@ services:
       - 8000
     env_file:
       - envs/prod/.env.prod
-#    depends_on:
-#      - db
-
-#  db:
-#    image: postgres:12.0-alpine
-#    ports:
-#      - 5432:5432
-#    volumes:
-#      - ./data/postgres:/var/lib/postgresql/data/
-#    env_file:
-#      - envs/dev/.env.dev.db
 
   nginx:
     build: ./nginx
@@ -47,14 +36,8 @@ services:
     ports:
       - "3000:3000"
     user: "0"
-#    links:
-#      - db
     volumes:
-      # Data persistency
-      # sudo mkdir -p /srv/docker/grafana/data; chown 472:472 /srv/docker/grafana/data
       - ./data/grafana:/var/lib/grafana
-#    depends_on:
-#      - db
     env_file:
       - envs/prod/.env.prod
 
@@ -67,7 +50,7 @@ services:
 
   celery:
     build: ./app
-    command: celery -A conf worker -l info
+    command: celery -A conf worker -l INFO
     volumes:
       - ./app:/app/web
     env_file:
@@ -77,7 +60,7 @@ services:
 
   celery-beat:
     build: ./app
-    command: celery -A conf beat -l info
+    command: celery -A conf beat -l INFO
     volumes:
       - ./app:/app/web
     env_file:
@@ -86,16 +69,11 @@ services:
       - redis
 
   dashboard:
-    build: ./app
-    command:  flower -A conf --port=5555 --broker=redis://redis:6379/0
+    image: mher/flower
     ports:
       - 5555:5555
     env_file:
       - envs/prod/.env.prod
-    depends_on:
-      - web
-      - redis
-      - celery
 
   pgadmin:
     image: dpage/pgadmin4

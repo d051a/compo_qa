@@ -4,9 +4,11 @@
 /staticfiles
 /mediafiles
 /data
+/app/celerybeat-schedule.db
 /app/celerybeat-schedule
 /app/celerybeat.pid
 /app/celery.log
+/app/main/test.py
 
 .DS_Store
 *.pyc
