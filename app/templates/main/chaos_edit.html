@@ -1,0 +1,30 @@
+{% extends 'base_template.html' %}
+
+{%block title%}{{ page_name }}{% endblock %}
+
+
+ {%block body%}
+     <div class = "col-md-6">
+        <div class = "justify-content-sm-center"></div>
+            <p>
+             <h4>Изменение данных устройства {{ object.name }}</h4>
+            </p>
+        <div class = "col-md-12 justify-content-sm-center">
+            <form action="" method="POST">
+                {% csrf_token %}
+                {{ form.as_table }}
+                 <p></p>
+                <button type="submit"  type="button" class="btn btn-secondary">Изменить</button>
+                <button type="submit" form="get_config" class="btn btn-secondary">Получить текущий конфиг</button>
+            </form>
+            <form id="get_config" method="get" action="{% url 'main:get_chaos_config' object.pk %}">
+            </form>
+        </div>
+     </div>
+
+
+ {%endblock body%}
+
+
+{% block scripts %}
+{% endblock scripts %}

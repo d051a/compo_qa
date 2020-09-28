@@ -27,7 +27,7 @@ class MetricReportForm(ModelForm):
 class ChaosForm (ModelForm):
     class Meta:
         model = Chaos
-        fields = ['name', 'ip', 'port', 'ssh_port', 'login', 'password', 'description']
+        fields = ['name', 'ip', 'port', 'ssh_port', 'login', 'password', 'description', 'config']
         widgets = {
             'ip': forms.TextInput(attrs={'class': 'form-control'}),
             'port': forms.TextInput(attrs={'class': 'form-control'}),
@@ -36,6 +36,7 @@ class ChaosForm (ModelForm):
             'login': forms.TextInput(attrs={'class': 'form-control'}),
             'password': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.TextInput(attrs={'class': 'form-control'}),
+            'config': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
 

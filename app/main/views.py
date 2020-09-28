@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from main.models import Statistic, MetricReport, Chaos, DrawImgsReport, NetCompileReport
 from main.chaos_utils import Utils as utils
-from django.views.generic import DetailView, CreateView, ListView
+from django.views.generic import DetailView, CreateView, ListView, UpdateView
 from django.urls import reverse_lazy, reverse
 from main.forms import ChaosForm, DrawImgsReportForm, NetCompileReportForm, MetricReportForm
 from main.tasks import drawed_images_report_generate, net_compilation, all_metrics_report_generate
@@ -53,7 +53,7 @@ def get_chaos_config(request, pk):
     config_json = json.loads(config_data[0])
     chaos.config = config_json
     chaos.save()
-    return HttpResponseRedirect(reverse('main:chaos_detail', args=(pk,)))
+    return HttpResponseRedirect(reverse('main:chaos_edit', args=(pk,)))
 
 
 class ChaosCreate(CreateView):
@@ -61,6 +61,14 @@ class ChaosCreate(CreateView):
     context_object_name = 'Новое РУ'
     form_class = ChaosForm
     template_name = 'main/chaos_add.html'
+    success_url = reverse_lazy('main:chaoses_list')
+
+
+class ChaosEdit(UpdateView):
+    model = Chaos
+    context_object_name = 'Изменение настроек Хаоса'
+    form_class = ChaosForm
+    template_name = 'main/chaos_edit.html'
     success_url = reverse_lazy('main:chaoses_list')
 
 

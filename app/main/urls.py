@@ -8,6 +8,7 @@ urlpatterns = [
     path('', views.main, name='main'),
     path('chaoses/', views.ChaosListView.as_view(), name='chaoses_list'),
     path('chaoses/add/', views.ChaosCreate.as_view(), name='chaos_add'),
+    path('chaoses/<int:pk>/edit/', views.ChaosEdit.as_view(), name='chaos_edit'),
     path('chaoses/<int:pk>/', views.ChaosDetail.as_view(), name='chaos_detail'),
     path('chaoses/<int:pk>/stats', views.ChaosStats.as_view(), name='chaos_stats'),
     path('metrics/', views.metrics_list, name='metrics_list'),
@@ -20,6 +21,9 @@ urlpatterns = [
     path('netcompiles/<int:pk>/', views.NetCompileReportDetail.as_view(), name='net_compiles_detail'),
     path('netcompiles/add', views.NetCompiliesReportCreate.as_view(), name='net_compiles_add'),
 
+    path('chaoses/<int:pk>/get_config/', views.get_chaos_config, name='get_chaos_config'),
+
+
     # excel reports generators
     path('metrics/<int:chaos_id>/stats/excel', views_excel.chaos_stats_export_to_xlsx, name='chaos_stats_export_to_xlsx'),
     path('metrics/<int:metric_report_id>/excel', views_excel.metric_report_export_to_xlsx, name='export_report_data_to_xlsx'),
@@ -31,8 +35,5 @@ urlpatterns = [
     path('drawed_imgs_stats_json/', views_dbs.DrawImgsStatModelListJson.as_view(), name='drawed_imgs_stats_json'),
     path('net_compile_stats_json/', views_dbs.NetCompilationStatModelListJson.as_view(), name='net_compile_stats_json'),
     path('net_compile_list_json/', views_dbs.NetCompilationReportModelListJson.as_view(), name='net_compile_list_json'),
-
-    path('chaoses/<int:pk>/get_config/', views.get_chaos_config, name='get_chaos_config'),
-
 
 ]

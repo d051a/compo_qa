@@ -39,6 +39,7 @@
                     <th>Описание</th>
                     <th>Отчеты</th>
                     <th>Актуальность данных</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -59,10 +60,10 @@
                     <td>{{ chaos.images_succeeded }}</td>
                     <td>{{ chaos.draw_percent }}</td>
                     <td>{{ chaos.net_percent }}</td>
-                    <td></td>
+                    <td>{% if chaos.description %}{{ chaos.description }}{% endif %}</td>
                     <td><a href="{% url 'main:chaos_stats' chaos.pk %}">{{ chaos.pk|stats_view }}</a></td>
                     <td>{{ chaos.date_time_update |date:"d-m-y H:i:s" }}</td>
-                  </tr>
+                    <td><a href="{% url 'main:chaos_edit' chaos.pk %} "> <img src="/staticfiles/base_svg/cog.svg" alt="" width=20></a></tr>
                   {% endfor %}
             </tbody>
         </table>
