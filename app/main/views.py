@@ -5,7 +5,7 @@ from main.models import Statistic, MetricReport, Chaos, DrawImgsReport, NetCompi
 from main.chaos_utils import Utils as utils
 from django.views.generic import DetailView, CreateView, ListView, UpdateView
 from django.urls import reverse_lazy, reverse
-from main.forms import ChaosForm, DrawImgsReportForm, NetCompileReportForm, MetricReportForm
+from main.forms import ChaosForm, DrawImgsReportForm, NetCompileReportForm, MetricReportForm, ChaosEditForm
 from main.tasks import drawed_images_report_generate, net_compilation, all_metrics_report_generate
 
 
@@ -67,7 +67,7 @@ class ChaosCreate(CreateView):
 class ChaosEdit(UpdateView):
     model = Chaos
     context_object_name = 'Изменение настроек Хаоса'
-    form_class = ChaosForm
+    form_class = ChaosEditForm
     template_name = 'main/chaos_edit.html'
     success_url = reverse_lazy('main:chaoses_list')
 

@@ -24,10 +24,26 @@ class MetricReportForm(ModelForm):
         }
 
 
-class ChaosForm (ModelForm):
+class ChaosForm(ModelForm):
     class Meta:
         model = Chaos
-        fields = ['name', 'ip', 'port', 'ssh_port', 'login', 'password', 'description', 'config']
+        fields = ['name', 'ip', 'port', 'ssh_port', 'login', 'password', 'description']
+        widgets = {
+            'ip': forms.TextInput(attrs={'class': 'form-control'}),
+            'port': forms.TextInput(attrs={'class': 'form-control'}),
+            'ssh_port': forms.TextInput(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'login': forms.TextInput(attrs={'class': 'form-control'}),
+            'password': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+class ChaosEditForm(ChaosForm):
+    class Meta:
+        model = Chaos
+        fields = ['name', 'ip', 'port', 'ssh_port', 'login',
+                  'password', 'description', 'config', 'monitoring_config_params']
         widgets = {
             'ip': forms.TextInput(attrs={'class': 'form-control'}),
             'port': forms.TextInput(attrs={'class': 'form-control'}),
@@ -37,7 +53,10 @@ class ChaosForm (ModelForm):
             'password': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.TextInput(attrs={'class': 'form-control'}),
             'config': forms.TextInput(attrs={'class': 'form-control'}),
+            'monitoring_config_params': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+
 
 
 class DrawImgsReportForm(ModelForm):
