@@ -9,9 +9,9 @@ app = Celery('conf')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 app.conf.beat_schedule = {
-    'get-stats-every-3-minutes': {
+    'get-stats-every-30-seconds': {
         'task': 'main.tasks.get_current_stats',
-        'schedule': 180.0,
+        'schedule': 30.0,
         'args': ()
     },
 }
