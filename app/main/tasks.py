@@ -1,6 +1,6 @@
 import time
-from datetime import datetime
 from conf.celery import app
+from django.utils import timezone
 from main.chaos_utils import Utils as utils
 from main.chaos_utils import ChaosStatisctic
 from main.models import NetCompileReport, DrawImgsReport, Chaos, MetricReport
@@ -71,14 +71,14 @@ def net_compilation(id_report):
     last_step = len(net_compilation_percernt_steps)-1
     current_step = 0
     elapsed_mins = 0
-    start_time = datetime.now()
+    start_time = timezone.now()
     net_compile_limit_mins = net_compile_report.net_compile_limit_mins
 
     while True:
         print(f'Получение новых данных c {db_chaos_object.ip} о cборке сети!')
 
         current_chaos_statistic_data = ChaosStatisctic(ip=db_chaos_object.ip)
-        current_time = utils.get_time_now()
+        current_time = timezone.now()
         elapsed_time = utils.get_time_delta(current_time,
                                             net_compile_report.create_date_time,
                                             "{hours}:{minutes}:{seconds}")
@@ -120,7 +120,7 @@ def net_compilation(id_report):
             save_net_compilation_final_status_and_data(net_compile_report, 'OK')
             break
 
-        elapsed_mins = (utils.get_time_now() - start_time).total_seconds() / 60
+        elapsed_mins = (timezone.now() - start_time).total_seconds() / 60
         time.sleep(60)
     return True
 
@@ -136,7 +136,7 @@ def drawed_images_report_generate(id_report):
                          'password': db_chaos_object.password,
                          'port': db_chaos_object.ssh_port
                          }
-    start_time = datetime.now()
+    start_time = timezone.now()
     elapsed_mins = 0
     current_step = 0
 
@@ -153,7 +153,7 @@ def drawed_images_report_generate(id_report):
         print(f'Получение новых данных c {db_chaos_object.ip} об отрисовке ценников...')
         current_chaos_statistic_data = ChaosStatisctic(ip=db_chaos_object.ip)
         drawed_images_percent = get_drawed_images_percent(current_chaos_statistic_data, fact_total_esl)
-        current_time = utils.get_time_now()
+        current_time = timezone.now()
         elapsed_time = utils.get_time_delta(current_time,
                                             db_draw_imgs_object.create_date_time,
                                             "{hours}:{minutes}:{seconds}")
@@ -198,7 +198,7 @@ def drawed_images_report_generate(id_report):
             save_draw_imgs_final_status_and_data(db_draw_imgs_object, current_chaos_statistic_data, 'OK')
             break
 
-        elapsed_mins = (utils.get_time_now() - start_time).total_seconds() / 60
+        elapsed_mins = (timezone.now() - start_time).total_seconds() / 60
         time.sleep(60)
     return True
 
@@ -247,6 +247,6 @@ def all_metrics_report_generate(id_report):
                 draw_imgs_count -= 1
             else:
                 break
-    metric_report.date_time_finish = datetime.now()
+    metric_report.date_time_finish = timezone.now()
     metric_report.save()
     return True

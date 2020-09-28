@@ -4,6 +4,7 @@ import json
 from main.models import NetCompilationStat, DrawImgsStat, Statistic
 from datetime import datetime
 from main.chaos_utils import Utils as utils
+from django.utils import timezone
 
 
 def check_host_alive(chaos_ip, slave_ip, slave_port):
@@ -192,13 +193,13 @@ def save_draw_imgs_final_status_and_data(db_draw_imgs_object, curent_stats_data,
     db_draw_imgs_object.not_drawed_esl = get_not_drawed_images(curent_stats_data, db_draw_imgs_object.fact_total_esl)
     db_draw_imgs_object.not_drawed_esl = curent_stats_data.images_succeeded
     db_draw_imgs_object.status = status
-    db_draw_imgs_object.date_time_finish = datetime.now()
+    db_draw_imgs_object.date_time_finish = timezone.now()
     db_draw_imgs_object.save()
 
 
 def save_net_compilation_final_status_and_data(db_net_compilation_object, status):
     db_net_compilation_object.status = status
-    db_net_compilation_object.date_time_finish = datetime.now()
+    db_net_compilation_object.date_time_finish = timezone.now()
     db_net_compilation_object.save()
 
 
