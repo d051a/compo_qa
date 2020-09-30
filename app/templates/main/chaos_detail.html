@@ -21,7 +21,11 @@
   <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
     Посмотреть последнюю статистику
   </a>
-
+{% if object.config %}
+  <a class="btn btn-primary" data-toggle="collapse" href="#chaosConfigCompare" role="button" aria-expanded="false" aria-controls="collapseExample">
+    chaos_config.json сравнение
+  </a>
+{% endif %}
     </p>
     <div class="collapse" id="collapseExample">
       <div class="card card-body">
@@ -29,6 +33,16 @@
               <p>
               <h5>Последняя статистика:</h5>
               {{ current_stats|safe }}
+              </p>
+          </div>
+      </div>
+    </div>
+        <div class="collapse" id="chaosConfigCompare">
+      <div class="card card-body">
+          <div>
+              <p>
+              <h5>chaos_config.json сравнение:</h5>
+              {{ object.compired_config|safe }}
               </p>
           </div>
       </div>

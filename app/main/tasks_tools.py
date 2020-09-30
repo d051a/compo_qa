@@ -218,6 +218,17 @@ def start_drawing_images(device_credentials):
     return connection
 
 
+def get_chaos_config(device_credentials):
+    config_data = utils.run_remote_command(device_credentials['ip'],
+                                           device_credentials['login'],
+                                           device_credentials['password'],
+                                           device_credentials['port'],
+                                           f'cat /var/Componentality/Chaos/chaos_config.json'
+                                           )
+    config_json = json.loads(config_data[0])
+    return config_json
+
+
 def stop_chaos_webcore(device_credentials):
     device_ssh_address = device_credentials['ip']
     ssh_user_name = device_credentials['login']

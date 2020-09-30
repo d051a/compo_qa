@@ -14,6 +14,13 @@ app.conf.beat_schedule = {
         'schedule': 30.0,
         'args': ()
     },
+
+    'compire-chaos-configs-every-5-minutes': {
+        'task': 'main.tasks.compire_chaos_configs',
+        'schedule': crontab(minute='*/5'),
+        'args': ()
+    },
 }
+
 
 app.autodiscover_tasks()

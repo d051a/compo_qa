@@ -49,6 +49,8 @@ class Chaos(models.Model):
     date_time_update = models.DateTimeField('Время обновления данных', auto_now=True)
     config = models.TextField('Текущий конфиг хаоса', blank=True, null=True)
     monitoring_config_params = models.TextField('Отслеживаемые поля конфига', blank=True, null=True)
+    compired_config = models.TextField('Результат сравнения конфигов', blank=True, null=True)
+    compired_config_date = models.DateTimeField('Дата и время сравнения конфигов', blank=True, null=True)
 
     class Meta:
         ordering = ["name"]
