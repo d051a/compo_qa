@@ -82,4 +82,7 @@ services:
     env_file:
       - envs/prod/.env.prod
     volumes:
-      - ./data/pgadmin:/var/lib/pgadmin
+      - pgadmin-data:/var/lib/pgadmin
+
+volumes:
+  pgadmin-data:

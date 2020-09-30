@@ -269,12 +269,11 @@ def compire_chaos_configs():
             chaos.save()
         reference_config = ast.literal_eval(chaos.config)
         monitored_params = chaos.monitoring_config_params
-        # if not monitored_params:
-        #     continue
         for param in reference_config:
             config_line = f'{param}: {reference_config[param]} ({current_config[param]})'
-            if param in monitored_params:
-                config_line = f'<b>{param}</b>: {reference_config[param]} ({current_config[param]})'
+            if monitored_params is not None:
+                if param in monitored_params:
+                    config_line = f'<b>{param}</b>: {reference_config[param]} ({current_config[param]})'
             if reference_config[param] != current_config[param] and param in monitored_params:
                 config_line = f' <span class="badge badge-pill badge-danger">ERR!</span> {config_line}'
             elif reference_config[param] != current_config[param]:

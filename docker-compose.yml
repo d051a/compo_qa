@@ -100,4 +100,7 @@ services:
     env_file:
       - envs/dev/.env.dev
     volumes:
-      - ./data/pgadmin:/var/lib/pgadmin
+      - pgadmin-data:/var/lib/pgadmin
+
+volumes:
+  pgadmin-data:
