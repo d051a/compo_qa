@@ -5,7 +5,7 @@ psycopg2-binary
 requests
 django_datatables_view
 django-datetime-widget
-celery
+celery==4.4.7
 redis
 openpyxl
 paramiko

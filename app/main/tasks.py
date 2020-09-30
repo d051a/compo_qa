@@ -12,7 +12,7 @@ from main.tasks_tools import add_current_statistic_to_db, \
     get_net_compilation_percernt, start_chaos_webcore, stop_chaos_webcore, reset_send_queue, get_chaos_config
 
 
-@app.task
+@app.task(autoretry_for=(Exception,))
 def get_current_stats():
     chaoses = Chaos.objects.all()
     for chaos in chaoses:
@@ -268,7 +268,6 @@ def compire_chaos_configs():
             chaos.config = current_config
             chaos.save()
         reference_config = ast.literal_eval(chaos.config)
-        print(reference_config)
         monitored_params = chaos.monitoring_config_params
         # if not monitored_params:
         #     continue

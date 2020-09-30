@@ -7,7 +7,7 @@
 /app/celerybeat-schedule.db
 /app/celerybeat-schedule
 /app/celerybeat.pid
-/app/celery.log
+/app/logs/*
 /app/main/test.py
 
 .DS_Store
