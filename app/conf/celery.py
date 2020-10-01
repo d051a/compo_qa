@@ -17,7 +17,13 @@ app.conf.beat_schedule = {
 
     'compire-chaos-configs-every-5-minutes': {
         'task': 'main.tasks.compire_chaos_configs',
-        'schedule': crontab(minute='*/5'),
+        'schedule': crontab(minute='*/1'),
+        'args': ()
+    },
+
+    'get_current_voltage_every-30-seconds': {
+        'task': 'main.tasks.get_voltage_params',
+        'schedule': 30.0,
         'args': ()
     },
 }

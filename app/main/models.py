@@ -23,6 +23,8 @@ class Statistic(models.Model):
     network_mode_percent = models.IntegerField('network_mode_percent', null=True)
     connects = models.IntegerField('connects', null=True)
     date_time = models.DateTimeField('Дата и время', auto_now_add=True, blank=True, null=True)
+    voltage_current = models.FloatField('Текущий вольтаж', blank=True, null=True)
+    voltage_average = models.FloatField('Средний вольтаж', blank=True, null=True)
 
     class Meta:
         ordering = ["-date_time"]
@@ -51,6 +53,11 @@ class Chaos(models.Model):
     monitoring_config_params = models.TextField('Отслеживаемые поля конфига', blank=True, null=True)
     compired_config = models.TextField('Результат сравнения конфигов', blank=True, null=True)
     compired_config_date = models.DateTimeField('Дата и время сравнения конфигов', blank=True, null=True)
+    compired_config_errs = models.IntegerField('Расхождений в сравниваемых параметрах конфигов',
+                                               default=0, blank=True, null=True)
+    compired_config_warns = models.IntegerField('Расхождений в параметрах конфигов', default=0, blank=True, null=True)
+    multimeter_ip = models.GenericIPAddressField('IP-адрес мультиметра',
+                                                 protocol='IPv4', unpack_ipv4=False, blank=True, null=True)
 
     class Meta:
         ordering = ["name"]
@@ -63,11 +70,16 @@ class Chaos(models.Model):
 
 class NetCompilationStat(models.Model):
     chaos = models.ForeignKey('Chaos', on_delete=models.CASCADE, verbose_name='Хаос', null=True, blank=True)
-    net_compile_report = models.ForeignKey('NetCompileReport', on_delete=models.CASCADE, verbose_name='NetCompileReport', null=True, blank=True)
+    net_compile_report = models.ForeignKey('NetCompileReport',
+                                           on_delete=models.CASCADE,
+                                           verbose_name='NetCompileReport',
+                                           null=True,
+                                           blank=True)
     online_esl = models.IntegerField('Ценников онлайн')
     compilation_percent = models.FloatField('Компиляция сети (%)')
     elapsed_time = models.CharField('Затраченное время', max_length=50)
     date_time = models.DateTimeField('Дата и время записи', auto_now_add=True, blank=True, null=True)
+
 
     class Meta:
         ordering = ["-pk"]
@@ -80,10 +92,15 @@ class NetCompilationStat(models.Model):
 
 class NetCompileReport(models.Model):
     chaos = models.ForeignKey('Chaos', on_delete=models.CASCADE, verbose_name='Хаос', null=True, blank=True)
-    metric_report = models.ForeignKey('MetricReport', on_delete=models.CASCADE, verbose_name='Отчет сбора метрик', null=True, blank=True)
+    metric_report = models.ForeignKey('MetricReport',
+                                      on_delete=models.CASCADE,
+                                      verbose_name='Отчет сбора метрик',
+                                      null=True,
+                                      blank=True)
     create_date_time = models.DateTimeField('Дата и время создания отчета', auto_now_add=True, blank=True, null=True)
     status = models.CharField('Статус', max_length=200, blank=True)
-    net_compile_limit_mins = models.IntegerField('Предельное время сборки сети(мин)', default=120, blank=True, null=True)
+    net_compile_limit_mins = models.IntegerField('Предельное время сборки сети(мин)',
+                                                 default=120, blank=True, null=True)
     net_compile_amount = models.IntegerField('Количество сборок сети', default=1, blank=True, null=True)
     date_time_finish = models.DateTimeField('Дата и время завершения', null=True, blank=True)
     fact_total_esl = models.IntegerField('Фактическое количество ESL', null=True, blank=True)
@@ -114,8 +131,10 @@ class NetCompileReport(models.Model):
 class MetricReport(models.Model):
     chaos = models.ForeignKey('Chaos', on_delete=models.CASCADE, verbose_name='Хаос', null=True)
     create_date_time = models.DateTimeField('Дата и время создания отчета', auto_now_add=True, blank=True, null=True)
-    net_compile_limit_mins = models.IntegerField('Предельное время сборки сети(мин)', default=120, blank=True, null=True)
-    draw_imgs_limit_mins = models.IntegerField('Предельное время отрисовки ценников (мин)', default=300, blank=True, null=True)
+    net_compile_limit_mins = models.IntegerField('Предельное время сборки сети(мин)',
+                                                 default=120, blank=True, null=True)
+    draw_imgs_limit_mins = models.IntegerField('Предельное время отрисовки ценников (мин)',
+                                               default=300, blank=True, null=True)
     net_compile_amount = models.IntegerField('Количество сборок сети', default=1, blank=True, null=True)
     draw_imgs_amount = models.IntegerField('Количество отрисовок', default=1, blank=True, null=True)
     fact_total_esl = models.IntegerField('Фактическое количество ESL онлайн', null=True, blank=True)
@@ -133,10 +152,15 @@ class MetricReport(models.Model):
 
 class DrawImgsReport(models.Model):
     chaos = models.ForeignKey('Chaos', on_delete=models.CASCADE, verbose_name='Хаос', null=True, blank=True)
-    metric_report = models.ForeignKey('MetricReport', on_delete=models.CASCADE, verbose_name='Отчет сбора метрик', null=True, blank=True)
+    metric_report = models.ForeignKey('MetricReport',
+                                      on_delete=models.CASCADE,
+                                      verbose_name='Отчет сбора метрик',
+                                      null=True,
+                                      blank=True)
     create_date_time = models.DateTimeField('Дата и время создания отчета', auto_now_add=True, blank=True, null=True)
     date_time_finish = models.DateTimeField('Дата и время окончания отчета', blank=True, null=True)
-    draw_imgs_limit_mins = models.IntegerField('Предельное время отрисовки ценников (мин)', default=300, blank=True, null=True)
+    draw_imgs_limit_mins = models.IntegerField('Предельное время отрисовки ценников (мин)',
+                                               default=300, blank=True, null=True)
     draw_imgs_amount = models.IntegerField('Количнство отрисовок ценников', default=1, blank=True, null=True)
     status = models.CharField('Статус', max_length=200, blank=True)
     fact_total_esl = models.IntegerField('Фактическое количество ESL онлайн', null=True, blank=True)
@@ -168,7 +192,8 @@ class DrawImgsReport(models.Model):
 
 class DrawImgsStat(models.Model):
     chaos = models.ForeignKey('Chaos', on_delete=models.CASCADE, verbose_name='Хаос', null=True, blank=True)
-    draw_imgs_report = models.ForeignKey('DrawImgsReport', on_delete=models.CASCADE, verbose_name='Отчет отрисовки ценников', null=True)
+    draw_imgs_report = models.ForeignKey('DrawImgsReport',
+                                         on_delete=models.CASCADE, verbose_name='Отчет отрисовки ценников', null=True)
     online_esl = models.IntegerField('Ценников онлайн', blank=True, null=True)
     images_succeeded = models.IntegerField('Отрисованных ценников', blank=True, null=True)
     percent_step = models.IntegerField('Шаг процента отрисовки', blank=True, null=True)

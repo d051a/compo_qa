@@ -9,7 +9,8 @@ from main.tasks_tools import add_current_statistic_to_db, \
     add_net_compilation_statistics_to_db, set_db_object_attribute, get_default_devices, get_ips_by_names, \
     reboot_devices_list, check_all_alive, start_drawing_images, add_draw_images_statistics_to_db, \
     get_drawed_images_percent, save_draw_imgs_final_status_and_data, save_net_compilation_final_status_and_data,\
-    get_net_compilation_percernt, start_chaos_webcore, stop_chaos_webcore, reset_send_queue, get_chaos_config
+    get_net_compilation_percernt, start_chaos_webcore, stop_chaos_webcore, reset_send_queue, get_chaos_config,\
+    get_current_voltage
 
 
 @app.task(autoretry_for=(Exception,))
@@ -252,10 +253,13 @@ def all_metrics_report_generate(id_report):
     metric_report.save()
     return True
 
+
 @app.task
 def compire_chaos_configs():
     chaoses = Chaos.objects.all()
     for chaos in chaoses:
+        errors = 0
+        warnings = 0
         print(f'Сравнение конфигурационных файлов для {chaos.name}({chaos.ip})')
         compired_config = ''
         chaos_credentials = {'ip': chaos.ip,
@@ -264,10 +268,12 @@ def compire_chaos_configs():
                              'port': chaos.ssh_port
                              }
         current_config = get_chaos_config(chaos_credentials)
+        if current_config is None:
+            continue
         if not chaos.config:
             chaos.config = current_config
             chaos.save()
-        reference_config = ast.literal_eval(chaos.config)
+        reference_config = ast.literal_eval(str(chaos.config))
         monitored_params = chaos.monitoring_config_params
         for param in reference_config:
             config_line = f'{param}: {reference_config[param]} ({current_config[param]})'
@@ -276,11 +282,27 @@ def compire_chaos_configs():
                     config_line = f'<b>{param}</b>: {reference_config[param]} ({current_config[param]})'
             if reference_config[param] != current_config[param] and param in monitored_params:
                 config_line = f' <span class="badge badge-pill badge-danger">ERR!</span> {config_line}'
+                errors += 1
             elif reference_config[param] != current_config[param]:
                 config_line = f' <span class="badge badge-pill badge-warning">WARN</span> {config_line}'
+                warnings += 1
             else:
                 config_line = f' <span class="badge badge-pill badge-success">GOOD</span> {config_line}'
             compired_config += config_line + '<br/>'
+        chaos.compired_config_errs = errors
+        chaos.compired_config_warns = warnings
         chaos.compired_config = compired_config
         chaos.compired_config_date = timezone.now()
         chaos.save()
+
+
+@app.task
+def get_voltage_params():
+    chaoses = Chaos.objects.exclude(multimeter_ip=None)
+    for chaos in chaoses:
+        statistic = ChaosStatisctic(ip=chaos.ip)
+        if statistic.text != 'None':
+            print(f'Снятие текущих значений вольтметра IP:{chaos.multimeter_ip} для стенда {chaos.name}')
+            db_statisctic_row = add_current_statistic_to_db(chaos, statistic)
+            db_statisctic_row.voltage_current = get_current_voltage(chaos.multimeter_ip)
+            db_statisctic_row.save()

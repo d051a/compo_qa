@@ -1,6 +1,7 @@
 import time
 import requests
 import json
+import pyvisa
 from main.models import NetCompilationStat, DrawImgsStat, Statistic
 from datetime import datetime
 from main.chaos_utils import Utils as utils
@@ -124,6 +125,7 @@ def add_current_statistic_to_db(db_chaos_object, current_chaos_statistic_data, m
         connects=current_chaos_statistic_data.connects,
     )
     db_statisctic_row.save()
+    return db_statisctic_row
 
 
 def add_net_compilation_statistics_to_db(db_chaos_object,
@@ -225,6 +227,8 @@ def get_chaos_config(device_credentials):
                                            device_credentials['port'],
                                            f'cat /var/Componentality/Chaos/chaos_config.json'
                                            )
+    if config_data is None:
+        return None
     config_json = json.loads(config_data[0])
     return config_json
 
@@ -285,6 +289,26 @@ def reset_send_queue(chaos_ip):
         return True
     else:
         return False
+
+
+def get_current_voltage(multimeter_ip, ndigits=4):
+    """
+    Simple program to get the current voltage value for the "HMC8012 Digital Multimeter" \n
+    :param ip: device ip-address \n
+    :param ndigits: digits after decimal point \n
+    :return: float \n
+    EXAMPLE:
+    python get_voltage.py "127.0.0.1" -n 2
+    """
+
+    rm = pyvisa.ResourceManager()
+    rm.list_resources()
+    inst = rm.open_resource(f'TCPIP::{multimeter_ip}::INSTR')
+    voltage = inst.query("FETCh?")
+    # voltage = f"{voltage:.{ndigits}f}"
+    inst.close()
+    return float(voltage)
+
 
 
 if __name__ == '__main__':

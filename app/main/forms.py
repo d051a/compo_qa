@@ -43,7 +43,7 @@ class ChaosEditForm(ChaosForm):
     class Meta:
         model = Chaos
         fields = ['name', 'ip', 'port', 'ssh_port', 'login',
-                  'password', 'description', 'config', 'monitoring_config_params']
+                  'password', 'description', 'config', 'monitoring_config_params', 'multimeter_ip']
         widgets = {
             'ip': forms.TextInput(attrs={'class': 'form-control'}),
             'port': forms.TextInput(attrs={'class': 'form-control'}),
@@ -54,9 +54,8 @@ class ChaosEditForm(ChaosForm):
             'description': forms.TextInput(attrs={'class': 'form-control'}),
             'config': forms.TextInput(attrs={'class': 'form-control'}),
             'monitoring_config_params': forms.TextInput(attrs={'class': 'form-control'}),
+            'multimeter_ip': forms.TextInput(attrs={'class': 'form-control'}),
         }
-
-
 
 
 class DrawImgsReportForm(ModelForm):

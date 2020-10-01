@@ -50,6 +50,9 @@ def get_chaos_config(request, pk):
                                           chaos_credentials['port'],
                                           f'cat /var/Componentality/Chaos/chaos_config.json'
                                           )
+    if config_data is None:
+        chaos.config = ''
+        chaos.save()
     config_json = json.loads(config_data[0])
     chaos.config = config_json
     chaos.save()
