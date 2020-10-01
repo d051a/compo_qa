@@ -302,7 +302,12 @@ def get_voltage_params():
     for chaos in chaoses:
         statistic = ChaosStatisctic(ip=chaos.ip)
         if statistic.text != 'None':
-            print(f'Снятие текущих значений вольтметра IP:{chaos.multimeter_ip} для стенда {chaos.name}')
+            print(f'PROCESS: Попытка снять значения вольтметра IP:{chaos.multimeter_ip} для стенда {chaos.name}')
             db_statisctic_row = add_current_statistic_to_db(chaos, statistic)
-            db_statisctic_row.voltage_current = get_current_voltage(chaos.multimeter_ip)
-            db_statisctic_row.save()
+            curent_voltage = get_current_voltage(chaos.multimeter_ip)
+            if curent_voltage:
+                db_statisctic_row.voltage_current = curent_voltage
+                db_statisctic_row.save()
+                print('DONE: Значения вольтметра успешно сняты и записаны в БД')
+            else:
+                print(f'FAIL: Не удалось снять значения. Вольтметр с IP:{chaos.multimeter_ip} недоступен!')

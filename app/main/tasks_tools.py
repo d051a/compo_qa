@@ -294,21 +294,26 @@ def reset_send_queue(chaos_ip):
 def get_current_voltage(multimeter_ip, ndigits=4):
     """
     Simple program to get the current voltage value for the "HMC8012 Digital Multimeter" \n
-    :param ip: device ip-address \n
+    :param multimeter_ip: device ip-address \n
     :param ndigits: digits after decimal point \n
     :return: float \n
     EXAMPLE:
     python get_voltage.py "127.0.0.1" -n 2
     """
-
     rm = pyvisa.ResourceManager()
     rm.list_resources()
-    inst = rm.open_resource(f'TCPIP::{multimeter_ip}::INSTR')
+
+    try:
+        inst = rm.open_resource(f'TCPIP::{multimeter_ip}::INSTR')
+    except pyvisa.errors.VisaIOError:
+        print('VI_ERROR_RSRC_NFOUND (-1073807343): '
+              'Insufficient location information or the requested device or resource is not present in the system. '
+              'CHECK CONNECTION TO DEVICE!')
+        return None
     voltage = inst.query("FETCh?")
     # voltage = f"{voltage:.{ndigits}f}"
     inst.close()
     return float(voltage)
-
 
 
 if __name__ == '__main__':
