@@ -84,5 +84,11 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
 
+  get_voltages_task:
+    build: ./app
+    command: python main/get_voltages_task.py
+    env_file:
+      - envs/dev/.env.dev
+
 volumes:
   pgadmin-data:
