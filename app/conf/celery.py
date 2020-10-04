@@ -11,22 +11,16 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.conf.beat_schedule = {
     'get-stats-every-30-seconds': {
         'task': 'main.tasks.get_current_stats',
-        'schedule': 30.0,
+        'schedule': 31.0,
         'args': ()
     },
 
     'compire-chaos-configs-every-5-minutes': {
         'task': 'main.tasks.compire_chaos_configs',
-        'schedule': crontab(minute='*/1'),
+        'schedule': crontab(minute='*/5'),
         'args': ()
     },
 
-    'get_current_voltage_every-30-seconds': {
-        'task': 'main.tasks.get_voltage_params',
-        'schedule': 30.0,
-        'args': ()
-    },
 }
-
 
 app.autodiscover_tasks()

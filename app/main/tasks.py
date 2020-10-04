@@ -4,6 +4,7 @@ from conf.celery import app
 from django.utils import timezone
 from main.chaos_utils import Utils as utils
 from main.chaos_utils import ChaosStatisctic
+from celery.signals import worker_ready
 from main.models import NetCompileReport, DrawImgsReport, Chaos, MetricReport
 from main.tasks_tools import add_current_statistic_to_db, \
     add_net_compilation_statistics_to_db, set_db_object_attribute, get_default_devices, get_ips_by_names, \
@@ -23,7 +24,7 @@ def get_current_stats():
             chaos.status = 'OK'
             chaos.esl_total = statistic.total_esl
             chaos.images_succeeded = statistic.images_succeeded
-            chaos.net_percent = statistic.get_net_compilation_percent()
+            chaos.net_percent = statistic.get_true_net_compilation_percent()
             chaos.draw_percent = statistic.get_drawed_images_percent()
             chaos.save()
             print(f'{chaos.ip} is ONLINE. add stats to DB')
@@ -311,3 +312,4 @@ def get_voltage_params():
                 print('DONE: Значения вольтметра успешно сняты и записаны в БД')
             else:
                 print(f'FAIL: Не удалось снять значения. Вольтметр с IP:{chaos.multimeter_ip} недоступен!')
+

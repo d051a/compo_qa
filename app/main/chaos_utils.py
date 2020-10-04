@@ -223,6 +223,11 @@ class ChaosStatisctic:
         except:
             return {}
 
+    @property
+    def nodes_num(self):
+        nodes_num = len(self.nodes_routes.keys())
+        return nodes_num
+
     def get_node_routes_num(self, node_mac: str) -> str:
         """
         Вовращает число маршрутов для отдельной ноды по ее мак-адресу.
@@ -293,7 +298,6 @@ class ChaosStatisctic:
     def get_net_compilation_percent(self, ndigits=2) -> float: # ОКРУГЛЕНИЕ !!!!!!
         """
         Возвращает процент компиляции сети
-
         :param ndigits: количество знаков после запятой
         :type ndigits: int
         :rtype: float
@@ -306,8 +310,20 @@ class ChaosStatisctic:
         except ZeroDivisionError:
             return float(0)
 
-
-
+    def get_true_net_compilation_percent(self) -> float:
+        """
+        Возвращает правильный процент сборки сети
+        :rtype: float
+        :return: процент компиляции сети
+        """
+        try:
+            total_nodes = self.total_nodes
+            inaccessible_nodes = self.inaccessible_nodes
+            nodes_num = self.nodes_num
+            net_compilation_percent = ((total_nodes - inaccessible_nodes - nodes_num) / (total_nodes - nodes_num)) * 100
+            return float(net_compilation_percent)
+        except ZeroDivisionError:
+            return float(0)
 
 class Utils:
     @staticmethod
@@ -370,10 +386,10 @@ class Utils:
 
     @staticmethod
     def run_remote_command_no_wait(ip_address: str,
-                           user_name: str,
-                           password: str,
-                           port: str,
-                           command: str):
+                                   user_name: str,
+                                   password: str,
+                                   port: str,
+                                   command: str):
         ssh_connection = Utils.get_ssh_connection(ip_address, user_name, password, port)
         ssh_connection.exec_command(command)
 

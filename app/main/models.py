@@ -25,6 +25,7 @@ class Statistic(models.Model):
     date_time = models.DateTimeField('Дата и время', auto_now_add=True, blank=True, null=True)
     voltage_current = models.FloatField('Текущий вольтаж', blank=True, null=True)
     voltage_average = models.FloatField('Средний вольтаж', blank=True, null=True)
+    voltage_max = models.FloatField('Максимальный вольтаж', blank=True, null=True)
 
     class Meta:
         ordering = ["-date_time"]

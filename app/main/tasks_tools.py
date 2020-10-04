@@ -124,6 +124,10 @@ def add_current_statistic_to_db(db_chaos_object, current_chaos_statistic_data, m
         network_mode_percent=current_chaos_statistic_data.network_mode_percent,
         connects=current_chaos_statistic_data.connects,
     )
+    if db_chaos_object.multimeter_ip:
+        curent_voltage = get_current_voltage(db_chaos_object.multimeter_ip)
+        if curent_voltage:
+            db_statisctic_row.voltage_current = curent_voltage
     db_statisctic_row.save()
     return db_statisctic_row
 
@@ -170,7 +174,7 @@ def get_net_compilation_percernt(curent_stats_data, fact_total_esl):
         net_compilation_percernt = (curent_stats_data.online_esl / fact_total_esl) * 100
         return float(f"{net_compilation_percernt:.2f}")
     else:
-        net_compilation_percernt = curent_stats_data.get_net_compilation_percent()
+        net_compilation_percernt = curent_stats_data.get_true_net_compilation_percent()
         return net_compilation_percernt
 
 
@@ -311,7 +315,6 @@ def get_current_voltage(multimeter_ip, ndigits=4):
               'CHECK CONNECTION TO DEVICE!')
         return None
     voltage = inst.query("FETCh?")
-    # voltage = f"{voltage:.{ndigits}f}"
     inst.close()
     return float(voltage)
 
