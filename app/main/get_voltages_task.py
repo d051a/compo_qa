@@ -17,6 +17,7 @@ from main.tasks import add_current_statistic_to_db, get_current_voltage
 def get_full_voltage_statistics():
     chaoses = Chaos.objects.exclude(multimeter_ip=None)
     voltage_statistics = {}
+    get_voltage_try = 1
     while True:
         for chaos in chaoses:
             time.sleep(0.5)
@@ -24,10 +25,12 @@ def get_full_voltage_statistics():
             if not current_voltage:
                 time.sleep(5)
                 continue
+
             statistic = ChaosStatisctic(ip=chaos.ip)
-            voltage_statistics.setdefault(chaos.pk, deque(maxlen=1000)).append(current_voltage)
+            voltage_statistics.setdefault(chaos.pk, deque(maxlen=10000)).append(current_voltage)
             chaos_voltage_stats = voltage_statistics[chaos.pk]
-            if len(chaos_voltage_stats) % 50 == 0:
+            get_voltage_try += 1
+            if get_voltage_try % 60 == 0:
                 chaos_voltage_stats.append(current_voltage)
                 date_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 voltage_average = statistics.mean(chaos_voltage_stats)
@@ -43,6 +46,7 @@ def get_full_voltage_statistics():
                     f'Min: {voltage_min:.4f} ' \
                     f'Max: {voltage_max:.4f} \n'
                 print(print_str)
+
 
 
 if __name__ == "__main__":
