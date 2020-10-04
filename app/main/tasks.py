@@ -24,7 +24,7 @@ def get_current_stats():
             chaos.status = 'OK'
             chaos.esl_total = statistic.total_esl
             chaos.images_succeeded = statistic.images_succeeded
-            chaos.net_percent = statistic.get_true_net_compilation_percent()
+            chaos.net_percent = f'{statistic.get_true_net_compilation_percent():.2f}'
             chaos.draw_percent = statistic.get_drawed_images_percent()
             chaos.save()
             print(f'{chaos.ip} is ONLINE. add stats to DB')
@@ -297,19 +297,19 @@ def compire_chaos_configs():
         chaos.save()
 
 
-@app.task
-def get_voltage_params():
-    chaoses = Chaos.objects.exclude(multimeter_ip=None)
-    for chaos in chaoses:
-        statistic = ChaosStatisctic(ip=chaos.ip)
-        if statistic.text != 'None':
-            print(f'PROCESS: Попытка снять значения вольтметра IP:{chaos.multimeter_ip} для стенда {chaos.name}')
-            db_statisctic_row = add_current_statistic_to_db(chaos, statistic)
-            curent_voltage = get_current_voltage(chaos.multimeter_ip)
-            if curent_voltage:
-                db_statisctic_row.voltage_current = curent_voltage
-                db_statisctic_row.save()
-                print('DONE: Значения вольтметра успешно сняты и записаны в БД')
-            else:
-                print(f'FAIL: Не удалось снять значения. Вольтметр с IP:{chaos.multimeter_ip} недоступен!')
+# @app.task
+# def get_voltage_params():
+#     chaoses = Chaos.objects.exclude(multimeter_ip=None)
+#     for chaos in chaoses:
+#         statistic = ChaosStatisctic(ip=chaos.ip)
+#         if statistic.text != 'None':
+#             print(f'PROCESS: Попытка снять значения вольтметра IP:{chaos.multimeter_ip} для стенда {chaos.name}')
+#             db_statisctic_row = add_current_statistic_to_db(chaos, statistic)
+#             curent_voltage = get_current_voltage(chaos.multimeter_ip)
+#             if curent_voltage:
+#                 db_statisctic_row.voltage_current = curent_voltage
+#                 db_statisctic_row.save()
+#                 print('DONE: Значения вольтметра успешно сняты и записаны в БД')
+#             else:
+#                 print(f'FAIL: Не удалось снять значения. Вольтметр с IP:{chaos.multimeter_ip} недоступен!')
 
