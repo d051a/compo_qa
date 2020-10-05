@@ -26,6 +26,10 @@ class Statistic(models.Model):
     voltage_current = models.FloatField('Текущий вольтаж', blank=True, null=True)
     voltage_average = models.FloatField('Средний вольтаж', blank=True, null=True)
     voltage_max = models.FloatField('Максимальный вольтаж', blank=True, null=True)
+    bat_reserved1 = models.IntegerField('bat_reserved1', blank=True, null=True)
+    bat_reserved2 = models.IntegerField('bat_reserved2', blank=True, null=True)
+    bat_reserved3 = models.IntegerField('bat_reserved3', blank=True, null=True)
+    bat_reserved4 = models.IntegerField('bat_reserved4', blank=True, null=True)
 
     class Meta:
         ordering = ["-date_time"]
@@ -59,6 +63,8 @@ class Chaos(models.Model):
     compired_config_warns = models.IntegerField('Расхождений в параметрах конфигов', default=0, blank=True, null=True)
     multimeter_ip = models.GenericIPAddressField('IP-адрес мультиметра',
                                                  protocol='IPv4', unpack_ipv4=False, blank=True, null=True)
+    bat_reserved = models.BooleanField('Отслеживать bat_reserved', default=False, blank=True, null=True)
+
 
     class Meta:
         ordering = ["name"]

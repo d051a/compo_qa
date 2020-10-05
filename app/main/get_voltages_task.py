@@ -48,6 +48,5 @@ def get_full_voltage_statistics():
                 print(print_str)
 
 
-
 if __name__ == "__main__":
     get_full_voltage_statistics()

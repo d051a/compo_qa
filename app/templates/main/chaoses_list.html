@@ -30,7 +30,6 @@
                     <th>-</th>
                     <th>Имя</th>
                     <th>IP-адрес</th>
-                    <th>Порт</th>
                     <th>Статус</th>
                     <th>ESL (всего)</th>
                     <th>Images succeeded</th>
@@ -38,6 +37,7 @@
                     <th>Сборка сети (%)</th>
 {#                    <th>Описание</th>#}
                     <th>Вольтаж</th>
+                    <th>bat_reserved</th>
                     <th>Конфиг</th>
                     <th>Отчеты</th>
                     <th>Актуальность данных</th>
@@ -56,7 +56,6 @@
                     <td>{{ forloop.counter }}</td>
                     <td><a href="{% url 'main:chaos_detail' chaos.pk %}">{{ chaos.name }}</a></td>
                     <td>{{ chaos.ip }}</td>
-                    <td>{{ chaos.port }}</td>
                     <td>{{ chaos.status }}</td>
                     <td>{{ chaos.esl_total }}</td>
                     <td>{{ chaos.images_succeeded }}</td>
@@ -64,6 +63,7 @@
                     <td>{{ chaos.net_percent }}</td>
 {#                    <td>{% if chaos.description %}{{ chaos.description }}{% endif %}</td>#}
                     <td>{% if chaos.multimeter_ip %}<img src="/staticfiles/base_svg/bolt.svg" alt="" width=20>{% endif %}</td>
+                    <td>{% if chaos.bat_reserved %}<img src="/staticfiles/base_svg/check.svg" alt="" width=20>{% endif %}</td>
                     <td><span class="badge badge-pill badge-danger">{{ chaos.compired_config_errs }}</span> <span class="badge badge-pill badge-warning">{{ chaos.compired_config_warns }}</span></td>
                     <td><a href="{% url 'main:chaos_stats' chaos.pk %}">{{ chaos.pk|stats_view }}</a></td>
                     <td>{{ chaos.date_time_update |date:"d-m-y H:i:s" }}</td>

@@ -90,5 +90,10 @@ services:
     env_file:
       - envs/prod/.env.prod
 
+  get_status_ex_task:
+    build: ./app
+    command: python main/get_status_ex_task.py
+    env_file:
+      - envs/prod/.env.prod
 volumes:
   pgadmin-data:
