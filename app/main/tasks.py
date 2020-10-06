@@ -4,14 +4,12 @@ from conf.celery import app
 from django.utils import timezone
 from main.chaos_utils import Utils as utils
 from main.chaos_utils import ChaosStatisctic
-from celery.signals import worker_ready
 from main.models import NetCompileReport, DrawImgsReport, Chaos, MetricReport
 from main.tasks_tools import add_current_statistic_to_db, \
     add_net_compilation_statistics_to_db, set_db_object_attribute, get_default_devices, get_ips_by_names, \
     reboot_devices_list, check_all_alive, start_drawing_images, add_draw_images_statistics_to_db, \
     get_drawed_images_percent, save_draw_imgs_final_status_and_data, save_net_compilation_final_status_and_data,\
-    get_net_compilation_percernt, start_chaos_webcore, stop_chaos_webcore, reset_send_queue, get_chaos_config,\
-    get_current_voltage
+    get_net_compilation_percernt, start_chaos_webcore, stop_chaos_webcore, reset_send_queue, get_chaos_config
 
 
 @app.task(autoretry_for=(Exception,))
@@ -148,7 +146,7 @@ def drawed_images_report_generate(id_report):
         db_draw_imgs_object.status = status
         db_draw_imgs_object.save()
         return False
-    start_drawing_images(chaos_credentials)
+    start_drawing_images(chaos_credentials, db_draw_imgs_object.color)
     print('Отправка команды на отрисовку...')
     time.sleep(60)
 
@@ -239,6 +237,7 @@ def all_metrics_report_generate(id_report):
                 fact_total_esl=metric_report.fact_total_esl,
                 draw_imgs_limit_mins=metric_report.draw_imgs_limit_mins,
                 draw_imgs_amount=metric_report.draw_imgs_amount,
+                color=metric_report.color,
             )
             draw_imgs_report.save()
             result = drawed_images_report_generate(draw_imgs_report.id)
@@ -295,21 +294,3 @@ def compire_chaos_configs():
         chaos.compired_config = compired_config
         chaos.compired_config_date = timezone.now()
         chaos.save()
-
-
-# @app.task
-# def get_voltage_params():
-#     chaoses = Chaos.objects.exclude(multimeter_ip=None)
-#     for chaos in chaoses:
-#         statistic = ChaosStatisctic(ip=chaos.ip)
-#         if statistic.text != 'None':
-#             print(f'PROCESS: Попытка снять значения вольтметра IP:{chaos.multimeter_ip} для стенда {chaos.name}')
-#             db_statisctic_row = add_current_statistic_to_db(chaos, statistic)
-#             curent_voltage = get_current_voltage(chaos.multimeter_ip)
-#             if curent_voltage:
-#                 db_statisctic_row.voltage_current = curent_voltage
-#                 db_statisctic_row.save()
-#                 print('DONE: Значения вольтметра успешно сняты и записаны в БД')
-#             else:
-#                 print(f'FAIL: Не удалось снять значения. Вольтметр с IP:{chaos.multimeter_ip} недоступен!')
-

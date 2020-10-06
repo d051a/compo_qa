@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import RegexValidator
 
 
 class Statistic(models.Model):
@@ -65,7 +66,6 @@ class Chaos(models.Model):
                                                  protocol='IPv4', unpack_ipv4=False, blank=True, null=True)
     bat_reserved = models.BooleanField('Отслеживать bat_reserved', default=False, blank=True, null=True)
 
-
     class Meta:
         ordering = ["name"]
         verbose_name = "Хаос"
@@ -87,7 +87,6 @@ class NetCompilationStat(models.Model):
     elapsed_time = models.CharField('Затраченное время', max_length=50)
     date_time = models.DateTimeField('Дата и время записи', auto_now_add=True, blank=True, null=True)
 
-
     class Meta:
         ordering = ["-pk"]
         verbose_name = "Сборка сети"
@@ -98,7 +97,7 @@ class NetCompilationStat(models.Model):
 
 
 class NetCompileReport(models.Model):
-    chaos = models.ForeignKey('Chaos', on_delete=models.CASCADE, verbose_name='Хаос', null=True, blank=True)
+    chaos = models.ForeignKey('Chaos', on_delete=models.CASCADE, verbose_name='Хаос', null=True)
     metric_report = models.ForeignKey('MetricReport',
                                       on_delete=models.CASCADE,
                                       verbose_name='Отчет сбора метрик',
@@ -147,6 +146,13 @@ class MetricReport(models.Model):
     fact_total_esl = models.IntegerField('Фактическое количество ESL онлайн', null=True, blank=True)
     status = models.CharField('Статус', max_length=200, blank=True)
     date_time_finish = models.DateTimeField('Дата и время завершения', null=True, blank=True)
+    color = models.CharField('Цвет отрисовки',
+                             max_length=3,
+                             default='RBW',
+                             blank=True,
+                             validators=[RegexValidator(regex='^[WBR]{3}$',
+                                                        message='Длина строки должна равняться любым 3 символам: R,B,W',
+                                                        code='nomatch')],)
 
     class Meta:
         ordering = ["-pk"]
@@ -158,13 +164,13 @@ class MetricReport(models.Model):
 
 
 class DrawImgsReport(models.Model):
-    chaos = models.ForeignKey('Chaos', on_delete=models.CASCADE, verbose_name='Хаос', null=True, blank=True)
+    chaos = models.ForeignKey('Chaos', on_delete=models.CASCADE, verbose_name='Хаос', null=True)
     metric_report = models.ForeignKey('MetricReport',
                                       on_delete=models.CASCADE,
                                       verbose_name='Отчет сбора метрик',
                                       null=True,
                                       blank=True)
-    create_date_time = models.DateTimeField('Дата и время создания отчета', auto_now_add=True, blank=True, null=True)
+    create_date_time = models.DateTimeField('Дата и время создания отчета', auto_now_add=True, blank=True)
     date_time_finish = models.DateTimeField('Дата и время окончания отчета', blank=True, null=True)
     draw_imgs_limit_mins = models.IntegerField('Предельное время отрисовки ценников (мин)',
                                                default=300, blank=True, null=True)
@@ -187,6 +193,13 @@ class DrawImgsReport(models.Model):
     p98 = models.CharField('Время отрисовки 98%', max_length=100, blank=True)
     p99 = models.CharField('Время отрисовки 99%', max_length=100, blank=True)
     p100 = models.CharField('Время отрисовки 100%', max_length=100, blank=True)
+    color = models.CharField('Цвет отрисовки',
+                             max_length=3,
+                             default='RBW',
+                             blank=True,
+                             validators=[RegexValidator(regex='^[WBR]{3}$',
+                                                        message='Длина строки должна равняться любым 3 символам: R,B,W',
+                                                        code='nomatch')],)
 
     class Meta:
         ordering = ["-pk"]
@@ -214,4 +227,5 @@ class DrawImgsStat(models.Model):
         verbose_name_plural = "Отрисовки ценников"
 
     def __str__(self):
-        return f"Отрисовка ценников #{self.pk} отчета #{self.draw_imgs_report.pk if self.draw_imgs_report.pk else ''}"
+        return f"Отрисовка ценников #{self.pk} " \
+            f"отчета #{self.draw_imgs_report.pk if self.draw_imgs_report.pk else ''}"

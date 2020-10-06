@@ -1,7 +1,6 @@
 import django
 import os
 import sys
-import pyvisa
 import time
 import datetime
 import statistics
@@ -11,19 +10,20 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "conf.settings")
 django.setup()
 from main.chaos_utils import ChaosStatisctic
 from main.models import Chaos
-from main.tasks import add_current_statistic_to_db, get_current_voltage
+from main.tasks import add_current_statistic_to_db
+from main.tasks_tools import get_current_voltage
 
 
 def get_full_voltage_statistics():
-    chaoses = Chaos.objects.exclude(multimeter_ip=None)
     voltage_statistics = {}
     get_voltage_try = 1
     while True:
+        chaoses = Chaos.objects.exclude(multimeter_ip=None)
+        time.sleep(30)
         for chaos in chaoses:
             time.sleep(0.5)
             current_voltage = get_current_voltage(chaos.multimeter_ip)
             if not current_voltage:
-                time.sleep(5)
                 continue
 
             statistic = ChaosStatisctic(ip=chaos.ip)

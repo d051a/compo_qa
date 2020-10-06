@@ -53,6 +53,7 @@ def main():
     run_tasks = {}
     while True:
         chaoses = Chaos.objects.filter(bat_reserved=True)
+        print(f"Очередной этап получения данных... Значения 'bat_reserved' собираются с {len(chaoses)} устройств(а).")
         time.sleep(15)
         for chaos in chaoses:
             run_tasks.setdefault(chaos.pk, ['STOPPED'])

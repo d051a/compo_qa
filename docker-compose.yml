@@ -107,12 +107,16 @@ services:
     command: python main/get_voltages_task.py
     env_file:
       - envs/dev/.env.dev
+    depends_on:
+      - web
 
   get_status_ex_task:
     build: ./app
     command: python main/get_status_ex_task.py
     env_file:
       - envs/dev/.env.dev
+    depends_on:
+      - web
 
 volumes:
   pgadmin-data:

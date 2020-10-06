@@ -11,7 +11,8 @@ class MetricReportForm(ModelForm):
                   'draw_imgs_amount',
                   'fact_total_esl',
                   'draw_imgs_limit_mins',
-                  'net_compile_limit_mins'
+                  'color',
+                  'net_compile_limit_mins',
                   ]
         widgets = {
             'chaos': forms.Select(attrs={'class': 'form-control'}),
@@ -20,6 +21,7 @@ class MetricReportForm(ModelForm):
             'fact_total_esl': forms.NumberInput(attrs={'class': 'form-control'}),
             'net_compile_limit_mins': forms.NumberInput(attrs={'class': 'form-control'}),
             'draw_imgs_limit_mins': forms.NumberInput(attrs={'class': 'form-control'}),
+            'color': forms.TextInput(attrs={'class': 'form-control'}),
 
         }
 
@@ -70,13 +72,13 @@ class DrawImgsReportForm(ModelForm):
                   'metric_report',
                   'fact_total_esl',
                   'draw_imgs_limit_mins',
-                  # 'draw_imgs_amount'
+                  'color'
                   ]
         widgets = {
             'chaos': forms.Select(attrs={'class': 'form-control'}),
             'fact_total_esl': forms.TextInput(attrs={'class': 'form-control'}),
             'draw_imgs_limit_mins': forms.TextInput(attrs={'class': 'form-control'}),
-            # 'draw_imgs_amount': forms.TextInput(attrs={'class': 'form-control'}),
+            'color': forms.TextInput(attrs={'class': 'form-control'}),
             'metric_report': forms.HiddenInput(),
         }
 

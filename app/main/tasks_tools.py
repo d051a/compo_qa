@@ -214,12 +214,12 @@ def set_db_object_attribute(db_object, attrubute_name, value):
     db_object.save()
 
 
-def start_drawing_images(device_credentials):
+def start_drawing_images(device_credentials, esl_color):
     connection = utils.run_remote_command_no_wait(device_credentials['ip'],
                                                   device_credentials['login'],
                                                   device_credentials['password'],
                                                   device_credentials['port'],
-                                                  f'/var/Componentality/Chaos/Highlight_ESL.py -s RBWX'
+                                                  f'/var/Componentality/Chaos/Highlight_ESL.py -s {esl_color}'
                                                   )
     return connection
 
@@ -295,11 +295,10 @@ def reset_send_queue(chaos_ip):
         return False
 
 
-def get_current_voltage(multimeter_ip, ndigits=4):
+def get_current_voltage(multimeter_ip):
     """
     Simple program to get the current voltage value for the "HMC8012 Digital Multimeter" \n
     :param multimeter_ip: device ip-address \n
-    :param ndigits: digits after decimal point \n
     :return: float \n
     EXAMPLE:
     python get_voltage.py "127.0.0.1" -n 2
