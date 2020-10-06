@@ -316,6 +316,9 @@ def get_current_voltage(multimeter_ip):
               'Insufficient location information or the requested device or resource is not present in the system. '
               'CHECK CONNECTION TO DEVICE!')
         return None
+    except ConnectionRefusedError:
+        print('ERROR: Connection to multimeter refused')
+        return None
     voltage = inst.query("FETCh?")
     inst.close()
     return float(voltage)
