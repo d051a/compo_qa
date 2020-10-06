@@ -24,7 +24,7 @@ def get_status_ex(chaos):
 
 
 def get_bat_reserved(input_data):
-    esl_statistics = json.loads(input_data)[0]
+    esl_statistics = json.loads(input_data[0])
     bat_reserved_quantities = {}
     for esl_stat in esl_statistics.keys():
         bat_reserved = esl_statistics[esl_stat]['bat_reserved']
@@ -46,6 +46,7 @@ def run_get_status_ex_task(chaos):
         setattr(db_statisctic_row, f'bat_reserved{bat_reserved_count}', bat_reserved_quantity)
     db_statisctic_row.save()
     run_tasks[chaos.pk] = ['STOPPED']
+    print(run_tasks)
 
 
 def main():
