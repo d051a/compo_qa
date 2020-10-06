@@ -72,14 +72,14 @@ def net_compilation(id_report):
     last_step = len(net_compilation_percernt_steps)-1
     current_step = 0
     elapsed_mins = 0
-    start_time = timezone.now()
+    start_time = timezone.localtime(timezone.now())
     net_compile_limit_mins = net_compile_report.net_compile_limit_mins
 
     while True:
         print(f'Получение новых данных c {db_chaos_object.ip} о cборке сети!')
 
         current_chaos_statistic_data = ChaosStatisctic(ip=db_chaos_object.ip)
-        current_time = timezone.now()
+        current_time = timezone.localtime(timezone.now())
         elapsed_time = utils.get_time_delta(current_time,
                                             net_compile_report.create_date_time,
                                             "{hours}:{minutes}:{seconds}")
@@ -106,7 +106,7 @@ def net_compilation(id_report):
             add_net_compilation_statistics_to_db(db_chaos_object,
                                                  net_compile_report,
                                                  current_chaos_statistic_data,
-                                                 net_compilation_percernt,
+                                                 net_compilation_percernt_steps[current_step],
                                                  elapsed_time)
             set_db_object_attribute(net_compile_report,
                                     f'p{net_compilation_percernt_steps[current_step]}',
@@ -121,7 +121,7 @@ def net_compilation(id_report):
             save_net_compilation_final_status_and_data(net_compile_report, 'OK')
             break
 
-        elapsed_mins = (timezone.now() - start_time).total_seconds() / 60
+        elapsed_mins = (timezone.localtime(timezone.now()) - start_time).total_seconds() / 60
         time.sleep(60)
     return True
 
@@ -137,13 +137,14 @@ def drawed_images_report_generate(id_report):
                          'password': db_chaos_object.password,
                          'port': db_chaos_object.ssh_port
                          }
-    start_time = timezone.now()
+    start_time = timezone.localtime(timezone.now())
     elapsed_mins = 0
     current_step = 0
 
     if not reset_send_queue(chaos_credentials['ip']):
-        status = f'FAIL: 'f'Не удалось сбросить очередь отрисовки'
+        status = f'FAIL: 'f'Не удалось сбросить очередь отрисовки перед запуском отрисовки'
         db_draw_imgs_object.status = status
+        db_draw_imgs_object.date_time_finish = timezone.localtime(timezone.now())
         db_draw_imgs_object.save()
         return False
     start_drawing_images(chaos_credentials, db_draw_imgs_object.color)
@@ -154,7 +155,7 @@ def drawed_images_report_generate(id_report):
         print(f'Получение новых данных c {db_chaos_object.ip} об отрисовке ценников...')
         current_chaos_statistic_data = ChaosStatisctic(ip=db_chaos_object.ip)
         drawed_images_percent = get_drawed_images_percent(current_chaos_statistic_data, fact_total_esl)
-        current_time = timezone.now()
+        current_time = timezone.localtime(timezone.now())
         elapsed_time = utils.get_time_delta(current_time,
                                             db_draw_imgs_object.create_date_time,
                                             "{hours}:{minutes}:{seconds}")
@@ -199,7 +200,7 @@ def drawed_images_report_generate(id_report):
             save_draw_imgs_final_status_and_data(db_draw_imgs_object, current_chaos_statistic_data, 'OK')
             break
 
-        elapsed_mins = (timezone.now() - start_time).total_seconds() / 60
+        elapsed_mins = (timezone.localtime(timezone.now()) - start_time).total_seconds() / 60
         time.sleep(60)
     return True
 
@@ -249,7 +250,7 @@ def all_metrics_report_generate(id_report):
                 draw_imgs_count -= 1
             else:
                 break
-    metric_report.date_time_finish = timezone.now()
+    metric_report.date_time_finish = timezone.localtime(timezone.now())
     metric_report.save()
     return True
 
@@ -292,5 +293,5 @@ def compire_chaos_configs():
         chaos.compired_config_errs = errors
         chaos.compired_config_warns = warnings
         chaos.compired_config = compired_config
-        chaos.compired_config_date = timezone.now()
+        chaos.compired_config_date = timezone.localtime(timezone.now())
         chaos.save()

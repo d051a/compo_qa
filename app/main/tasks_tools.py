@@ -199,13 +199,13 @@ def save_draw_imgs_final_status_and_data(db_draw_imgs_object, curent_stats_data,
     db_draw_imgs_object.not_drawed_esl = get_not_drawed_images(curent_stats_data, db_draw_imgs_object.fact_total_esl)
     db_draw_imgs_object.not_drawed_esl = curent_stats_data.images_succeeded
     db_draw_imgs_object.status = status
-    db_draw_imgs_object.date_time_finish = timezone.now()
+    db_draw_imgs_object.date_time_finish = timezone.localtime(timezone.now())
     db_draw_imgs_object.save()
 
 
 def save_net_compilation_final_status_and_data(db_net_compilation_object, status):
     db_net_compilation_object.status = status
-    db_net_compilation_object.date_time_finish = timezone.now()
+    db_net_compilation_object.date_time_finish = timezone.localtime(timezone.now())
     db_net_compilation_object.save()
 
 
@@ -265,7 +265,7 @@ def start_chaos_webcore(device_credentials):
         print('chaos_webcore успешно запущен')
         return True
     else:
-        print('chaos_webcore не запущен. Что-то пошло не так')
+        print(f'chaos_webcore не запущен. Что-то пошло не так. ERROR: {run_command[1]}')
         return run_command[1]
 
 
@@ -279,9 +279,11 @@ def sent_request(ip, url_path):
         final_result['code'] = 0
     except requests.exceptions.ConnectionError:
         print(f'Cannot connect {url}')
+        final_result['result'] = False
         final_result['code'] = 503
-    except Exception as e:
-        print(e)
+    except Exception as error:
+        print(error)
+        final_result['result'] = error
         final_result['code'] = 500
     finally:
         return final_result
@@ -290,6 +292,7 @@ def sent_request(ip, url_path):
 def reset_send_queue(chaos_ip):
     response = sent_request(chaos_ip, 'reset_send_queue')
     if response['result'] == 'true':
+        print('Успешный сброс очереди')
         return True
     else:
         return False

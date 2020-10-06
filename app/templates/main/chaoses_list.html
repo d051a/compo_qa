@@ -40,7 +40,7 @@
                     <th>bat_reserved</th>
                     <th>Конфиг</th>
                     <th>Отчеты</th>
-                    <th>Актуальность данных</th>
+                    <th>Актуальность</th>
                     <th></th>
                 </tr>
             </thead>
@@ -56,17 +56,17 @@
                     <td>{{ forloop.counter }}</td>
                     <td><a href="{% url 'main:chaos_detail' chaos.pk %}">{{ chaos.name }}</a></td>
                     <td>{{ chaos.ip }}</td>
-                    <td>{{ chaos.status }}</td>
-                    <td>{{ chaos.esl_total }}</td>
-                    <td>{{ chaos.images_succeeded }}</td>
-                    <td>{{ chaos.draw_percent }}</td>
-                    <td>{{ chaos.net_percent }}</td>
+                    <td align="center">{{ chaos.status }}</td>
+                    <td align="center">{{ chaos.esl_total }}</td>
+                    <td align="center">{{ chaos.images_succeeded }}</td>
+                    <td align="center">{{ chaos.draw_percent }}</td>
+                    <td align="center">{{ chaos.net_percent }}</td>
 {#                    <td>{% if chaos.description %}{{ chaos.description }}{% endif %}</td>#}
-                    <td>{% if chaos.multimeter_ip %}<img src="/staticfiles/base_svg/bolt.svg" alt="" width=20>{% endif %}</td>
-                    <td>{% if chaos.bat_reserved %}<img src="/staticfiles/base_svg/check.svg" alt="" width=20>{% endif %}</td>
-                    <td><span class="badge badge-pill badge-danger">{{ chaos.compired_config_errs }}</span> <span class="badge badge-pill badge-warning">{{ chaos.compired_config_warns }}</span></td>
-                    <td><a href="{% url 'main:chaos_stats' chaos.pk %}">{{ chaos.pk|stats_view }}</a></td>
-                    <td>{{ chaos.date_time_update |date:"d-m-y H:i:s" }}</td>
+                    <td align="center">{% if chaos.multimeter_ip %}<img src="/staticfiles/base_svg/bolt.svg" alt="" width=20>{% else %}-{% endif %}</td>
+                    <td align="center">{% if chaos.bat_reserved %}<img src="/staticfiles/base_svg/check.svg" alt="" width=20>{% else %}-{% endif %}</td>
+                    <td align="center"><span class="badge badge-pill badge-danger">{{ chaos.compired_config_errs }}</span> <span class="badge badge-pill badge-warning">{{ chaos.compired_config_warns }}</span></td>
+                    <td align="center"><a href="{% url 'main:chaos_stats' chaos.pk %}">{{ chaos.pk|stats_view }}</a></td>
+                    <td align="center">{{ chaos.date_time_update |date:"d-m-y H:i:s" }}</td>
                     <td><a href="{% url 'main:chaos_edit' chaos.pk %} "><img src="/staticfiles/base_svg/cog.svg" alt="" width=20></a></tr>
                   {% endfor %}
             </tbody>

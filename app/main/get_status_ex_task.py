@@ -64,7 +64,7 @@ def main():
             elif task_status == ['WORKING']:
                 continue
             print(run_tasks)
-        time.sleep(300)
+        time.sleep(600)
 
 
 if __name__ == '__main__':
