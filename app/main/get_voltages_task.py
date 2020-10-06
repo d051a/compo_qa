@@ -19,7 +19,7 @@ def get_full_voltage_statistics():
     get_voltage_try = 1
     while True:
         chaoses = Chaos.objects.exclude(multimeter_ip=None)
-        time.sleep(30)
+        time.sleep(3)
         for chaos in chaoses:
             time.sleep(0.5)
             current_voltage = get_current_voltage(chaos.multimeter_ip)

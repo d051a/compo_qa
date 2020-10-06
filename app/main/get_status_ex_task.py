@@ -20,7 +20,6 @@ def get_status_ex(chaos):
                                            chaos.ssh_port,
                                            f'/var/Componentality/Chaos/get_status_ex.py -jan'
                                            )
-
     return output_data
 
 
@@ -50,11 +49,10 @@ def run_get_status_ex_task(chaos):
 
 
 def main():
-    run_tasks = {}
+    global run_tasks
     while True:
-        chaoses = Chaos.objects.filter(bat_reserved=True)
+        chaoses = Chaos.objects.filter(bat_reserved=True).exclude(multimeter_ip=None)
         print(f"Очередной этап получения данных... Значения 'bat_reserved' собираются с {len(chaoses)} устройств(а).")
-        time.sleep(15)
         for chaos in chaoses:
             run_tasks.setdefault(chaos.pk, ['STOPPED'])
             task_status = run_tasks[chaos.pk]
@@ -66,7 +64,9 @@ def main():
             elif task_status == ['WORKING']:
                 continue
             print(run_tasks)
+        time.sleep(300)
 
 
 if __name__ == '__main__':
+    run_tasks = {}
     main()

@@ -29,7 +29,7 @@ class Statistic(models.Model):
     voltage_max = models.FloatField('Максимальный вольтаж', blank=True, null=True)
     bat_reserved1 = models.IntegerField('bat_reserved1', blank=True, null=True)
     bat_reserved2 = models.IntegerField('bat_reserved2', blank=True, null=True)
-    bat_reserved3 = models.IntegerField('bat_reserved3', blank=True, null=True)
+    bat_reserved2 = models.IntegerField('bat_reserved3', blank=True, null=True)
     bat_reserved4 = models.IntegerField('bat_reserved4', blank=True, null=True)
 
     class Meta:
