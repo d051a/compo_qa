@@ -24,7 +24,7 @@ def get_status_ex(chaos):
 
 
 def get_bat_reserved(input_data):
-    esl_statistics = json.loads(input_data)
+    esl_statistics = json.loads(input_data)[0]
     bat_reserved_quantities = {}
     for esl_stat in esl_statistics.keys():
         bat_reserved = esl_statistics[esl_stat]['bat_reserved']
