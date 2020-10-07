@@ -1,6 +1,6 @@
 from main.models import Statistic,  MetricReport, Chaos, DrawImgsReport,\
     NetCompileReport, DrawImgsStat, NetCompilationStat
-from main.excel_tools import create_excel_cheet, create_excel_cheet_for_stats
+from main.excel_reports.excel_tools import create_excel_cheet, create_excel_cheet_for_stats
 from django.http import HttpResponse
 from datetime import datetime
 from openpyxl import Workbook

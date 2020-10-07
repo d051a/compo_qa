@@ -10,7 +10,7 @@ django.setup()
 from main.chaos_utils import ChaosStatisctic
 from main.models import Chaos
 from main.chaos_utils import Utils as utils
-from main.tasks_tools import add_current_statistic_to_db
+from main.tasks.tasks_tools import add_current_statistic_to_db
 
 
 def get_status_ex(chaos):

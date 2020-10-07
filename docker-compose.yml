@@ -104,7 +104,7 @@ services:
 
   get_voltages_task:
     build: ./app
-    command: python main/get_voltages_task.py
+    command: python main/tasks/get_voltages_task.py
     env_file:
       - envs/dev/.env.dev
     depends_on:
@@ -112,7 +112,7 @@ services:
 
   get_status_ex_task:
     build: ./app
-    command: python main/get_status_ex_task.py
+    command: python main/tasks/get_status_ex_task.py
     env_file:
       - envs/dev/.env.dev
     depends_on:

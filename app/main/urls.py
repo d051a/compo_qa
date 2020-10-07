@@ -1,4 +1,5 @@
-from . import views, views_dbs, views_excel
+from . import views, views_tables
+from main.excel_reports import views_excel
 from django.urls import path
 
 
@@ -29,11 +30,11 @@ urlpatterns = [
     path('metrics/<int:metric_report_id>/excel', views_excel.metric_report_export_to_xlsx, name='export_report_data_to_xlsx'),
 
     # excel json-datatables
-    path('metric_reports_list_json/', views_dbs.MetricsModelListJson.as_view(), name='metric_reports_list_json'),
-    path('chaos_stats_json/', views_dbs.ChaosStatisticModelListJson.as_view(), name='chaos_stats_json'),
-    path('drawed_imgs_reports_json/', views_dbs.DrawImgsReportModelListJson.as_view(), name='drawed_imgs_reports_json'),
-    path('drawed_imgs_stats_json/', views_dbs.DrawImgsStatModelListJson.as_view(), name='drawed_imgs_stats_json'),
-    path('net_compile_stats_json/', views_dbs.NetCompilationStatModelListJson.as_view(), name='net_compile_stats_json'),
-    path('net_compile_list_json/', views_dbs.NetCompilationReportModelListJson.as_view(), name='net_compile_list_json'),
+    path('metric_reports_list_json/', views_tables.MetricsModelListJson.as_view(), name='metric_reports_list_json'),
+    path('chaos_stats_json/', views_tables.ChaosStatisticModelListJson.as_view(), name='chaos_stats_json'),
+    path('drawed_imgs_reports_json/', views_tables.DrawImgsReportModelListJson.as_view(), name='drawed_imgs_reports_json'),
+    path('drawed_imgs_stats_json/', views_tables.DrawImgsStatModelListJson.as_view(), name='drawed_imgs_stats_json'),
+    path('net_compile_stats_json/', views_tables.NetCompilationStatModelListJson.as_view(), name='net_compile_stats_json'),
+    path('net_compile_list_json/', views_tables.NetCompilationReportModelListJson.as_view(), name='net_compile_list_json'),
 
 ]

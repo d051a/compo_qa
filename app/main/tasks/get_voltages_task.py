@@ -10,8 +10,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "conf.settings")
 django.setup()
 from main.chaos_utils import ChaosStatisctic
 from main.models import Chaos
-from main.tasks import add_current_statistic_to_db
-from main.tasks_tools import get_current_voltage
+from main.tasks.tasks import add_current_statistic_to_db
+from main.tasks.tasks_tools import get_current_voltage
 
 
 def get_full_voltage_statistics():

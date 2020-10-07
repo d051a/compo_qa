@@ -6,7 +6,7 @@ from main.chaos_utils import Utils as utils
 from django.views.generic import DetailView, CreateView, ListView, UpdateView
 from django.urls import reverse_lazy, reverse
 from main.forms import ChaosForm, DrawImgsReportForm, NetCompileReportForm, MetricReportForm, ChaosEditForm
-from main.tasks import drawed_images_report_generate, net_compilation, all_metrics_report_generate
+from main.tasks.tasks import drawed_images_report_generate, net_compilation, all_metrics_report_generate
 
 
 def main(request):

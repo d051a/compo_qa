@@ -5,7 +5,7 @@ from django.utils import timezone
 from main.chaos_utils import Utils as utils
 from main.chaos_utils import ChaosStatisctic
 from main.models import NetCompileReport, DrawImgsReport, Chaos, MetricReport
-from main.tasks_tools import add_current_statistic_to_db, \
+from main.tasks.tasks_tools import add_current_statistic_to_db, \
     add_net_compilation_statistics_to_db, set_db_object_attribute, get_default_devices, get_ips_by_names, \
     reboot_devices_list, check_all_alive, start_drawing_images, add_draw_images_statistics_to_db, \
     get_drawed_images_percent, save_draw_imgs_final_status_and_data, save_net_compilation_final_status_and_data,\

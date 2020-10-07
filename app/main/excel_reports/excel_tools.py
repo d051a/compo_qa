@@ -1,6 +1,6 @@
 import django
 import os
-from .models import DrawImgsStat, NetCompilationStat
+from main.models import DrawImgsStat, NetCompilationStat
 from openpyxl.styles.borders import Border, Side
 from openpyxl.styles import Font
 
