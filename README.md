@@ -9,13 +9,13 @@
 - app/requirements.txt
 
 
-##Installation and run / Установка и запуск проекта
+## Installation and run / Установка и запуск проекта
 You can install and start the project locally or just start the project in the Docker. But containers are simpler. You have to choose :)
-##Run in Docker / Запуск проекта в Docker
+## Run in Docker / Запуск проекта в Docker
 - project start: docker-compose up --build -d
 - project down: docker-compose down
 
-##Local installation / Локальная установка
+## Local installation / Локальная установка
 #### Local Installation / Локальная установка 
 - Open the command line, navigate to the project folder and execute:
 - virtualenv *virtualenvname*
@@ -30,7 +30,7 @@ You can install and start the project locally or just start the project in the D
 - open http://127.0.0.1:8000/ in web browser.
 
 ## Основные реализованные подсистемы и фичи:
-####Общая информация
+#### Общая информация
 - текущий мониторинг
 - запуск сборки сети со сбором статистических данных
 - запуск отрисовки ценников со сбором статистических данных
