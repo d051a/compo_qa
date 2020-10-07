@@ -27,7 +27,9 @@ def get_bat_reserved(input_data):
     esl_statistics = json.loads(input_data[0])
     bat_reserved_quantities = {}
     for esl_stat in esl_statistics.keys():
-        bat_reserved = esl_statistics[esl_stat]['bat_reserved']
+        bat_reserved = esl_statistics[esl_stat].get('bat_reserved')
+        if bat_reserved in None:
+            continue
         bat_reserved_quantities.setdefault(bat_reserved, 0)
         bat_reserved_quantities[bat_reserved] += 1
     return bat_reserved_quantities
