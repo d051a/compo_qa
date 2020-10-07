@@ -89,11 +89,11 @@
         </table>
     <p></p>
     <h5>Отрисовки ценников:</h5>
-        <form method="post" action="{% url 'main:draw_imgs_add' %}">
-                 {% csrf_token %}
-                <input id="id_chaos" type="hidden" name="chaos" value="{{ object.pk }}">
-                <button  type="submit" class="btn btn-secondary">Новая отрисовка</button>
-        </form>
+{#        <form method="post" action="{% url 'main:draw_imgs_add' %}">#}
+{#                 {% csrf_token %}#}
+{#                <input id="id_chaos" type="hidden" name="chaos" value="{{ object.pk }}">#}
+{#                <button  type="submit" class="btn btn-secondary">Новая отрисовка</button>#}
+{#        </form>#}
         <p></p>
         <table id="report_drawed_list" class="datatable row-border" style="width:100;">
             <thead>
