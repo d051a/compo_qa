@@ -69,9 +69,10 @@ def net_compilation(id_report):
     start_chaos_webcore(chaos_credentials)
 
     # --------сборка сети------
-    net_compilation_percent_steps = [10, 20, 30, 40, 50, 60, 75, 90, 95, 96, 97, 98, 99, 100]
-    last_step = len(net_compilation_percent_steps)-1
-    current_step = 0
+    net_compilation_percent_steps = [10, 20, 30, 40, 50, 60, 75, 90, 95, 96, 97, 98, 99, 99.5, 99.9, 100]
+    net_compilation_time_points = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150]
+    compilation_percent_current_step = 0
+    compilation_time_current_step = 0
     elapsed_mins = 0
     start_time = timezone.localtime(timezone.now())
     net_compile_limit_mins = net_compile_report.net_compile_limit_mins
@@ -87,11 +88,6 @@ def net_compilation(id_report):
 
         print(f'Прошло минут с начала сборки: {elapsed_mins} Предельное время: {net_compile_limit_mins}')
 
-        if elapsed_mins > net_compile_limit_mins:
-            status = f'Превышено предельное время сборки сети: {net_compile_limit_mins} мин.'
-            save_net_compilation_final_status_and_data(net_compile_report, status, net_compilation_percent)
-            return 2
-
         if net_compile_report.metric_report:
             add_current_statistic_to_db(db_chaos_object,
                                         current_chaos_statistic_data,
@@ -101,22 +97,34 @@ def net_compilation(id_report):
             continue
 
         net_compilation_percent = get_net_compilation_percent(current_chaos_statistic_data,
-                                                                net_compile_report.fact_total_esl)
+                                                              net_compile_report.fact_total_esl)
 
-        if net_compilation_percent >= net_compilation_percent_steps[current_step]:
+        if elapsed_mins >= net_compilation_time_points[compilation_time_current_step]:
+            set_db_object_attribute(net_compile_report,
+                                    f't{net_compilation_percent_steps[compilation_time_current_step]}',
+                                    current_chaos_statistic_data.get_true_net_compilation_percent())
+            compilation_time_current_step += 1
+
+        if net_compilation_percent >= net_compilation_percent_steps[compilation_percent_current_step]:
             add_net_compilation_statistics_to_db(db_chaos_object,
                                                  net_compile_report,
                                                  current_chaos_statistic_data,
-                                                 net_compilation_percent_steps[current_step],
+                                                 net_compilation_percent_steps[compilation_percent_current_step],
                                                  elapsed_time)
             set_db_object_attribute(net_compile_report,
-                                    f'p{net_compilation_percent_steps[current_step]}',
+                                    f'p{net_compilation_percent_steps[compilation_percent_current_step]}',
                                     elapsed_time)
-            net_compile_report.save()
+            # net_compile_report.save()
             print(f'Добавлены данные сборки сети. Время:{current_time} Разница: {elapsed_time}', )
-            current_step += 1
+            compilation_percent_current_step += 1
 
-        if net_compilation_percent == 100 or current_step > last_step:
+        if elapsed_mins > net_compile_limit_mins:
+            status = f'Превышено предельное время сборки сети: {net_compile_limit_mins} мин.'
+            save_net_compilation_final_status_and_data(net_compile_report, status, net_compilation_percent)
+            return 2
+
+        compilation_percent_last_step = len(net_compilation_percent_steps) - 1
+        if net_compilation_percent == 100 or compilation_percent_current_step >= compilation_percent_last_step:
             net_compile_report.p100 = elapsed_time
             net_compile_report.save()
             save_net_compilation_final_status_and_data(net_compile_report, 'OK')
@@ -129,7 +137,8 @@ def net_compilation(id_report):
 
 @app.task
 def drawed_images_report_generate(id_report):
-    drawed_percent_points = [10, 20, 30, 40, 50, 60, 75, 90, 95, 96, 97, 98, 99, 100]
+    drawed_percent_points = [10, 20, 30, 40, 50, 60, 75, 90, 95, 96, 97, 98, 99, 99.5, 99.9, 100]
+    drawed_time_points = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150]
     db_draw_imgs_object = DrawImgsReport.objects.get(pk=id_report)
     db_chaos_object = Chaos.objects.get(pk=db_draw_imgs_object.chaos_id)
     fact_total_esl = db_draw_imgs_object.fact_total_esl
@@ -140,7 +149,8 @@ def drawed_images_report_generate(id_report):
                          }
     start_time = timezone.localtime(timezone.now())
     elapsed_mins = 0
-    current_step = 0
+    drawed_percent_current_step = 0
+    drawed_time_current_step = 0
 
     if not reset_send_queue(chaos_credentials['ip']):
         status = f'FAIL: 'f'Не удалось сбросить очередь отрисовки перед запуском отрисовки'
@@ -181,21 +191,25 @@ def drawed_images_report_generate(id_report):
         print(f'Текущий процент отрисовки: '
               f'{drawed_images_percent} '
               f'Отрисовано: {current_chaos_statistic_data.images_succeeded} '
-              f'Процент шага: {drawed_percent_points[current_step]}')
+              f'Процент шага: {drawed_percent_points[drawed_percent_current_step]}')
 
-        if drawed_images_percent >= drawed_percent_points[current_step]:
+        if elapsed_mins >= drawed_time_points[drawed_time_current_step]:
+            setattr(db_draw_imgs_object, f't{drawed_time_points[drawed_time_current_step]}',
+                    current_chaos_statistic_data.get_drawed_images_percent())
+
+        if drawed_images_percent >= drawed_percent_points[drawed_percent_current_step]:
             add_draw_images_statistics_to_db(db_chaos_object,
                                              db_draw_imgs_object,
                                              current_chaos_statistic_data,
-                                             drawed_percent_points[current_step],
+                                             drawed_percent_points[drawed_percent_current_step],
                                              elapsed_time)
-            setattr(db_draw_imgs_object, f'p{drawed_percent_points[current_step]}', elapsed_time)
-            db_draw_imgs_object.save()
+            setattr(db_draw_imgs_object, f'p{drawed_percent_points[drawed_percent_current_step]}', elapsed_time)
+            # db_draw_imgs_object.save()
             print(f'Добавлены новые метрики. Время: {current_time} Разница: {elapsed_time}', )
-            current_step += 1
+            drawed_percent_current_step += 1
 
-        last_step = len(drawed_percent_points) - 1
-        if drawed_images_percent == 100 or current_step > last_step:
+        drawed_percent_last_step = len(drawed_percent_points) - 1
+        if drawed_images_percent == 100 or drawed_percent_current_step > drawed_percent_last_step:
             db_draw_imgs_object.p100 = elapsed_time
             db_draw_imgs_object.save()
             save_draw_imgs_final_status_and_data(db_draw_imgs_object, current_chaos_statistic_data, 'OK')
