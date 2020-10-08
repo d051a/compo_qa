@@ -331,25 +331,22 @@ class Utils:
         """Возвращает текущее время"""
         return datetime.datetime.now()
 
-    # @staticmethod
-    # def get_time_delta(current_time, start_time, output_format) -> str:
-    #     time_delta = current_time - start_time
-    #     d = {"days": time_delta.days}
-    #     d["hours"], rem = divmod(time_delta.seconds, 3600)
-    #     d["minutes"], d["seconds"] = divmod(rem, 60)
-    #     return output_format.format(**d)
 
     @staticmethod
     def get_time_delta(current_time, start_time, output_format) -> str:
         def correct_num_format(num):
             return num if num > 9 else '0' + str(num)
         time_delta = current_time - start_time
-        days = time_delta.days
-        hours = rem = divmod(time_delta.seconds, 3600)
-        d = {"days": correct_num_format(days)}
-        d["hours"], rem = correct_num_format(hours)
-        d["minutes"], d["seconds"] = correct_num_format(divmod(rem, 60))
-        return output_format.format(**d)
+        rem = divmod(time_delta.seconds, 3600)[1]
+        hours = divmod(time_delta.seconds, 3600)[0]
+        minutes = divmod(rem, 60)[0]
+        seconds = divmod(rem, 60)[1]
+        times = {'days': time_delta.days,
+                 'hours': correct_num_format(hours),
+                 'minutes': correct_num_format(minutes),
+                 'seconds': correct_num_format(seconds)
+                 }
+        return output_format.format(**times)
 
     @staticmethod
     def get_ssh_connection(ip_address: str, username: str, password: str, port: str, connect_try=5) -> paramiko.SSHClient:
