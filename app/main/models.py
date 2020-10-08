@@ -103,12 +103,12 @@ class NetCompileReport(models.Model):
                                       verbose_name='Отчет сбора метрик',
                                       null=True,
                                       blank=True)
-    create_date_time = models.DateTimeField('Дата и время создания отчета', auto_now_add=True, blank=True, null=True)
+    create_date_time = models.DateTimeField('Дата и время начала сборки', auto_now_add=True, blank=True, null=True)
     status = models.CharField('Статус', max_length=200, blank=True)
     net_compile_limit_mins = models.IntegerField('Предельное время сборки сети(мин)',
                                                  default=120, blank=True, null=True)
     net_compile_amount = models.IntegerField('Количество сборок сети', default=1, blank=True, null=True)
-    date_time_finish = models.DateTimeField('Дата и время завершения', null=True, blank=True)
+    date_time_finish = models.DateTimeField('Дата и время окончания сборки', null=True, blank=True)
     fact_total_esl = models.IntegerField('Фактическое количество ESL', null=True, blank=True)
     p10 = models.CharField('Время сборки 10%', max_length=100, blank=True)
     p20 = models.CharField('Время сборки 20%', max_length=100, blank=True)
@@ -123,7 +123,28 @@ class NetCompileReport(models.Model):
     p97 = models.CharField('Время сборки 97%', max_length=100, blank=True)
     p98 = models.CharField('Время сборки 98%', max_length=100, blank=True)
     p99 = models.CharField('Время сборки 99%', max_length=100, blank=True)
+    p995 = models.CharField('Время сборки 99.5%', max_length=100, blank=True)
+    p999 = models.CharField('Время сборки 99.9%', max_length=100, blank=True)
     p100 = models.CharField('Время сборки 100%', max_length=100, blank=True)
+    t10 = models.CharField('Собранность сети за 10 мин., %', max_length=100, blank=True)
+    t20 = models.CharField('Собранность сети за 20 мин., %', max_length=100, blank=True)
+    t30 = models.CharField('Собранность сети за 30 мин., %', max_length=100, blank=True)
+    t40 = models.CharField('Собранность сети за 40 мин., %', max_length=100, blank=True)
+    t50 = models.CharField('Собранность сети за 50 мин., %', max_length=100, blank=True)
+    t60 = models.CharField('Собранность сети за 60 мин., %', max_length=100, blank=True)
+    t70 = models.CharField('Собранность сети за 70 мин., %', max_length=100, blank=True)
+    t80 = models.CharField('Собранность сети за 80 мин., %', max_length=100, blank=True)
+    t90 = models.CharField('Собранность сети за 90 мин., %', max_length=100, blank=True)
+    t100 = models.CharField('Собранность сети за 100 мин., %', max_length=100, blank=True)
+    t110 = models.CharField('Собранность сети за 110 мин., %', max_length=100, blank=True)
+    t120 = models.CharField('Собранность сети за 120 мин., %', max_length=100, blank=True)
+    t130 = models.CharField('Собранность сети за 130 мин., %', max_length=100, blank=True)
+    t140 = models.CharField('Собранность сети за 140 мин., %', max_length=100, blank=True)
+    t150 = models.CharField('Собранность сети за 150 мин., %', max_length=100, blank=True)
+    final_percent = models.FloatField('Процент сборки сети', blank=True, null=True)
+    elapsed_time = models.CharField('Время сборки сети', max_length=100, blank=True, null=True)
+    max_inactive_time = models.IntegerField('Предельное время бездействия', default=30, blank=True, null=True)
+    success_percent = models.FloatField('Считать сборку успешной при, %', default=100, blank=True, null=True)
 
     class Meta:
         ordering = ["-pk"]
@@ -136,7 +157,7 @@ class NetCompileReport(models.Model):
 
 class MetricReport(models.Model):
     chaos = models.ForeignKey('Chaos', on_delete=models.CASCADE, verbose_name='Хаос', null=True)
-    create_date_time = models.DateTimeField('Дата и время создания отчета', auto_now_add=True, blank=True, null=True)
+    create_date_time = models.DateTimeField('Дата и время начала сбора статистики', auto_now_add=True, blank=True, null=True)
     net_compile_limit_mins = models.IntegerField('Предельное время сборки сети(мин)',
                                                  default=120, blank=True, null=True)
     draw_imgs_limit_mins = models.IntegerField('Предельное время отрисовки ценников (мин)',
@@ -145,7 +166,7 @@ class MetricReport(models.Model):
     draw_imgs_amount = models.IntegerField('Количество отрисовок', default=1, blank=True, null=True)
     fact_total_esl = models.IntegerField('Фактическое количество ESL онлайн', null=True, blank=True)
     status = models.CharField('Статус', max_length=200, blank=True)
-    date_time_finish = models.DateTimeField('Дата и время завершения', null=True, blank=True)
+    date_time_finish = models.DateTimeField('Дата и время окончания сбора статистики', null=True, blank=True)
     color = models.CharField('Цвет отрисовки',
                              max_length=3,
                              default='RBW',
@@ -153,6 +174,10 @@ class MetricReport(models.Model):
                              validators=[RegexValidator(regex='^[WBR]{3}$',
                                                         message='Длина строки должна равняться любым 3 символам: R,B,W',
                                                         code='nomatch')],)
+    net_inactive_time = models.IntegerField('Предельное время бездействия сборки сети', default=30, blank=True, null=True)
+    draw_inactive_time = models.IntegerField('Предельное время бездействия отрисовки', default=30, blank=True, null=True)
+    net_success_percent = models.FloatField('Считать сборку сети успешной при, %', default=100.0, blank=True, null=True)
+    draw_success_percent = models.FloatField('Считать отрисовку успешной при, %', default=100.0, blank=True, null=True)
 
     class Meta:
         ordering = ["-pk"]
@@ -177,8 +202,15 @@ class DrawImgsReport(models.Model):
     draw_imgs_amount = models.IntegerField('Количнство отрисовок ценников', default=1, blank=True, null=True)
     status = models.CharField('Статус', max_length=200, blank=True)
     fact_total_esl = models.IntegerField('Фактическое количество ESL онлайн', null=True, blank=True)
-    drawed_esl = models.IntegerField('Отрисовано ценников', null=True, blank=True)
-    not_drawed_esl = models.IntegerField('Неотрисовано ценников', null=True, blank=True)
+    drawed_esl = models.IntegerField('Отрисовано ценников, шт', null=True, blank=True)
+    not_drawed_esl = models.IntegerField('Не отрисовано, шт ', null=True, blank=True)
+    color = models.CharField('Цвет отрисовки',
+                             max_length=3,
+                             default='RBW',
+                             blank=True,
+                             validators=[RegexValidator(regex='^[WBR]{3}$',
+                                                        message='Длина строки должна равняться любым 3 символам: R,B,W',
+                                                        code='nomatch')],)
     p10 = models.CharField('Время отрисовки 10%', max_length=100, blank=True)
     p20 = models.CharField('Время отрисовки 20%', max_length=100, blank=True)
     p30 = models.CharField('Время отрисовки 30%', max_length=100, blank=True)
@@ -192,14 +224,28 @@ class DrawImgsReport(models.Model):
     p97 = models.CharField('Время отрисовки 97%', max_length=100, blank=True)
     p98 = models.CharField('Время отрисовки 98%', max_length=100, blank=True)
     p99 = models.CharField('Время отрисовки 99%', max_length=100, blank=True)
+    p995 = models.CharField('Время отрисовки 99.5%', max_length=100, blank=True)
+    p999 = models.CharField('Время отрисовки 99.9%', max_length=100, blank=True)
     p100 = models.CharField('Время отрисовки 100%', max_length=100, blank=True)
-    color = models.CharField('Цвет отрисовки',
-                             max_length=3,
-                             default='RBW',
-                             blank=True,
-                             validators=[RegexValidator(regex='^[WBR]{3}$',
-                                                        message='Длина строки должна равняться любым 3 символам: R,B,W',
-                                                        code='nomatch')],)
+    t10 = models.CharField('Отрисовано за 10 мин., %', max_length=100, blank=True)
+    t20 = models.CharField('Отрисовано за 20 мин., %', max_length=100, blank=True)
+    t30 = models.CharField('Отрисовано за 30 мин., %', max_length=100, blank=True)
+    t40 = models.CharField('Отрисовано за 40 мин., %', max_length=100, blank=True)
+    t50 = models.CharField('Отрисовано за 50 мин., %', max_length=100, blank=True)
+    t60 = models.CharField('Отрисовано за 60 мин., %', max_length=100, blank=True)
+    t70 = models.CharField('Отрисовано за 70 мин., %', max_length=100, blank=True)
+    t80 = models.CharField('Отрисовано за 80 мин., %', max_length=100, blank=True)
+    t90 = models.CharField('Отрисовано за 90 мин., %', max_length=100, blank=True)
+    t100 = models.CharField('Отрисовано за 100 мин., %', max_length=100, blank=True)
+    t110 = models.CharField('Отрисовано за 110 мин., %', max_length=100, blank=True)
+    t120 = models.CharField('Отрисовано за 120 мин., %', max_length=100, blank=True)
+    t130 = models.CharField('Отрисовано за 130 мин., %', max_length=100, blank=True)
+    t140 = models.CharField('Отрисовано за 140 мин., %', max_length=100, blank=True)
+    t150 = models.CharField('Отрисовано за 150 мин., %', max_length=100, blank=True)
+    final_percent = models.FloatField('Процент отрисовки', blank=True, null=True)
+    elapsed_time = models.CharField('Время отрисовки', max_length=100, blank=True, null=True)
+    max_inactive_time = models.IntegerField('Предельное время бездействия', default=30, blank=True, null=True)
+    success_percent = models.FloatField('Cчитать отрисовку успешной при, %', default=100, blank=True, null=True)
 
     class Meta:
         ordering = ["-pk"]
