@@ -64,6 +64,13 @@ class ChaosStatisticModelListJson(FilterQuerysetMixin, BaseDatatableView):
                'currently_scanning',
                'network_mode',
                'connects',
+               'voltage_current',
+               'voltage_average',
+               'voltage_max',
+               'bat_reserved1',
+               'bat_reserved2',
+               'bat_reserved3',
+               'bat_reserved4',
                ]
 
     def render_column(self, row, column):
@@ -75,7 +82,7 @@ class ChaosStatisticModelListJson(FilterQuerysetMixin, BaseDatatableView):
 
 class NetCompilationReportModelListJson(FilterQuerysetMixin, BaseDatatableView):
     model = NetCompileReport
-    columns = ['pk', 'create_date_time', 'status', 'date_time_finish', 'name', 'ip', 'p50', 'p75', 'p90', 'p95', 'p96',     'p97', 'p98', 'p99', 'p100']
+    columns = ['pk', 'create_date_time', 'status', 'date_time_finish', 'name', 'ip', 'p50', 'p75', 'p90', 'p95', 'p96', 'p97', 'p98', 'p99', 'p100']
 
     def render_column(self, row, column):
         if column == 'pk':
