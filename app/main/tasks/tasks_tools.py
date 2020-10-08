@@ -319,6 +319,9 @@ def get_current_voltage(multimeter_ip):
     except ConnectionRefusedError:
         print('ERROR: Connection to multimeter refused')
         return None
+    except Exception as error:
+        print(f'ERROR: {error}')
+        return None
     voltage = inst.query("FETCh?")
     inst.close()
     return float(voltage)
