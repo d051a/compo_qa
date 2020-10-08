@@ -10,13 +10,13 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 
 app.conf.beat_schedule = {
     'get-stats-every-30-seconds': {
-        'task': 'main.tasks.get_current_stats',
+        'task': 'main.tasks.tasks.get_current_stats',
         'schedule': 31.0,
         'args': ()
     },
 
     'compire-chaos-configs-every-5-minutes': {
-        'task': 'main.tasks.compire_chaos_configs',
+        'task': 'main.tasks.tasks.compire_chaos_configs',
         'schedule': crontab(minute='*/5'),
         'args': ()
     },
