@@ -9,7 +9,7 @@ from main.tasks.tasks_tools import add_current_statistic_to_db, \
     add_net_compilation_statistics_to_db, set_db_object_attribute, get_default_devices, get_ips_by_names, \
     reboot_devices_list, check_all_alive, start_drawing_images, add_draw_images_statistics_to_db, \
     get_drawed_images_percent, save_draw_imgs_final_status_and_data, save_net_compilation_final_status_and_data,\
-    get_net_compilation_percernt, start_chaos_webcore, stop_chaos_webcore, reset_send_queue, get_chaos_config
+    get_net_compilation_percent, start_chaos_webcore, stop_chaos_webcore, reset_send_queue, get_chaos_config
 
 
 @app.task(autoretry_for=(Exception,))
@@ -41,35 +41,36 @@ def net_compilation(id_report):
                          'password': db_chaos_object.password,
                          'port': db_chaos_object.ssh_port
                          }
+    net_compilation_percent = 0
 
     # --------перезагрузка устройств------
     server_names_ports = get_default_devices(chaos_credentials)
     if not server_names_ports:
         status = f'FAIL: Не удалось получить DEFAULT_RSERVERS c устройства {server_ssh_address}'
-        save_net_compilation_final_status_and_data(net_compile_report, status)
+        save_net_compilation_final_status_and_data(net_compile_report, status, net_compilation_percent)
         return False
     servers_ips_ports = get_ips_by_names(server_names_ports, chaos_credentials)
     stop_chaos_webcore(chaos_credentials)
     if not reboot_devices_list(servers_ips_ports, chaos_credentials):
         status = 'FAIL: Не удалось инициировать перезагрузку одного или нескольких устройств'
-        save_net_compilation_final_status_and_data(net_compile_report, status)
+        save_net_compilation_final_status_and_data(net_compile_report, status, net_compilation_percent)
         return False
     time.sleep(30)
     if not check_all_alive(servers_ips_ports, chaos_credentials['ip'], 5):
         status = 'FAIL: Одного или несколько устройство недоступно после перезагрузки'
-        save_net_compilation_final_status_and_data(net_compile_report, status)
+        save_net_compilation_final_status_and_data(net_compile_report, status, net_compilation_percent)
         return False
     # if not reboot_devices_list([f"{chaos_credentials['ip']}:19871"], chaos_credentials):
     #     status = 'FAIL: Не удалось инициировать перезагрузку chaos'
-    #     save_net_compilation_final_status_and_data(net_compile_report, status)
+    #     save_net_compilation_final_status_and_data(net_compile_report, status, net_compilation_percent)
     #     return False
     # print('OK! инициирована перезагрузка устройств!')
     time.sleep(60)
     start_chaos_webcore(chaos_credentials)
 
     # --------сборка сети------
-    net_compilation_percernt_steps = [10, 20, 30, 40, 50, 60, 75, 90, 95, 96, 97, 98, 99, 100]
-    last_step = len(net_compilation_percernt_steps)-1
+    net_compilation_percent_steps = [10, 20, 30, 40, 50, 60, 75, 90, 95, 96, 97, 98, 99, 100]
+    last_step = len(net_compilation_percent_steps)-1
     current_step = 0
     elapsed_mins = 0
     start_time = timezone.localtime(timezone.now())
@@ -88,7 +89,7 @@ def net_compilation(id_report):
 
         if elapsed_mins > net_compile_limit_mins:
             status = f'Превышено предельное время сборки сети: {net_compile_limit_mins} мин.'
-            save_net_compilation_final_status_and_data(net_compile_report, status)
+            save_net_compilation_final_status_and_data(net_compile_report, status, net_compilation_percent)
             return 2
 
         if net_compile_report.metric_report:
@@ -99,23 +100,23 @@ def net_compilation(id_report):
             time.sleep(5)
             continue
 
-        net_compilation_percernt = get_net_compilation_percernt(current_chaos_statistic_data,
+        net_compilation_percent = get_net_compilation_percent(current_chaos_statistic_data,
                                                                 net_compile_report.fact_total_esl)
 
-        if net_compilation_percernt >= net_compilation_percernt_steps[current_step]:
+        if net_compilation_percent >= net_compilation_percent_steps[current_step]:
             add_net_compilation_statistics_to_db(db_chaos_object,
                                                  net_compile_report,
                                                  current_chaos_statistic_data,
-                                                 net_compilation_percernt_steps[current_step],
+                                                 net_compilation_percent_steps[current_step],
                                                  elapsed_time)
             set_db_object_attribute(net_compile_report,
-                                    f'p{net_compilation_percernt_steps[current_step]}',
+                                    f'p{net_compilation_percent_steps[current_step]}',
                                     elapsed_time)
             net_compile_report.save()
             print(f'Добавлены данные сборки сети. Время:{current_time} Разница: {elapsed_time}', )
             current_step += 1
 
-        if net_compilation_percernt == 100 or current_step > last_step:
+        if net_compilation_percent == 100 or current_step > last_step:
             net_compile_report.p100 = elapsed_time
             net_compile_report.save()
             save_net_compilation_final_status_and_data(net_compile_report, 'OK')

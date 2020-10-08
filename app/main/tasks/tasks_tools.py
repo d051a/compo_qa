@@ -135,13 +135,13 @@ def add_current_statistic_to_db(db_chaos_object, current_chaos_statistic_data, m
 def add_net_compilation_statistics_to_db(db_chaos_object,
                                          db_metric_report_object,
                                          current_chaos_statistic_data,
-                                         net_compilation_percernt,
+                                         net_compilation_percent,
                                          elapsed_time):
     db_net_compilation_row = NetCompilationStat(
         chaos=db_chaos_object,
         net_compile_report=db_metric_report_object,
         online_esl=current_chaos_statistic_data.online_esl,
-        compilation_percent=net_compilation_percernt,
+        compilation_percent=net_compilation_percent,
         elapsed_time=elapsed_time,
     )
     db_net_compilation_row.save()
@@ -169,13 +169,13 @@ def get_fact_percent(dividend, fact_total_esl):
     return float(f"{fact_percent:.2f}")
 
 
-def get_net_compilation_percernt(curent_stats_data, fact_total_esl):
+def get_net_compilation_percent(curent_stats_data, fact_total_esl):
     if fact_total_esl:
-        net_compilation_percernt = (curent_stats_data.online_esl / fact_total_esl) * 100
-        return float(f"{net_compilation_percernt:.2f}")
+        net_compilation_percent = (curent_stats_data.online_esl / fact_total_esl) * 100
+        return float(f"{net_compilation_percent:.2f}")
     else:
-        net_compilation_percernt = curent_stats_data.get_true_net_compilation_percent()
-        return net_compilation_percernt
+        net_compilation_percent = curent_stats_data.get_true_net_compilation_percent()
+        return net_compilation_percent
 
 
 def get_drawed_images_percent(curent_stats_data, fact_total_esl):
@@ -203,8 +203,14 @@ def save_draw_imgs_final_status_and_data(db_draw_imgs_object, curent_stats_data,
     db_draw_imgs_object.save()
 
 
-def save_net_compilation_final_status_and_data(db_net_compilation_object, status):
+def save_net_compilation_final_status_and_data(db_net_compilation_object, status, net_compilation_percent):
+    current_time = timezone.localtime(timezone.now())
+    elapsed_time = utils.get_time_delta(current_time,
+                                        db_net_compilation_object.create_date_time,
+                                        "{hours}:{minutes}:{seconds}")
+    db_net_compilation_object.elapsed_time = elapsed_time
     db_net_compilation_object.status = status
+    db_net_compilation_object.final_percent = net_compilation_percent
     db_net_compilation_object.date_time_finish = timezone.localtime(timezone.now())
     db_net_compilation_object.save()
 

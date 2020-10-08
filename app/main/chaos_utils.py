@@ -331,12 +331,24 @@ class Utils:
         """Возвращает текущее время"""
         return datetime.datetime.now()
 
+    # @staticmethod
+    # def get_time_delta(current_time, start_time, output_format) -> str:
+    #     time_delta = current_time - start_time
+    #     d = {"days": time_delta.days}
+    #     d["hours"], rem = divmod(time_delta.seconds, 3600)
+    #     d["minutes"], d["seconds"] = divmod(rem, 60)
+    #     return output_format.format(**d)
+
     @staticmethod
     def get_time_delta(current_time, start_time, output_format) -> str:
+        def correct_num_format(num):
+            return num if num > 9 else '0' + str(num)
         time_delta = current_time - start_time
-        d = {"days": time_delta.days}
-        d["hours"], rem = divmod(time_delta.seconds, 3600)
-        d["minutes"], d["seconds"] = divmod(rem, 60)
+        days = time_delta.days
+        hours = rem = divmod(time_delta.seconds, 3600)
+        d = {"days": correct_num_format(days)}
+        d["hours"], rem = correct_num_format(hours)
+        d["minutes"], d["seconds"] = correct_num_format(divmod(rem, 60))
         return output_format.format(**d)
 
     @staticmethod
