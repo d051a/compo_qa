@@ -128,6 +128,7 @@ def create_excel_net_draw_cheet(workbook,
                                 net_compile_included_columns,
                                 draw_imgs_reports,
                                 draw_imgs_included_columns,
+                                draw_imgs_amount,
                                 vertical=False):
     worksheet = workbook.create_sheet('Сводный отчет', 0)
     colon_or_row_num = 1
@@ -158,13 +159,14 @@ def create_excel_net_draw_cheet(workbook,
         row = [stat[stat_id] for stat_id in columns_ids]
         for elem_num, cell_value in enumerate(row, 1):
             if vertical:
+                print(f"start_row={elem_num}, start_column={colon_or_row_num}, end_row={elem_num},end_column={colon_or_row_num + draw_imgs_amount - 1}")
                 worksheet.merge_cells(start_row=elem_num, start_column=colon_or_row_num, end_row=elem_num,
-                                      end_column=colon_or_row_num+1)
+                                      end_column=colon_or_row_num+draw_imgs_amount-1)
                 cell = worksheet.cell(row=elem_num, column=colon_or_row_num)
                 cell.value = cell_value
-                cell.border = thin_border
-                cell = worksheet.cell(row=elem_num, column=colon_or_row_num+1)
-                cell.border = thin_border
+                for i in range(1, draw_imgs_amount):
+                    cell.border = thin_border
+                    cell = worksheet.cell(row=elem_num, column=colon_or_row_num+i)
             else:
                 cell = worksheet.cell(row=colon_or_row_num, column=elem_num)
                 cell.value = cell_value
@@ -173,9 +175,11 @@ def create_excel_net_draw_cheet(workbook,
                 cell.border = thin_border
 
             cell.border = thin_border
-        colon_or_row_num += 2
+        colon_or_row_num += draw_imgs_amount
+
     start_row_num = len(net_compile_included_columns) + 1
-    generate_table_data(worksheet, draw_imgs_reports, draw_imgs_included_columns, vertical=True, start_row_num=start_row_num)
+    generate_table_data(worksheet, draw_imgs_reports, draw_imgs_included_columns,
+                        vertical=True, start_row_num=start_row_num)
     # expands_columns_width(worksheet)
     return workbook
 

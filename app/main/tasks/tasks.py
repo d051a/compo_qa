@@ -127,11 +127,11 @@ def net_compilation(id_report):
         if net_compilation_percent == 100 or compilation_percent_current_step >= compilation_percent_last_step:
             net_compile_report.p100 = elapsed_time
             net_compile_report.save()
-            save_net_compilation_final_status_and_data(net_compile_report, 'OK')
+            save_net_compilation_final_status_and_data(net_compile_report, 'OK', net_compilation_percent)
             break
 
         elapsed_mins = (timezone.localtime(timezone.now()) - start_time).total_seconds() / 60
-        time.sleep(60)
+        time.sleep(25)
     return True
 
 
@@ -194,8 +194,9 @@ def drawed_images_report_generate(id_report):
               f'Процент шага: {drawed_percent_points[drawed_percent_current_step]}')
 
         if elapsed_mins >= drawed_time_points[drawed_time_current_step]:
-            setattr(db_draw_imgs_object, f't{drawed_time_points[drawed_time_current_step]}',
-                    current_chaos_statistic_data.get_drawed_images_percent())
+            set_db_object_attribute(db_draw_imgs_object,
+                                    f't{drawed_time_points[drawed_time_current_step]}',
+                                    current_chaos_statistic_data.get_drawed_images_percent())
 
         if drawed_images_percent >= drawed_percent_points[drawed_percent_current_step]:
             add_draw_images_statistics_to_db(db_chaos_object,
@@ -203,8 +204,9 @@ def drawed_images_report_generate(id_report):
                                              current_chaos_statistic_data,
                                              drawed_percent_points[drawed_percent_current_step],
                                              elapsed_time)
-            setattr(db_draw_imgs_object, f'p{drawed_percent_points[drawed_percent_current_step]}', elapsed_time)
-            # db_draw_imgs_object.save()
+            set_db_object_attribute(db_draw_imgs_object,
+                                    f'p{drawed_percent_points[drawed_percent_current_step]}',
+                                    elapsed_time)
             print(f'Добавлены новые метрики. Время: {current_time} Разница: {elapsed_time}', )
             drawed_percent_current_step += 1
 
@@ -216,7 +218,7 @@ def drawed_images_report_generate(id_report):
             break
 
         elapsed_mins = (timezone.localtime(timezone.now()) - start_time).total_seconds() / 60
-        time.sleep(60)
+        time.sleep(25)
     return True
 
 

@@ -49,20 +49,30 @@ def metric_report_export_to_xlsx(request, metric_report_id):
         'connects',
     ]
 
+    net_compile_fields_common_report = ['create_date_time', 'elapsed_time', 'final_percent', 't60', 'fact_total_esl',
+                                        'status', 'date_time_finish',
+                                       ]
+    draw_imgs_fields_common_report = ['p50', 'p75', 'p90', 'p95', 'p96', 'p97', 'p98', 'p99', 'p995', 'p999', 'p100',
+                                      'not_drawed_esl',
+                                     ]
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     )
     response['Content-Disposition'] = 'attachment; filename={date}-metric_report.xlsx'.format(
         date=datetime.now().strftime('%d.%m.%Y_%H.%M.%S'),
     )
-
+    draw_imgs_amount = metrics_report.draw_imgs_amount
     workbook = Workbook()
     workbook = create_excel_cheet_for_stats(workbook, draw_imgs_reports, DrawImgsStat, draw_imgs_stat_fields)
     workbook = create_excel_cheet_for_stats(workbook, net_compile_reports, NetCompilationStat, net_compile_stat_fields)
     workbook = create_excel_cheet(workbook, net_compile_reports, net_compile_reports_draw_fields, vertical=True)
     workbook = create_excel_cheet(workbook, draw_imgs_reports, draw_imgs_reports_draw_fields, vertical=True)
     workbook = create_excel_cheet(workbook, metrics_report_common_statistic, metrics_report_common_statistic_draw_fields)
-    workbook = create_excel_net_draw_cheet(workbook, net_compile_reports, net_compile_reports_draw_fields, draw_imgs_reports, draw_imgs_reports_draw_fields, vertical=True)
+    workbook = create_excel_net_draw_cheet(workbook,
+                                           net_compile_reports, net_compile_fields_common_report,
+                                           draw_imgs_reports, draw_imgs_fields_common_report,
+                                           draw_imgs_amount,
+                                           vertical=True)
     workbook.save(response)
     return response
 
