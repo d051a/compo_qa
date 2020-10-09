@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import RegexValidator
+from django.utils import timezone
 
 
 class Statistic(models.Model):
@@ -23,7 +24,7 @@ class Statistic(models.Model):
     network_mode = models.CharField('network_mode', max_length=100, null=True)
     network_mode_percent = models.IntegerField('network_mode_percent', null=True)
     connects = models.IntegerField('connects', null=True)
-    date_time = models.DateTimeField('Дата и время', auto_now_add=True, blank=True, null=True)
+    date_time = models.DateTimeField('Дата и время', default=timezone.localtime, blank=True, null=True)
     voltage_current = models.FloatField('Текущий вольтаж', blank=True, null=True)
     voltage_average = models.FloatField('Средний вольтаж', blank=True, null=True)
     voltage_max = models.FloatField('Максимальный вольтаж', blank=True, null=True)
@@ -54,7 +55,7 @@ class Chaos(models.Model):
     images_succeeded = models.CharField('Images succeeded', max_length=20, blank=True, null=True)
     net_percent = models.CharField('Сборка сети (%)', max_length=50, blank=True, null=True)
     draw_percent = models.CharField('Отрисовка (%)', max_length=50, blank=True, null=True)
-    date_time_update = models.DateTimeField('Время обновления данных', auto_now=True)
+    date_time_update = models.DateTimeField('Время обновления данных', default=timezone.localtime, blank=True, null=True)
     config = models.TextField('Текущий конфиг хаоса', blank=True, null=True)
     monitoring_config_params = models.TextField('Отслеживаемые поля конфига', blank=True, null=True)
     compired_config = models.TextField('Результат сравнения конфигов', blank=True, null=True)
@@ -85,7 +86,8 @@ class NetCompilationStat(models.Model):
     online_esl = models.IntegerField('Ценников онлайн')
     compilation_percent = models.FloatField('Компиляция сети (%)')
     elapsed_time = models.CharField('Затраченное время', max_length=50)
-    date_time = models.DateTimeField('Дата и время записи', auto_now_add=True, blank=True, null=True)
+    date_time = models.DateTimeField('Дата и время записи',
+                                     default=timezone.localtime, blank=True, null=True)
 
     class Meta:
         ordering = ["-pk"]
@@ -103,7 +105,8 @@ class NetCompileReport(models.Model):
                                       verbose_name='Отчет сбора метрик',
                                       null=True,
                                       blank=True)
-    create_date_time = models.DateTimeField('Дата и время начала сборки', auto_now_add=True, blank=True, null=True)
+    create_date_time = models.DateTimeField('Дата и время начала сборки',
+                                            default=timezone.localtime, blank=True, null=True)
     status = models.CharField('Статус', max_length=200, blank=True)
     net_compile_limit_mins = models.IntegerField('Предельное время сборки сети(мин)',
                                                  default=120, blank=True, null=True)
@@ -157,7 +160,8 @@ class NetCompileReport(models.Model):
 
 class MetricReport(models.Model):
     chaos = models.ForeignKey('Chaos', on_delete=models.CASCADE, verbose_name='Хаос', null=True)
-    create_date_time = models.DateTimeField('Дата и время начала сбора статистики', auto_now_add=True, blank=True, null=True)
+    create_date_time = models.DateTimeField('Дата и время начала сбора статистики',
+                                            default=timezone.localtime, blank=True, null=True)
     net_compile_limit_mins = models.IntegerField('Предельное время сборки сети(мин)',
                                                  default=120, blank=True, null=True)
     draw_imgs_limit_mins = models.IntegerField('Предельное время отрисовки ценников (мин)',
@@ -195,7 +199,8 @@ class DrawImgsReport(models.Model):
                                       verbose_name='Отчет сбора метрик',
                                       null=True,
                                       blank=True)
-    create_date_time = models.DateTimeField('Дата и время создания отчета', auto_now_add=True, blank=True)
+    create_date_time = models.DateTimeField('Дата и время создания отчета',
+                                            default=timezone.localtime, blank=True, null=True)
     date_time_finish = models.DateTimeField('Дата и время окончания отчета', blank=True, null=True)
     draw_imgs_limit_mins = models.IntegerField('Предельное время отрисовки ценников (мин)',
                                                default=300, blank=True, null=True)
@@ -265,7 +270,8 @@ class DrawImgsStat(models.Model):
     percent_step = models.IntegerField('Шаг процента отрисовки', blank=True, null=True)
     drawed_percent = models.FloatField('Процент отрисовки (%)', blank=True, null=True)
     elapsed_time = models.CharField('Затраченное время', max_length=50)
-    date_time = models.DateTimeField('Дата и время записи', auto_now_add=True, blank=True, null=True)
+    date_time = models.DateTimeField('Дата и время записи',
+                                     default=timezone.localtime, blank=True, null=True)
 
     class Meta:
         ordering = ["-pk"]

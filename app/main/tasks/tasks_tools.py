@@ -195,7 +195,7 @@ def get_not_drawed_images(curent_stats_data, fact_total_esl):
 
 
 def save_draw_imgs_final_status_and_data(db_draw_imgs_object, curent_stats_data, status):
-    current_time = timezone.localtime(timezone.now())
+    current_time = timezone.localtime()
     elapsed_time = utils.get_time_delta(current_time,
                                         db_draw_imgs_object.create_date_time,
                                         "{hours}:{minutes}:{seconds}")
@@ -204,19 +204,19 @@ def save_draw_imgs_final_status_and_data(db_draw_imgs_object, curent_stats_data,
     db_draw_imgs_object.not_drawed_esl = get_not_drawed_images(curent_stats_data, db_draw_imgs_object.fact_total_esl)
     db_draw_imgs_object.drawed_esl = curent_stats_data.images_succeeded
     db_draw_imgs_object.status = status
-    db_draw_imgs_object.date_time_finish = timezone.localtime(timezone.now())
+    db_draw_imgs_object.date_time_finish = timezone.localtime()
     db_draw_imgs_object.save()
 
 
 def save_net_compilation_final_status_and_data(db_net_compilation_object, status, net_compilation_percent):
-    current_time = timezone.localtime(timezone.now())
+    current_time = timezone.localtime()
     elapsed_time = utils.get_time_delta(current_time,
                                         db_net_compilation_object.create_date_time,
                                         "{hours}:{minutes}:{seconds}")
     db_net_compilation_object.elapsed_time = elapsed_time
     db_net_compilation_object.final_percent = net_compilation_percent
     db_net_compilation_object.status = status
-    db_net_compilation_object.date_time_finish = timezone.localtime(timezone.now())
+    db_net_compilation_object.date_time_finish = timezone.localtime()
     db_net_compilation_object.save()
 
 
