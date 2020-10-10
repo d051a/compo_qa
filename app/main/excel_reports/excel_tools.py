@@ -130,6 +130,8 @@ def create_excel_net_draw_cheet(workbook,
                                 draw_imgs_included_columns,
                                 draw_imgs_amount,
                                 vertical=False):
+    net_compile_reports = net_compile_reports.order_by('create_date_time')
+    draw_imgs_reports = draw_imgs_reports.order_by('create_date_time')
     worksheet = workbook.create_sheet('Сводный отчет', 0)
     colon_or_row_num = 1
     columns = []
