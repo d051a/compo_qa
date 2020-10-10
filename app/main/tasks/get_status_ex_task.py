@@ -30,6 +30,8 @@ def get_bat_reserved(input_data):
         print('FAIL: Это не JSON. Что-то пошло не так. Данные не получены...')
         print(f'STDOUT: {input_data[0]}: STDERR: {input_data[1]}')
         return None
+    except TypeError:
+        return None
     # esl_statistics = json.loads(input_data)
     bat_reserved_quantities = {1: 0, 2: 0, 3: 0, 4: 0}
     for esl_stat in esl_statistics.keys():
