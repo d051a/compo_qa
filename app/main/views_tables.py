@@ -2,6 +2,7 @@ from main.models import Statistic, \
     MetricReport, NetCompilationStat, DrawImgsStat, DrawImgsReport, NetCompileReport
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from main.chaos_utils import Utils as utils
+from django.utils.timezone import localtime
 
 
 class FilterQuerysetMixin(BaseDatatableView):
@@ -34,10 +35,10 @@ class DrawImgsReportModelListJson(FilterQuerysetMixin, BaseDatatableView):
             except:
                 return ''
         if column == 'create_date_time':
-            return row.create_date_time.strftime("%d.%m.%y %H:%M:%S")
+            return localtime(row.create_date_time).strftime("%d.%m.%y %H:%M:%S")
         if column == 'date_time_finish':
             if row.date_time_finish:
-                return row.date_time_finish.strftime("%d.%m.%y %H:%M:%S")
+                return localtime(row.date_time_finish).strftime("%d.%m.%y %H:%M:%S")
             else:
                 return ''
         else:
@@ -75,7 +76,7 @@ class ChaosStatisticModelListJson(FilterQuerysetMixin, BaseDatatableView):
 
     def render_column(self, row, column):
         if column == 'date_time':
-            return row.date_time.strftime("%d.%m.%y %H:%M:%S")
+            return localtime(row.date_time).strftime("%d.%m.%y %H:%M:%S")
         else:
             return super(ChaosStatisticModelListJson, self).render_column(row, column)
 
@@ -98,10 +99,10 @@ class NetCompilationReportModelListJson(FilterQuerysetMixin, BaseDatatableView):
             except:
                 return ''
         if column == 'create_date_time':
-            return row.create_date_time.strftime("%d.%m.%y %H:%M:%S")
+            return localtime(row.create_date_time).strftime("%d.%m.%y %H:%M:%S")
         if column == 'date_time_finish':
             if row.date_time_finish:
-                return row.date_time_finish.strftime("%d.%m.%y %H:%M:%S")
+                return localtime(row.date_time_finish).strftime("%d.%m.%y %H:%M:%S")
             else:
                 return ''
         else:
@@ -166,10 +167,10 @@ class MetricsModelListJson(BaseDatatableView):
             except:
                 return ''
         if column == 'create_date_time':
-            return row.create_date_time.strftime("%d.%m.%y %H:%M:%S")
+            return localtime(row.create_date_time).strftime("%d.%m.%y %H:%M:%S")
         if column == 'date_time_finish':
             if row.date_time_finish:
-                return row.date_time_finish.strftime("%d.%m.%y %H:%M:%S")
+                return localtime(row.date_time_finish).strftime("%d.%m.%y %H:%M:%S")
             else:
                 return ''
         if column == 'elapsed_time':
