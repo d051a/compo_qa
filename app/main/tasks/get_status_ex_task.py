@@ -24,7 +24,12 @@ def get_status_ex(chaos):
 
 
 def get_bat_reserved(input_data):
-    esl_statistics = json.loads(input_data[0])
+    try:
+        esl_statistics = json.loads(input_data[0])
+    except json.decoder.JSONDecodeError:
+        print('FAIL: Это не JSON. Что-то пошло не так. Данные не получены...')
+        print(f'STDOUT: {input_data[0]}: STDERR: {input_data[1]}')
+        return None
     # esl_statistics = json.loads(input_data)
     bat_reserved_quantities = {1: 0, 2: 0, 3: 0, 4: 0}
     for esl_stat in esl_statistics.keys():
@@ -42,14 +47,17 @@ def run_get_status_ex_task(chaos):
     # with open('get_status_ex.txt', 'r') as file:
     #     get_status_ex_data = file.read()
     bat_reserved_quantities = get_bat_reserved(get_status_ex_data)
-    statistic = ChaosStatisctic(ip=chaos.ip)
-    db_statisctic_row = add_current_statistic_to_db(chaos, statistic)
-    for bat_reserved_count in bat_reserved_quantities.keys():
-        bat_reserved_quantity = bat_reserved_quantities[bat_reserved_count]
-        setattr(db_statisctic_row, f'bat_reserved{bat_reserved_count}', bat_reserved_quantity)
-    db_statisctic_row.save()
-    run_tasks[chaos.pk] = ['STOPPED']
-    print(run_tasks)
+    if bat_reserved_quantities is None:
+        run_tasks[chaos.pk] = ['STOPPED']
+    else:
+        statistic = ChaosStatisctic(ip=chaos.ip)
+        db_statisctic_row = add_current_statistic_to_db(chaos, statistic)
+        for bat_reserved_count in bat_reserved_quantities.keys():
+            bat_reserved_quantity = bat_reserved_quantities[bat_reserved_count]
+            setattr(db_statisctic_row, f'bat_reserved{bat_reserved_count}', bat_reserved_quantity)
+        db_statisctic_row.save()
+        run_tasks[chaos.pk] = ['STOPPED']
+        print(run_tasks)
 
 
 def main():
