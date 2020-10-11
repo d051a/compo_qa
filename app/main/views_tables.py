@@ -19,7 +19,7 @@ class FilterQuerysetMixin(BaseDatatableView):
 
 class DrawImgsReportModelListJson(FilterQuerysetMixin, BaseDatatableView):
     model = DrawImgsReport
-    columns = ['pk', 'create_date_time', 'status', 'date_time_finish', 'name', 'ip', 'p50', 'p75', 'p90', 'p95', 'p96', 'p97', 'p98', 'p99', 'p100']
+    columns = ['pk', 'create_date_time', 'status', 'date_time_finish', 'name', 'ip', 'p50', 'p75', 'p90', 'p95', 'p96', 'p97', 'p98', 'p99', 'p100', 'task']
 
     def render_column(self, row, column):
         if column == 'pk':
@@ -39,6 +39,11 @@ class DrawImgsReportModelListJson(FilterQuerysetMixin, BaseDatatableView):
         if column == 'date_time_finish':
             if row.date_time_finish:
                 return localtime(row.date_time_finish).strftime("%d.%m.%y %H:%M:%S")
+            else:
+                return ''
+        if column == 'task':
+            if row.task_id:
+                return f'<a href="/drawed/{row.pk}/task_terminate"><img src="/staticfiles/base_svg/circle-x.svg" width=20></a>'
             else:
                 return ''
         else:
@@ -83,7 +88,8 @@ class ChaosStatisticModelListJson(FilterQuerysetMixin, BaseDatatableView):
 
 class NetCompilationReportModelListJson(FilterQuerysetMixin, BaseDatatableView):
     model = NetCompileReport
-    columns = ['pk', 'create_date_time', 'status', 'date_time_finish', 'name', 'ip', 'p50', 'p75', 'p90', 'p95', 'p96', 'p97', 'p98', 'p99', 'p100']
+    columns = ['pk', 'create_date_time', 'status', 'date_time_finish',
+               'name', 'ip', 'p50', 'p75', 'p90', 'p95', 'p96', 'p97', 'p98', 'p99', 'p100', 'task']
 
     def render_column(self, row, column):
         if column == 'pk':
@@ -103,6 +109,11 @@ class NetCompilationReportModelListJson(FilterQuerysetMixin, BaseDatatableView):
         if column == 'date_time_finish':
             if row.date_time_finish:
                 return localtime(row.date_time_finish).strftime("%d.%m.%y %H:%M:%S")
+            else:
+                return ''
+        if column == 'task':
+            if row.task_id:
+                return f'<a href="/netcompiles/{row.pk}/task_terminate"><img src="/staticfiles/base_svg/circle-x.svg" width=20></a>'
             else:
                 return ''
         else:
@@ -151,7 +162,7 @@ class NetCompilationStatModelListJson(BaseDatatableView):
 
 class MetricsModelListJson(BaseDatatableView):
     model = MetricReport
-    columns = ['pk', 'create_date_time', 'date_time_finish', 'status', 'elapsed_time', 'name', 'ip']
+    columns = ['pk', 'create_date_time', 'date_time_finish', 'status', 'elapsed_time',  'task', 'name', 'ip',]
 
     def render_column(self, row, column):
         if column == 'pk':
@@ -175,9 +186,13 @@ class MetricsModelListJson(BaseDatatableView):
                 return ''
         if column == 'elapsed_time':
             if row.date_time_finish:
-
                 elapsed_time = utils.get_time_delta(row.date_time_finish, row.create_date_time, "{hours}:{minutes}:{seconds}")
                 return elapsed_time
+            else:
+                return ''
+        if column == 'task':
+            if row.task_id:
+                return f'<a href="/metrics/{row.pk}/task_terminate"><img src="/staticfiles/base_svg/circle-x.svg" width=20></a>'
             else:
                 return ''
         else:

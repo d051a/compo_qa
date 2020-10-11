@@ -22,9 +22,6 @@ urlpatterns = [
     path('netcompiles/<int:pk>/', views.NetCompileReportDetail.as_view(), name='net_compiles_detail'),
     path('netcompiles/add', views.NetCompiliesReportCreate.as_view(), name='net_compiles_add'),
 
-    path('chaoses/<int:pk>/get_config/', views.get_chaos_config, name='get_chaos_config'),
-
-
     # excel reports generators
     path('metrics/<int:chaos_id>/stats/excel', views_excel.chaos_stats_export_to_xlsx, name='chaos_stats_export_to_xlsx'),
     path('metrics/<int:metric_report_id>/excel', views_excel.metric_report_export_to_xlsx, name='export_report_data_to_xlsx'),
@@ -36,5 +33,12 @@ urlpatterns = [
     path('drawed_imgs_stats_json/', views_tables.DrawImgsStatModelListJson.as_view(), name='drawed_imgs_stats_json'),
     path('net_compile_stats_json/', views_tables.NetCompilationStatModelListJson.as_view(), name='net_compile_stats_json'),
     path('net_compile_list_json/', views_tables.NetCompilationReportModelListJson.as_view(), name='net_compile_list_json'),
+
+    # other
+    path('chaoses/<int:pk>/get_config/', views.get_chaos_config, name='get_chaos_config'),
+
+    path('drawed/<int:report_id>/task_terminate', views.celery_draw_imgs_task_revoke, name='drawed_task_terminate'),
+    path('netcompiles/<int:report_id>/task_terminate', views.celery_net_compilation_task_revoke, name='net_task_terminate'),
+    path('metrics/<int:report_id>/task_terminate', views.celery_metric_report_task_revoke, name='metric_task_terminate'),
 
 ]

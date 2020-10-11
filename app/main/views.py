@@ -7,6 +7,8 @@ from django.views.generic import DetailView, CreateView, ListView, UpdateView
 from django.urls import reverse_lazy, reverse
 from main.forms import ChaosForm, DrawImgsReportForm, NetCompileReportForm, MetricReportForm, ChaosEditForm
 from main.tasks.tasks import drawed_images_report_generate, net_compilation, all_metrics_report_generate
+from conf.celery import app
+from django.utils import timezone
 
 
 def main(request):
@@ -35,6 +37,42 @@ def chaoses_list(request):
     return render(request, 'main/chaoses_list.html', {
         'pagename': 'Chaoses'
     })
+
+
+def celery_draw_imgs_task_revoke(request, report_id):
+    status = 'FAIL: Задача была остановлена вручную до окончания завершения'
+    draw_imgs_report = DrawImgsReport.objects.get(pk=report_id)
+    task_id = draw_imgs_report.task_id
+    app.control.revoke(task_id, terminate=True)
+    draw_imgs_report.task_id = ''
+    draw_imgs_report.date_time_finish = timezone.localtime()
+    draw_imgs_report.status = status
+    draw_imgs_report.save()
+    return HttpResponseRedirect(reverse('main:drawed_list'))
+
+
+def celery_net_compilation_task_revoke(request, report_id):
+    status = 'FAIL: Задача была остановлена вручную до окончания завершения'
+    net_compilation_report = NetCompileReport.objects.get(pk=report_id)
+    task_id = net_compilation_report.task_id
+    app.control.revoke(task_id, terminate=True)
+    net_compilation_report.task_id = ''
+    net_compilation_report.date_time_finish = timezone.localtime()
+    net_compilation_report.status = status
+    net_compilation_report.save()
+    return HttpResponseRedirect(reverse('main:net_compiles_list'))
+
+
+def celery_metric_report_task_revoke(request, report_id):
+    status = 'FAIL: Задача была остановлена вручную до окончания завершения'
+    metrics_report = MetricReport.objects.get(pk=report_id)
+    task_id = metrics_report.task_id
+    app.control.revoke(task_id, terminate=True)
+    metrics_report.task_id = ''
+    metrics_report.date_time_finish = timezone.localtime()
+    metrics_report.status = status
+    metrics_report.save()
+    return HttpResponseRedirect(reverse('main:net_compiles_list'))
 
 
 def get_chaos_config(request, pk):
@@ -128,6 +166,7 @@ class MetricReportCreate(CreateView):
         redirect_url = super().form_valid(form)
         metric_report = MetricReport.objects.get(pk=form.instance.id)
         metric_report.task_id = task.id
+        metric_report.status = 'ACTIVE'
         metric_report.save()
         return redirect_url
 
@@ -168,6 +207,7 @@ class DrawImgsReportCreate(CreateView):
         task = drawed_images_report_generate.delay(form.instance.id)
         redirect_url = super().form_valid(form)
         draw_imgs_report = DrawImgsReport.objects.get(pk=form.instance.id)
+        draw_imgs_report.status = 'ACTIVE'
         draw_imgs_report.task_id = task.id
         draw_imgs_report.save()
         return redirect_url
@@ -186,6 +226,7 @@ class NetCompiliesReportCreate(CreateView):
         task = net_compilation.delay(form.instance.id)
         redirect_url = super().form_valid(form)
         net_compilation_report = NetCompileReport.objects.get(pk=form.instance.id)
+        net_compilation_report.status = 'ACTIVE'
         net_compilation_report.task_id = task.id
         net_compilation_report.save()
         return redirect_url
