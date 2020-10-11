@@ -148,6 +148,7 @@ class NetCompileReport(models.Model):
     elapsed_time = models.CharField('Время сборки сети', max_length=100, blank=True, null=True)
     max_inactive_time = models.IntegerField('Предельное время бездействия', default=30, blank=True, null=True)
     success_percent = models.FloatField('Считать сборку успешной при, %', default=100, blank=True, null=True)
+    task_id = models.CharField('Celery task ID', max_length=200, blank=True, null=True)
 
     class Meta:
         ordering = ["-pk"]
@@ -182,6 +183,7 @@ class MetricReport(models.Model):
     draw_inactive_time = models.IntegerField('Предельное время бездействия отрисовки', default=30, blank=True, null=True)
     net_success_percent = models.FloatField('Считать сборку сети успешной при, %', default=100.0, blank=True, null=True)
     draw_success_percent = models.FloatField('Считать отрисовку успешной при, %', default=100.0, blank=True, null=True)
+    task_id = models.CharField('Celery task ID', max_length=200, blank=True, null=True)
 
     class Meta:
         ordering = ["-pk"]
@@ -251,6 +253,7 @@ class DrawImgsReport(models.Model):
     elapsed_time = models.CharField('Время отрисовки', max_length=100, blank=True, null=True)
     max_inactive_time = models.IntegerField('Предельное время бездействия', default=30, blank=True, null=True)
     success_percent = models.FloatField('Cчитать отрисовку успешной при, %', default=100, blank=True, null=True)
+    task_id = models.CharField('Celery task ID', max_length=200, blank=True, null=True)
 
     class Meta:
         ordering = ["-pk"]

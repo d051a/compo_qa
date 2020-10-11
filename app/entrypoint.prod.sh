@@ -10,5 +10,6 @@ fi
 
 python manage.py collectstatic --noinput
 python manage.py migrate
+python main/tasks/clear_tasks.py
 
 exec "$@"

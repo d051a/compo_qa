@@ -155,6 +155,7 @@ def drawed_images_report_generate(id_report):
     if not reset_send_queue(chaos_credentials['ip']):
         status = f'FAIL: 'f'Не удалось сбросить очередь отрисовки перед запуском отрисовки'
         db_draw_imgs_object.status = status
+        db_draw_imgs_object.task_id = ''
         db_draw_imgs_object.date_time_finish = timezone.localtime()
         db_draw_imgs_object.save()
         return False
@@ -197,7 +198,7 @@ def drawed_images_report_generate(id_report):
             set_db_object_attribute(db_draw_imgs_object,
                                     f't{drawed_time_points[drawed_time_current_step]}',
                                     current_chaos_statistic_data.get_drawed_images_percent())
-            drawed_time_current_step+=1
+            drawed_time_current_step += 1
 
         if drawed_images_percent >= drawed_percent_points[drawed_percent_current_step]:
             add_draw_images_statistics_to_db(db_chaos_object,

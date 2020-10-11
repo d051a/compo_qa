@@ -124,8 +124,12 @@ class MetricReportCreate(CreateView):
 
     def form_valid(self, form):
         form.save()
-        all_metrics_report_generate.delay(form.instance.id)
-        return super().form_valid(form)
+        task = all_metrics_report_generate.delay(form.instance.id)
+        redirect_url = super().form_valid(form)
+        metric_report = MetricReport.objects.get(pk=form.instance.id)
+        metric_report.task_id = task.id
+        metric_report.save()
+        return redirect_url
 
 
 class MetricReportDetail(DetailView):
@@ -161,8 +165,12 @@ class DrawImgsReportCreate(CreateView):
 
     def form_valid(self, form):
         form.save()
-        drawed_images_report_generate.delay(form.instance.id)
-        return super().form_valid(form)
+        task = drawed_images_report_generate.delay(form.instance.id)
+        redirect_url = super().form_valid(form)
+        draw_imgs_report = DrawImgsReport.objects.get(pk=form.instance.id)
+        draw_imgs_report.task_id = task.id
+        draw_imgs_report.save()
+        return redirect_url
 
 
 class NetCompiliesReportCreate(CreateView):
@@ -175,5 +183,9 @@ class NetCompiliesReportCreate(CreateView):
     def form_valid(self, form):
         form.save()
         net_compilation.delay(form.instance.id)
-        # net_compilation(form.instance.id)
-        return super().form_valid(form)
+        task = net_compilation.delay(form.instance.id)
+        redirect_url = super().form_valid(form)
+        net_compilation_report = NetCompileReport.objects.get(pk=form.instance.id)
+        net_compilation_report.task_id = task.id
+        net_compilation_report.save()
+        return redirect_url
