@@ -26,6 +26,7 @@ def get_current_stats():
             chaos.images_succeeded = statistic.images_succeeded
             chaos.net_percent = f'{statistic.get_true_net_compilation_percent():.2f}'
             chaos.draw_percent = statistic.get_drawed_images_percent()
+            chaos.date_time_update = timezone.localtime()
             chaos.save()
             print(f'{time_now} {chaos.ip} is ONLINE. add stats to DB')
         else:
