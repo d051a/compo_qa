@@ -50,7 +50,7 @@ def metric_report_export_to_xlsx(request, metric_report_id):
     ]
 
     net_compile_fields_common_report = ['create_date_time', 'elapsed_time', 'final_percent', 't60', 'fact_total_esl',
-                                        'status', 'date_time_finish',
+                                        'status',
                                        ]
     draw_imgs_fields_common_report = ['p50', 'p75', 'p90', 'p95', 'p96', 'p97', 'p98', 'p99', 'p995', 'p999', 'p100',
                                       'not_drawed_esl',
