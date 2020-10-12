@@ -248,7 +248,14 @@ def get_chaos_config(device_credentials):
                                            )
     if config_data is None:
         return None
-    config_json = json.loads(config_data[0])
+    try:
+        config_json = json.loads(config_data[0])
+    except json.decoder.JSONDecodeError:
+        print('FAIL: Это не JSON. Что-то пошло не так. Данные не получены...')
+        print(f'STDOUT: {config_data[0]}: STDERR: {config_data[1]}')
+        return None
+    except TypeError:
+        return None
     return config_json
 
 

@@ -238,6 +238,7 @@ def all_metrics_report_generate(id_report):
             fact_total_esl=metric_report.fact_total_esl,
             net_compile_limit_mins=metric_report.net_compile_limit_mins,
             net_compile_amount=metric_report.net_compile_amount,
+            status='ACTIVE',
         )
         net_compilation_report.save()
         result = net_compilation(net_compilation_report.id)
@@ -258,6 +259,7 @@ def all_metrics_report_generate(id_report):
                 draw_imgs_limit_mins=metric_report.draw_imgs_limit_mins,
                 draw_imgs_amount=metric_report.draw_imgs_amount,
                 color=metric_report.color,
+                status='ACTIVE',
             )
             draw_imgs_report.save()
             result = drawed_images_report_generate(draw_imgs_report.id)

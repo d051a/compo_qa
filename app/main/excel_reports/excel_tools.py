@@ -161,7 +161,6 @@ def create_excel_net_draw_cheet(workbook,
         row = [stat[stat_id] for stat_id in columns_ids]
         for elem_num, cell_value in enumerate(row, 1):
             if vertical:
-                print(f"start_row={elem_num}, start_column={colon_or_row_num}, end_row={elem_num},end_column={colon_or_row_num + draw_imgs_amount - 1}")
                 worksheet.merge_cells(start_row=elem_num, start_column=colon_or_row_num, end_row=elem_num,
                                       end_column=colon_or_row_num+draw_imgs_amount-1)
                 cell = worksheet.cell(row=elem_num, column=colon_or_row_num)
