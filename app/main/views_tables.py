@@ -156,7 +156,6 @@ class NetCompilationStatModelListJson(BaseDatatableView):
             queryset = queryset.filter(net_compile_report=report)
         if chaos_id:
             queryset = queryset.filter(chaos=chaos_id)
-            print(queryset)
         return queryset
 
 

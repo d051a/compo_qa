@@ -4,6 +4,7 @@ import sys
 import json
 import time
 import threading
+from datetime import datetime
 sys.path.append("/app/web")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "conf.settings")
 django.setup()
@@ -24,10 +25,11 @@ def get_status_ex(chaos):
 
 
 def get_bat_reserved(input_data):
+    time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
     try:
         esl_statistics = json.loads(input_data[0])
     except json.decoder.JSONDecodeError:
-        print('FAIL: Это не JSON. Что-то пошло не так. Данные не получены...')
+        print(f'{time_now} FAIL: Это не JSON. Что-то пошло не так. Данные не получены...')
         print(f'STDOUT: {input_data[0]}: STDERR: {input_data[1]}')
         return None
     except TypeError:
@@ -59,14 +61,14 @@ def run_get_status_ex_task(chaos):
             setattr(db_statisctic_row, f'bat_reserved{bat_reserved_count}', bat_reserved_quantity)
         db_statisctic_row.save()
         run_tasks[chaos.pk] = ['STOPPED']
-        print(run_tasks)
 
 
 def main():
     global run_tasks
     while True:
+        time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
         chaoses = Chaos.objects.filter(bat_reserved=True).exclude(multimeter_ip=None)
-        print(f"Очередной этап получения данных... Значения 'bat_reserved' собираются с {len(chaoses)} устройств(а).")
+        print(f"{time_now} Очередной этап получения данных... Значения 'bat_reserved' собираются с {len(chaoses)} устройств(а).")
         for chaos in chaoses:
             run_tasks.setdefault(chaos.pk, ['STOPPED'])
             task_status = run_tasks[chaos.pk]

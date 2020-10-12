@@ -12,20 +12,21 @@ def check_host_alive(chaos_ip, slave_ip, slave_port):
     rq_cnt = 100500
     time_out = 3
     url = f'http://{slave_ip}:{slave_port}'
+    time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
     if chaos_ip == '127.0.0.1':
         url = f'http://{chaos_ip}:{slave_port}'
     try:
         request = requests.post(url, json={'command': 'ping', 'request-id': rq_cnt}, timeout=time_out)
     except:
-        print('Driver at %s is not available, no ping' % url)
+        print(f'{time_now} Driver at %s is not available, no ping' % url)
         return False
     try:
         request = requests.post(url, json={'command': 'list-roots', 'request-id': rq_cnt}, timeout=time_out)
         rq_cnt += 1
         roots = json.loads(request.text)["roots"]
-        print("Driver at %s roots: %s" % (url, ', '.join(roots)))
+        print(f"{time_now} Driver at {url} roots: {', '.join(roots)}")
     except:
-        print('Driver at %s is not available, no roots' % url)
+        print(f'{time_now} Driver at {url} is not available, no roots')
         return False
     return True
 
@@ -71,9 +72,10 @@ def check_all_alive(rebooted_devices_ips_ports, chaos_ip, max_work_time_minutes=
         time.sleep(1)
         time_now = datetime.now()
         elapsed_time = (time_now - time_start).total_seconds() / 60
+        time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
         if elapsed_time > max_work_time_minutes:
             print(
-                f'Устройства перезагружаются дольше чем {max_work_time_minutes} минут. '
+                f'{time_now} Устройства перезагружаются дольше чем {max_work_time_minutes} минут. '
                 f'Процесс перезапуска остановлен!')
             return False
         for address in list(rebooted_devices_ips_ports):
@@ -81,7 +83,8 @@ def check_all_alive(rebooted_devices_ips_ports, chaos_ip, max_work_time_minutes=
             alive = check_host_alive(chaos_ip, ip, port)
             if alive:
                 rebooted_devices_ips_ports.pop(address)
-    print('Хаос и все слейвы перезапущены! Все живы!')
+    time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+    print(f'{time_now} Хаос и все слейвы перезапущены! Все живы!')
     return True
 
 
@@ -90,13 +93,16 @@ def reboot_devices_list(devices_ips_ports, device_credentials):
     ssh_user_password = device_credentials['password']
     ssh_port = device_credentials['port']
     devices_ips = [device.split(':')[0] for device in devices_ips_ports]
+
     for ip_address in set(devices_ips):
         try:
-            print(f'Инициация перезагрузки устройства: {ip_address}')
+            time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+            print(f'{time_now} Инициация перезагрузки устройства: {ip_address}')
             utils.run_remote_command(ip_address, ssh_user_name, ssh_user_password, ssh_port,
                                      f'echo {ssh_user_password}|sudo -S sudo reboot')
         except:
-            print(f'Неудалось инициировать перезагрузку устройства: {ip_address}')
+            time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+            print(f'{time_now} Неудалось инициировать перезагрузку устройства: {ip_address}')
             return False
     return True
 
@@ -251,7 +257,8 @@ def get_chaos_config(device_credentials):
     try:
         config_json = json.loads(config_data[0])
     except json.decoder.JSONDecodeError:
-        print('FAIL: Это не JSON. Что-то пошло не так. Данные не получены...')
+        time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+        print(f'{time_now} FAIL: Это не JSON. Что-то пошло не так. Данные не получены...')
         print(f'STDOUT: {config_data[0]}: STDERR: {config_data[1]}')
         return None
     except TypeError:
@@ -264,14 +271,16 @@ def stop_chaos_webcore(device_credentials):
     ssh_user_name = device_credentials['login']
     ssh_user_password = device_credentials['password']
     ssh_port = device_credentials['port']
-    print('Инициация остановки chaos_webcore ')
+    time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+    print(f'{time_now} Инициация остановки chaos_webcore ')
     run_command = utils.run_remote_command(device_ssh_address, ssh_user_name, ssh_user_password, ssh_port,
                                            f'echo {ssh_user_password}|sudo -S sudo systemctl stop chaos_webcore')
+    time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
     if run_command == ('', ''):
-        print('chaos_webcore успешно остановлен')
+        print(f'{time_now} chaos_webcore успешно остановлен')
         return True
     else:
-        print('chaos_webcore не остановлен. Что-то пошло не так')
+        print(f'{time_now} chaos_webcore не остановлен. Что-то пошло не так')
         return run_command[1]
 
 
@@ -280,14 +289,17 @@ def start_chaos_webcore(device_credentials):
     ssh_user_name = device_credentials['login']
     ssh_user_password = device_credentials['password']
     ssh_port = device_credentials['port']
-    print('Инициация запуска chaos_webcore ')
+    time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+
+    print(f'{time_now} Инициация запуска chaos_webcore ')
     run_command = utils.run_remote_command(device_ssh_address, ssh_user_name, ssh_user_password, ssh_port,
                                            f'echo {ssh_user_password}|sudo -S sudo systemctl start chaos_webcore')
+    time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
     if run_command == ('', ''):
-        print('chaos_webcore успешно запущен')
+        print(f'{time_now} chaos_webcore успешно запущен')
         return True
     else:
-        print(f'chaos_webcore не запущен. Что-то пошло не так. ERROR: {run_command[1]}')
+        print(f'{time_now} chaos_webcore не запущен. Что-то пошло не так. ERROR: {run_command[1]}')
         return run_command[1]
 
 
@@ -313,8 +325,9 @@ def sent_request(ip, url_path):
 
 def reset_send_queue(chaos_ip):
     response = sent_request(chaos_ip, 'reset_send_queue')
+    time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
     if response['result'] == 'true':
-        print('Успешный сброс очереди')
+        print(f'{time_now} Успешный сброс очереди')
         return True
     else:
         return False
@@ -330,19 +343,20 @@ def get_current_voltage(multimeter_ip):
     """
     rm = pyvisa.ResourceManager()
     rm.list_resources()
-
+    time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
     try:
         inst = rm.open_resource(f'TCPIP::{multimeter_ip}::INSTR')
     except pyvisa.errors.VisaIOError:
-        print('VI_ERROR_RSRC_NFOUND (-1073807343): '
+        time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+        print(f'{time_now} VI_ERROR_RSRC_NFOUND (-1073807343): '
               'Insufficient location information or the requested device or resource is not present in the system. '
               'CHECK CONNECTION TO DEVICE!')
         return None
     except ConnectionRefusedError:
-        print('ERROR: Connection to multimeter refused')
+        print(f'{time_now} ERROR: Connection to multimeter refused')
         return None
     except Exception as error:
-        print(f'ERROR: {error}')
+        print(f'{time_now} ERROR: {error}')
         return None
     voltage = inst.query("FETCh?")
     inst.close()

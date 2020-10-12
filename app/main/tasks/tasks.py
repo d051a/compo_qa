@@ -2,6 +2,7 @@ import time
 import ast
 from conf.celery import app
 from django.utils import timezone
+from datetime import datetime
 from main.chaos_utils import Utils as utils
 from main.chaos_utils import ChaosStatisctic
 from main.models import NetCompileReport, DrawImgsReport, Chaos, MetricReport
@@ -17,6 +18,7 @@ def get_current_stats():
     chaoses = Chaos.objects.all()
     for chaos in chaoses:
         statistic = ChaosStatisctic(ip=chaos.ip)
+        time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
         if statistic.text != 'None':
             add_current_statistic_to_db(chaos, statistic)
             chaos.status = 'OK'
@@ -25,9 +27,9 @@ def get_current_stats():
             chaos.net_percent = f'{statistic.get_true_net_compilation_percent():.2f}'
             chaos.draw_percent = statistic.get_drawed_images_percent()
             chaos.save()
-            print(f'{chaos.ip} is ONLINE. add stats to DB')
+            print(f'{time_now} {chaos.ip} is ONLINE. add stats to DB')
         else:
-            print(f'{chaos.ip} is OFFLINE. add chaos status to DB')
+            print(f'{time_now} {chaos.ip} is OFFLINE. add chaos status to DB')
             set_db_object_attribute(chaos, 'status', 'OFFLINE')
 
 
@@ -78,7 +80,8 @@ def net_compilation(id_report):
     net_compile_limit_mins = net_compile_report.net_compile_limit_mins
 
     while True:
-        print(f'Получение новых данных c {db_chaos_object.ip} о cборке сети!')
+        time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+        print(f'{time_now} Получение новых данных c {db_chaos_object.ip} о cборке сети!')
 
         current_chaos_statistic_data = ChaosStatisctic(ip=db_chaos_object.ip)
         current_time = timezone.localtime()
@@ -86,7 +89,7 @@ def net_compilation(id_report):
                                             net_compile_report.create_date_time,
                                             "{hours}:{minutes}:{seconds}")
 
-        print(f'Прошло минут с начала сборки: {elapsed_mins} Предельное время: {net_compile_limit_mins}')
+        print(f'{time_now} Прошло минут с начала сборки: {elapsed_mins} Предельное время: {net_compile_limit_mins}')
 
         if net_compile_report.metric_report:
             add_current_statistic_to_db(db_chaos_object,
@@ -115,11 +118,12 @@ def net_compilation(id_report):
                                     f'p{net_compilation_percent_steps[compilation_percent_current_step]}',
                                     elapsed_time)
             # net_compile_report.save()
-            print(f'Добавлены данные сборки сети. Время:{current_time} Разница: {elapsed_time}', )
+
+            print(f'{time_now} Добавлены данные сборки сети. Время:{current_time} Разница: {elapsed_time}', )
             compilation_percent_current_step += 1
 
         if elapsed_mins > net_compile_limit_mins:
-            status = f'Превышено предельное время сборки сети: {net_compile_limit_mins} мин.'
+            status = f'{time_now} Превышено предельное время сборки сети: {net_compile_limit_mins} мин.'
             save_net_compilation_final_status_and_data(net_compile_report, status, net_compilation_percent)
             return 2
 
@@ -160,11 +164,13 @@ def drawed_images_report_generate(id_report):
         db_draw_imgs_object.save()
         return False
     start_drawing_images(chaos_credentials, db_draw_imgs_object.color)
-    print('Отправка команды на отрисовку...')
+    time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+    print(f'{time_now} Отправка команды на отрисовку...')
     time.sleep(60)
 
     while True:
-        print(f'Получение новых данных c {db_chaos_object.ip} об отрисовке ценников...')
+        time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+        print(f'{time_now} Получение новых данных c {db_chaos_object.ip} об отрисовке ценников...')
         current_chaos_statistic_data = ChaosStatisctic(ip=db_chaos_object.ip)
         drawed_images_percent = get_drawed_images_percent(current_chaos_statistic_data, fact_total_esl)
         current_time = timezone.localtime()
@@ -188,8 +194,8 @@ def drawed_images_report_generate(id_report):
         add_current_statistic_to_db(db_chaos_object,
                                     current_chaos_statistic_data,
                                     metric_report=db_draw_imgs_object.metric_report)
-
-        print(f'Текущий процент отрисовки: '
+        time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+        print(f'{time_now} Текущий процент отрисовки: '
               f'{drawed_images_percent} '
               f'Отрисовано: {current_chaos_statistic_data.images_succeeded} '
               f'Процент шага: {drawed_percent_points[drawed_percent_current_step]}')
@@ -209,7 +215,7 @@ def drawed_images_report_generate(id_report):
             set_db_object_attribute(db_draw_imgs_object,
                                     f'p{drawed_percent_points[drawed_percent_current_step]}',
                                     elapsed_time)
-            print(f'Добавлены новые метрики. Время: {current_time} Разница: {elapsed_time}', )
+            print(f'{time_now} Добавлены новые метрики. Время: {current_time} Разница: {elapsed_time}', )
             drawed_percent_current_step += 1
 
         drawed_percent_last_step = len(drawed_percent_points) - 1
@@ -242,12 +248,13 @@ def all_metrics_report_generate(id_report):
         )
         net_compilation_report.save()
         result = net_compilation(net_compilation_report.id)
+        time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
         if result == 2:
-            print('Превышено предельное время cборки сети.')
+            print(f'{time_now} Превышено предельное время cборки сети.')
             net_compiles_amount -= 1
             continue
         if result == 1:
-            print('Успешная сборка сети')
+            print(f'{time_now} Успешная сборка сети')
             net_compiles_amount -= 1
 
         draw_imgs_count = draw_imgs_amount
@@ -263,11 +270,12 @@ def all_metrics_report_generate(id_report):
             )
             draw_imgs_report.save()
             result = drawed_images_report_generate(draw_imgs_report.id)
+            time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
             if result == 2:
-                print('Превышено предельное время отрисовки.')
+                print(f'{time_now} Превышено предельное время отрисовки.')
                 draw_imgs_count -= 1
             elif result == 1:
-                print('Успешная отрисовка')
+                print(f'{datetime} Успешная отрисовка')
                 draw_imgs_count -= 1
             else:
                 break
@@ -279,10 +287,12 @@ def all_metrics_report_generate(id_report):
 @app.task
 def compire_chaos_configs():
     chaoses = Chaos.objects.all()
+
     for chaos in chaoses:
+        time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
         errors = 0
         warnings = 0
-        print(f'Сравнение конфигурационных файлов для {chaos.name}({chaos.ip})')
+        print(f'{time_now} Сравнение конфигурационных файлов для {chaos.name}({chaos.ip})')
         compired_config = ''
         chaos_credentials = {'ip': chaos.ip,
                              'login': chaos.login,

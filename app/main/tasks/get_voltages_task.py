@@ -2,7 +2,7 @@ import django
 import os
 import sys
 import time
-import datetime
+from datetime import datetime
 import statistics
 from collections import deque
 sys.path.append("/app/web")
@@ -32,7 +32,7 @@ def get_full_voltage_statistics():
             get_voltage_try += 1
             if get_voltage_try % 60 == 0:
                 chaos_voltage_stats.append(current_voltage)
-                date_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                date_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 voltage_average = statistics.mean(chaos_voltage_stats)
                 voltage_min = min(chaos_voltage_stats)
                 voltage_max = max(chaos_voltage_stats)
