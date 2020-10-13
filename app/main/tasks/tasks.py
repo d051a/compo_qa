@@ -28,9 +28,9 @@ def get_current_stats():
             chaos.draw_percent = statistic.get_drawed_images_percent()
             chaos.date_time_update = timezone.localtime()
             chaos.save()
-            print(f'{time_now} {chaos.ip} is ONLINE. add stats to DB')
+            # print(f'{time_now} {chaos.ip} is ONLINE. add stats to DB')
         else:
-            print(f'{time_now} {chaos.ip} is OFFLINE. add chaos status to DB')
+            # print(f'{time_now} {chaos.ip} is OFFLINE. add chaos status to DB')
             set_db_object_attribute(chaos, 'status', 'OFFLINE')
 
 
