@@ -12,8 +12,13 @@ class MetricReportForm(ModelForm):
                   'fact_total_esl',
                   'draw_imgs_limit_mins',
                   'color',
+                  'draw_imgs_type',
                   'net_compile_limit_mins',
                   ]
+        DRAW_IMGS_TYPE_CHOICES = (
+            (1, 'HighLight'),
+            (2, 'СУМ')
+        )
         widgets = {
             'chaos': forms.Select(attrs={'class': 'form-control'}),
             'net_compile_amount': forms.NumberInput(attrs={'class': 'form-control'}),
@@ -22,7 +27,7 @@ class MetricReportForm(ModelForm):
             'net_compile_limit_mins': forms.NumberInput(attrs={'class': 'form-control'}),
             'draw_imgs_limit_mins': forms.NumberInput(attrs={'class': 'form-control'}),
             'color': forms.TextInput(attrs={'class': 'form-control'}),
-
+            'draw_imgs_type': forms.Select(choices=DRAW_IMGS_TYPE_CHOICES, attrs={'class': 'form-control'})
         }
 
 
@@ -72,14 +77,20 @@ class DrawImgsReportForm(ModelForm):
                   'metric_report',
                   'fact_total_esl',
                   'draw_imgs_limit_mins',
-                  'color'
+                  'color',
+                  'draw_imgs_type'
                   ]
+        DRAW_IMGS_TYPE_CHOICES = (
+            (1, 'HighLight'),
+            (2, 'СУМ')
+        )
         widgets = {
             'chaos': forms.Select(attrs={'class': 'form-control'}),
             'fact_total_esl': forms.TextInput(attrs={'class': 'form-control'}),
             'draw_imgs_limit_mins': forms.TextInput(attrs={'class': 'form-control'}),
             'color': forms.TextInput(attrs={'class': 'form-control'}),
             'metric_report': forms.HiddenInput(),
+            'draw_imgs_type': forms.Select(choices=DRAW_IMGS_TYPE_CHOICES, attrs={'class': 'form-control'})
         }
 
 
@@ -98,4 +109,5 @@ class NetCompileReportForm(ModelForm):
             'net_compile_limit_mins': forms.TextInput(attrs={'class': 'form-control'}),
             # 'net_compile_amount': forms.TextInput(attrs={'class': 'form-control'}),
             'metric_report': forms.HiddenInput(),
+
         }
