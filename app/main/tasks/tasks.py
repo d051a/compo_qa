@@ -7,7 +7,7 @@ from main.chaos_utils import ChaosStatisctic
 from main.models import NetCompileReport, DrawImgsReport, Chaos, MetricReport
 from main.tasks.tasks_tools import add_current_statistic_to_db, set_db_object_attribute, get_chaos_config,\
     net_compilation_init, net_compilation_get_statistics, draw_images_init, draw_images_get_statistics,\
-    create_net_compilation_report, create_draw_imgs_report
+    create_net_compilation_report, create_draw_imgs_report, draw_images_init_sum
 
 
 @app.task(autoretry_for=(Exception,))
@@ -56,8 +56,12 @@ def run_drawed_images_report_generate_task(id_report):
                          'password': db_chaos_object.password,
                          'port': db_chaos_object.ssh_port
                          }
-
-    draw_images_init_result = draw_images_init(chaos_credentials, db_draw_imgs_object)
+    if db_draw_imgs_object.draw_imgs_type == 'highlight':
+        draw_images_init_result = draw_images_init(chaos_credentials, db_draw_imgs_object)
+    elif db_draw_imgs_object.draw_imgs_type == 'sum':
+        draw_images_init_result = draw_images_init_sum(db_chaos_object, db_draw_imgs_object)
+    else:
+        return False
     if draw_images_init_result is False:
         return draw_images_init_result
     draw_images_result = draw_images_get_statistics(db_draw_imgs_object, db_chaos_object)
@@ -95,6 +99,7 @@ def run_all_metrics_report_generate_task(id_report):
             else:
                 break
     metric_report.date_time_finish = timezone.localtime()
+    metric_report.status = 'OK'
     metric_report.save()
     return True
 

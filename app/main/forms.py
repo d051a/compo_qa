@@ -16,8 +16,8 @@ class MetricReportForm(ModelForm):
                   'net_compile_limit_mins',
                   ]
         DRAW_IMGS_TYPE_CHOICES = (
-            (1, 'HighLight'),
-            (2, 'СУМ')
+            ('highlight', 'HighLight'),
+            ('sum', 'СУМ')
         )
         widgets = {
             'chaos': forms.Select(attrs={'class': 'form-control'}),
@@ -81,8 +81,8 @@ class DrawImgsReportForm(ModelForm):
                   'draw_imgs_type'
                   ]
         DRAW_IMGS_TYPE_CHOICES = (
-            (1, 'HighLight'),
-            (2, 'СУМ')
+            ('highlight', 'HighLight'),
+            ('sum', 'СУМ')
         )
         widgets = {
             'chaos': forms.Select(attrs={'class': 'form-control'}),
@@ -101,13 +101,11 @@ class NetCompileReportForm(ModelForm):
                   'metric_report',
                   'fact_total_esl',
                   'net_compile_limit_mins',
-                  # 'net_compile_amount',
                   ]
         widgets = {
             'chaos': forms.Select(attrs={'class': 'form-control'}),
             'fact_total_esl': forms.TextInput(attrs={'class': 'form-control'}),
             'net_compile_limit_mins': forms.TextInput(attrs={'class': 'form-control'}),
-            # 'net_compile_amount': forms.TextInput(attrs={'class': 'form-control'}),
             'metric_report': forms.HiddenInput(),
 
         }

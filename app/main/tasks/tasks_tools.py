@@ -194,6 +194,7 @@ def create_draw_imgs_report(metric_report):
         draw_imgs_limit_mins=metric_report.draw_imgs_limit_mins,
         draw_imgs_amount=metric_report.draw_imgs_amount,
         color=metric_report.color,
+        draw_imgs_type=metric_report.draw_imgs_type,
         status='ACTIVE',
     )
     draw_imgs_report.save()
@@ -566,6 +567,32 @@ def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object):
 
         elapsed_mins = (timezone.localtime() - start_time).total_seconds() / 60
         time.sleep(25)
+    return True
+
+
+def draw_images_init_sum(chaos, db_draw_imgs_object):
+    def change_goods_prices_in_file(input_file_path):
+        pass
+
+    def get_remote_dir_files_list(chaos, remote_dir):
+        files_list_command = f"ls -p {export_magnit_directory} | grep -v /"
+        response = utils.run_remote_command(chaos.ip, chaos.login, chaos.password, chaos.ssh_port, files_list_command)
+        if not response[0]:
+            return []
+        files_list = response[0].split('\n')
+        return files_list
+
+    def remove_files_on_host_by_filename(chaos, remote_dir_path, files_list):
+        for file_name in files_list:
+            command = f'echo {chaos.password}|sudo -S sudo rm {remote_dir_path + file_name}'
+            response = utils.run_remote_command(chaos.ip, chaos.login, chaos.password, chaos.ssh_port, command)
+
+
+    goods_prices_file_name = chaos.prices_file_name
+    goods_prices_local_file_path = chaos.prices_file_path
+    export_magnit_directory = '/var/Componentality/storesvc/qpstore/export_magnit/'
+    output_file_path = export_magnit_directory + goods_prices_file_name
+    utils.copy_file_over_ssh(chaos.ip, chaos.login, chaos.password, chaos.ssh_port, goods_prices_local_file_path, output_file_path)
     return True
 
 
