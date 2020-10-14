@@ -587,7 +587,6 @@ def draw_images_init_sum(chaos, db_draw_imgs_object):
             command = f'echo {chaos.password}|sudo -S sudo rm {remote_dir_path + file_name}'
             response = utils.run_remote_command(chaos.ip, chaos.login, chaos.password, chaos.ssh_port, command)
 
-
     goods_prices_file_name = chaos.prices_file_name
     goods_prices_local_file_path = chaos.prices_file_path
     export_magnit_directory = '/var/Componentality/storesvc/qpstore/export_magnit/'
