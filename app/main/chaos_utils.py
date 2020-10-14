@@ -295,7 +295,7 @@ class ChaosStatisctic:
         except ZeroDivisionError:
             return float(0)
 
-    def get_net_compilation_percent(self, ndigits=2) -> float: # ОКРУГЛЕНИЕ !!!!!!
+    def get_net_compilation_percent(self, ndigits=2) -> float:
         """
         Возвращает процент компиляции сети
         :param ndigits: количество знаков после запятой
@@ -320,13 +320,14 @@ class ChaosStatisctic:
             total_nodes = self.total_nodes
             inaccessible_nodes = self.inaccessible_nodes
             nodes_num = self.nodes_num
-            # net_compilation_percent = ((total_nodes - inaccessible_nodes - nodes_num) / (total_nodes - nodes_num)) * 100
-            real_total_nodes = total_nodes - nodes_num
-            net_compilation_percent = ((total_nodes - inaccessible_nodes - nodes_num) / (
-                        real_total_nodes - nodes_num)) * 100
+            net_compilation_percent = ((total_nodes - inaccessible_nodes - nodes_num) / (total_nodes - nodes_num)) * 100
+            # real_total_nodes = total_nodes - nodes_num
+            # net_compilation_percent = ((total_nodes - inaccessible_nodes - nodes_num) / (
+            #             real_total_nodes - nodes_num)) * 100
             return float(net_compilation_percent)
         except ZeroDivisionError:
             return float(0)
+
 
 class Utils:
     @staticmethod

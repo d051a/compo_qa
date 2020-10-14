@@ -6,7 +6,7 @@ from main.chaos_utils import Utils as utils
 from django.views.generic import DetailView, CreateView, ListView, UpdateView
 from django.urls import reverse_lazy, reverse
 from main.forms import ChaosForm, DrawImgsReportForm, NetCompileReportForm, MetricReportForm, ChaosEditForm
-from main.tasks.tasks import drawed_images_report_generate, net_compilation, all_metrics_report_generate
+from main.tasks.tasks import run_drawed_images_report_generate_task, run_net_compilation_task, run_all_metrics_report_generate_task
 from conf.celery import app
 from django.utils import timezone
 
@@ -72,7 +72,7 @@ def celery_metric_report_task_revoke(request, report_id):
     metrics_report.date_time_finish = timezone.localtime()
     metrics_report.status = status
     metrics_report.save()
-    return HttpResponseRedirect(reverse('main:net_compiles_list'))
+    return HttpResponseRedirect(reverse('main:metrics_list'))
 
 
 def get_chaos_config(request, pk):
@@ -162,7 +162,7 @@ class MetricReportCreate(CreateView):
 
     def form_valid(self, form):
         form.save()
-        task = all_metrics_report_generate.delay(form.instance.id)
+        task = run_all_metrics_report_generate_task.delay(form.instance.id)
         redirect_url = super().form_valid(form)
         metric_report = MetricReport.objects.get(pk=form.instance.id)
         metric_report.task_id = task.id
@@ -204,7 +204,7 @@ class DrawImgsReportCreate(CreateView):
 
     def form_valid(self, form):
         form.save()
-        task = drawed_images_report_generate.delay(form.instance.id)
+        task = run_drawed_images_report_generate_task.delay(form.instance.id)
         redirect_url = super().form_valid(form)
         draw_imgs_report = DrawImgsReport.objects.get(pk=form.instance.id)
         draw_imgs_report.status = 'ACTIVE'
@@ -222,8 +222,7 @@ class NetCompiliesReportCreate(CreateView):
 
     def form_valid(self, form):
         form.save()
-        net_compilation.delay(form.instance.id)
-        task = net_compilation.delay(form.instance.id)
+        task = run_net_compilation_task.delay(form.instance.id)
         redirect_url = super().form_valid(form)
         net_compilation_report = NetCompileReport.objects.get(pk=form.instance.id)
         net_compilation_report.status = 'ACTIVE'
