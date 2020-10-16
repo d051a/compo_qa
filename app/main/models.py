@@ -66,6 +66,7 @@ class Chaos(models.Model):
     multimeter_ip = models.GenericIPAddressField('IP-адрес мультиметра',
                                                  protocol='IPv4', unpack_ipv4=False, blank=True, null=True)
     bat_reserved = models.BooleanField('Отслеживать bat_reserved', default=False, blank=True, null=True)
+    dat_file = models.FileField('.dat файл выгрузки товаров и цен', blank=True, null=True)
 
     class Meta:
         ordering = ["name"]

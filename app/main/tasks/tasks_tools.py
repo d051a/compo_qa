@@ -2,11 +2,14 @@ import time
 import requests
 import json
 import pyvisa
+import os
 from main.models import NetCompilationStat, DrawImgsStat, Statistic, NetCompileReport, DrawImgsReport, Chaos
 from datetime import datetime
 from main.chaos_utils import Utils as utils
 from django.utils import timezone
 from main.chaos_utils import ChaosStatisctic
+from conf.settings import BASE_DIR, MEDIA_ROOT
+from main.tasks.change_price import dat_file_change_prices
 
 
 def check_host_alive(chaos_ip, slave_ip, slave_port):
@@ -570,28 +573,55 @@ def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object):
     return True
 
 
-def draw_images_init_sum(chaos, db_draw_imgs_object):
-    def change_goods_prices_in_file(input_file_path):
-        pass
-
+def draw_images_init_sum(chaos):
     def get_remote_dir_files_list(chaos, remote_dir):
-        files_list_command = f"ls -p {export_magnit_directory} | grep -v /"
+        print(f'INFO: получение списка файлов на устройстве {chaos.ip}...')
+        files_list_command = f"ls -p {remote_dir} | grep -v /"
         response = utils.run_remote_command(chaos.ip, chaos.login, chaos.password, chaos.ssh_port, files_list_command)
         if not response[0]:
             return []
         files_list = response[0].split('\n')
+        print(f'INFO: получен список файлов на устройстве {chaos.ip}...')
         return files_list
 
+    def check_exist_files_by_name(file_names_list, search_name):
+        find_files = []
+        for file_name in file_names_list:
+            find_file = file_name.find(search_name)
+            if find_file != -1:
+                find_files.append(file_name)
+        return find_files
+
     def remove_files_on_host_by_filename(chaos, remote_dir_path, files_list):
+        print(f'INFO: ининиация удаления файлов на устройстве {chaos.ip}')
         for file_name in files_list:
             command = f'echo {chaos.password}|sudo -S sudo rm {remote_dir_path + file_name}'
             response = utils.run_remote_command(chaos.ip, chaos.login, chaos.password, chaos.ssh_port, command)
+        return False
 
-    goods_prices_file_name = chaos.prices_file_name
-    goods_prices_local_file_path = chaos.prices_file_path
-    export_magnit_directory = '/var/Componentality/storesvc/qpstore/export_magnit/'
-    output_file_path = export_magnit_directory + goods_prices_file_name
-    utils.copy_file_over_ssh(chaos.ip, chaos.login, chaos.password, chaos.ssh_port, goods_prices_local_file_path, output_file_path)
+    def make_flg_on_remote_host(chaos, remote_dir_path, file_name):
+        path_to_flg_file = remote_dir_path + file_name + '.txt'
+        command = f"echo {chaos.password}|sudo -S sudo touch {path_to_flg_file}"
+        response = utils.run_remote_command(chaos.ip, chaos.login, chaos.password, chaos.ssh_port, command)
+        print(f'INFO: успешное создание flg-файла на устройства {chaos.ip}')
+        return True
+
+    remote_directory = '/var/Componentality/storesvc/qpstore/export_magnit/'
+    dat_file_name = chaos.dat_file.name
+    dat_file_name_wo_expansion = dat_file_name.split('.')[0]
+    local_dat_file_dir = os.path.join(BASE_DIR, MEDIA_ROOT)
+    local_dat_file_full_path = local_dat_file_dir + chaos.dat_file.name
+    local_dat_new_file_path = f'{local_dat_file_dir}{dat_file_name_wo_expansion}_tmp.dat'
+    remote_dat_file_path = remote_directory + dat_file_name
+
+    change_prices_result = dat_file_change_prices(local_dat_file_full_path, local_dat_new_file_path)
+    files_list = get_remote_dir_files_list(chaos, remote_directory)
+    filtered_files = check_exist_files_by_name(files_list, dat_file_name_wo_expansion)
+    remove_files_result = remove_files_on_host_by_filename(chaos, remote_directory, filtered_files)
+    copy_dat_file_result = utils.copy_file_over_ssh(chaos.ip, chaos.login, chaos.password, chaos.ssh_port,
+                                                    local_dat_new_file_path, remote_dat_file_path)
+    remove_dat_tmp_file_pesult = os.remove(local_dat_new_file_path)
+    make_flg_file_result = make_flg_on_remote_host(chaos, remote_directory, dat_file_name_wo_expansion)
     return True
 
 

@@ -10,7 +10,7 @@
              <h4>Изменение данных устройства {{ object.name }}</h4>
             </p>
         <div class = "col-md-12 justify-content-sm-center">
-            <form action="" method="POST">
+            <form enctype="multipart/form-data" action="" method="POST">
                 {% csrf_token %}
                 {{ form.as_table }}
                  <p></p>

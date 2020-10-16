@@ -335,7 +335,6 @@ class Utils:
         """Возвращает текущее время"""
         return datetime.datetime.now()
 
-
     @staticmethod
     def get_time_delta(current_time, start_time, output_format) -> str:
         def correct_num_format(num):

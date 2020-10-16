@@ -14,13 +14,13 @@ status = 'FAIL: Задача была остановлена. В процесс�
 date_time = timezone.localtime()
 print(f'{time_now} Запущен процесс очистки Celery task IDs для объектов БД...')
 try:
-    metric_report_with_task_id = MetricReport.objects.exclude(task_id='').update(
+    metric_report_with_task_id = MetricReport.objects.exclude(task_id='').exclude(task_id=None).update(
         task_id='', status=status, date_time_finish=date_time)
     print(f'{time_now} Завершен процесс очистки task IDs для объектов MetricReports')
-    draw_imgs_report_with_task_id = DrawImgsReport.objects.exclude(task_id='').update(
+    draw_imgs_report_with_task_id = DrawImgsReport.objects.exclude(task_id='').exclude(task_id=None).update(
         task_id='', status=status, date_time_finish=date_time)
     print(f'{time_now} Завершен процесс очистки task IDs для объектов DrawImgsReports')
-    net_compile_with_task_id = NetCompileReport.objects.exclude(task_id='').update(
+    net_compile_with_task_id = NetCompileReport.objects.exclude(task_id='').exclude(task_id=None).update(
         task_id='', status=status, date_time_finish=date_time)
     print(f'{time_now} Завершен процесс очистки task IDs для объектов NetCompileReports')
 except:

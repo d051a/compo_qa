@@ -1,6 +1,8 @@
 from . import views, views_tables
 from main.excel_reports import views_excel
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 app_name = 'main'
@@ -41,4 +43,4 @@ urlpatterns = [
     path('netcompiles/<int:report_id>/task_terminate', views.celery_net_compilation_task_revoke, name='net_task_terminate'),
     path('metrics/<int:report_id>/task_terminate', views.celery_metric_report_task_revoke, name='metric_task_terminate'),
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

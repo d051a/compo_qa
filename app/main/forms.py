@@ -50,7 +50,8 @@ class ChaosEditForm(ChaosForm):
     class Meta:
         model = Chaos
         fields = ['name', 'ip', 'port', 'ssh_port', 'login',
-                  'password', 'description', 'config', 'monitoring_config_params', 'multimeter_ip', 'bat_reserved']
+                  'password', 'description', 'config', 'monitoring_config_params',
+                  'multimeter_ip', 'bat_reserved', 'dat_file']
         TRUE_FALSE_CHOICES = (
             (True, 'Да'),
             (False, 'Нет')
@@ -66,7 +67,8 @@ class ChaosEditForm(ChaosForm):
             'config': forms.TextInput(attrs={'class': 'form-control'}),
             'monitoring_config_params': forms.TextInput(attrs={'class': 'form-control'}),
             'multimeter_ip': forms.TextInput(attrs={'class': 'form-control'}),
-            'bat_reserved': forms.Select(choices=TRUE_FALSE_CHOICES, attrs={'class': 'form-control'})
+            'bat_reserved': forms.Select(choices=TRUE_FALSE_CHOICES, attrs={'class': 'form-control'}),
+            'dat_file': forms.ClearableFileInput(attrs={'class': 'form-control-file'})
         }
 
 

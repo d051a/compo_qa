@@ -59,7 +59,7 @@ def run_drawed_images_report_generate_task(id_report):
     if db_draw_imgs_object.draw_imgs_type == 'highlight':
         draw_images_init_result = draw_images_init(chaos_credentials, db_draw_imgs_object)
     elif db_draw_imgs_object.draw_imgs_type == 'sum':
-        draw_images_init_result = draw_images_init_sum(db_chaos_object, db_draw_imgs_object)
+        draw_images_init_result = draw_images_init_sum(db_chaos_object)
     else:
         return False
     if draw_images_init_result is False:
