@@ -10,9 +10,11 @@ def read_file(filename):
     try:
         with open(filename, 'r', encoding='utf-8')as f:
             lines = f.readlines()
+            return lines
     except:
         traceback.print_exc()
-    return lines
+        print('Не удалось прочитать файл')
+        return False
 
 
 def add_lines_to_file(file_path, lines):
