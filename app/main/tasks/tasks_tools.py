@@ -600,7 +600,7 @@ def draw_images_init_sum(chaos):
         return False
 
     def make_flg_on_remote_host(chaos, remote_dir_path, file_name):
-        path_to_flg_file = remote_dir_path + file_name + '.txt'
+        path_to_flg_file = remote_dir_path + file_name + '.flg'
         command = f"echo {chaos.password}|sudo -S sudo touch {path_to_flg_file}"
         response = utils.run_remote_command(chaos.ip, chaos.login, chaos.password, chaos.ssh_port, command)
         print(f'INFO: успешное создание flg-файла на устройства {chaos.ip}')
