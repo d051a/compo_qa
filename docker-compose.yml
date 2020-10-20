@@ -80,6 +80,7 @@ services:
     command: celery -A conf beat -l INFO
     volumes:
       - ./app:/app/web
+      - ./mediafiles:/app/web/mediafiles
     env_file:
       - envs/dev/.env.dev
     depends_on:

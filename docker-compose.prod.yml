@@ -53,6 +53,7 @@ services:
     command: celery -A conf worker -l INFO
     volumes:
       - ./app:/app/web
+      - ./mediafiles:/app/web/mediafiles
     env_file:
       - envs/prod/.env.prod
     depends_on:
@@ -63,6 +64,7 @@ services:
     command: celery -A conf beat -l INFO
     volumes:
       - ./app:/app/web
+      - ./mediafiles:/app/web/mediafiles
     env_file:
       - envs/prod/.env.prod
     depends_on:
