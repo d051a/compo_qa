@@ -48,13 +48,19 @@ def dat_file_change_prices(input_file_path, output_file_path):
     input_lines = read_file(input_file_path)
     output_lines = []
     random_price_num = random.randint(0, len(prices) - 1)
-    for line in input_lines:
-        new_price = prices[random_price_num]
-        string_with_new_price = chage_price_in_string(line, new_price)
-        output_lines.append(string_with_new_price)
-    add_lines_to_file(output_file_path, output_lines)
-    print('INFO: Успешное завершение обработки dat-файла')
-    return True
+    try:
+        for line in input_lines:
+            new_price = prices[random_price_num]
+            string_with_new_price = chage_price_in_string(line, new_price)
+            output_lines.append(string_with_new_price)
+        add_lines_to_file(output_file_path, output_lines)
+        print('INFO: Успешное завершение обработки dat-файла')
+        return True
+    except Exception as error:
+        print(f'Не удалось изменить цены в файле {input_file_path}. Ошибка: ')
+        print(error)
+        return False
+
 
 
 if __name__ == '__main__':

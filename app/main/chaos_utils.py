@@ -415,9 +415,10 @@ class Utils:
         try:
             ssh = Utils.get_ssh_connection(ip_address, user_name, password, port)
             Utils.sftp_transfer_file(ssh, localpath_to_file, remotepath_to_file)
+            return True
         except:
             print(f'Что-то пошло не так. Файлы не скопированы!')
-            return 1
+            return False
 
     @staticmethod
     def zip_file(files_paths: list) -> str:

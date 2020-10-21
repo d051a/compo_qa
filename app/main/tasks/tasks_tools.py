@@ -594,17 +594,27 @@ def draw_images_init_sum(chaos):
 
     def remove_files_on_host_by_filename(chaos, remote_dir_path, files_list):
         print(f'INFO: ининиация удаления файлов на устройстве {chaos.ip}')
-        for file_name in files_list:
-            command = f'echo {chaos.password}|sudo -S sudo rm {remote_dir_path + file_name}'
-            response = utils.run_remote_command(chaos.ip, chaos.login, chaos.password, chaos.ssh_port, command)
-        return False
+        try:
+            for file_name in files_list:
+                command = f'echo {chaos.password}|sudo -S sudo rm {remote_dir_path + file_name}'
+                response = utils.run_remote_command(chaos.ip, chaos.login, chaos.password, chaos.ssh_port, command)
+            return True
+        except Exception as error:
+            print('Что-то пошло не так в процессе удаления dat-файлов')
+            print(error)
+            return False
 
     def make_flg_on_remote_host(chaos, remote_dir_path, file_name):
         path_to_flg_file = remote_dir_path + file_name + '.flg'
         command = f"echo {chaos.password}|sudo -S sudo touch {path_to_flg_file}"
-        response = utils.run_remote_command(chaos.ip, chaos.login, chaos.password, chaos.ssh_port, command)
-        print(f'INFO: успешное создание flg-файла на устройства {chaos.ip}')
-        return True
+        try:
+            response = utils.run_remote_command(chaos.ip, chaos.login, chaos.password, chaos.ssh_port, command)
+            print(f'INFO: успешное создание flg-файла на устройства {chaos.ip}')
+            return True
+        except Exception as error:
+            print(f'INFO: Не удалось создать flg-файла на устройстве {chaos.ip}')
+            print(error)
+            return False
 
     remote_directory = '/var/Componentality/storesvc/qpstore/export_magnit/'
     dat_file_name = chaos.dat_file.name
@@ -615,13 +625,22 @@ def draw_images_init_sum(chaos):
     remote_dat_file_path = remote_directory + dat_file_name
 
     change_prices_result = dat_file_change_prices(local_dat_file_full_path, local_dat_new_file_path)
+    if not change_prices_result:
+        return False
     files_list = get_remote_dir_files_list(chaos, remote_directory)
     filtered_files = check_exist_files_by_name(files_list, dat_file_name_wo_expansion)
     remove_files_result = remove_files_on_host_by_filename(chaos, remote_directory, filtered_files)
+    if not remove_files_result:
+        return False
     copy_dat_file_result = utils.copy_file_over_ssh(chaos.ip, chaos.login, chaos.password, chaos.ssh_port,
                                                     local_dat_new_file_path, remote_dat_file_path)
-    remove_dat_tmp_file_pesult = os.remove(local_dat_new_file_path)
+    if not copy_dat_file_result:
+        return False
+    os.remove(local_dat_new_file_path)
+    time.sleep(5)
     make_flg_file_result = make_flg_on_remote_host(chaos, remote_directory, dat_file_name_wo_expansion)
+    if not make_flg_file_result:
+        return False
     return True
 
 

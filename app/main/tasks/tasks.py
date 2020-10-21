@@ -72,7 +72,7 @@ def run_drawed_images_report_generate_task(id_report):
 def run_all_metrics_report_generate_task(id_report):
     metric_report = MetricReport.objects.get(pk=id_report)
     net_compiles_amount = metric_report.net_compile_amount
-    draw_imgs_count = metric_report.draw_imgs_amount
+    draw_imgs_amount = metric_report.draw_imgs_amount
 
     while net_compiles_amount != 0:
         net_compilation_report = create_net_compilation_report(metric_report)
@@ -86,6 +86,7 @@ def run_all_metrics_report_generate_task(id_report):
             print(f'{time_now} Успешная сборка сети')
             net_compiles_amount -= 1
 
+        draw_imgs_count = draw_imgs_amount
         while draw_imgs_count != 0:
             draw_imgs_report = create_draw_imgs_report(metric_report)
             result = run_drawed_images_report_generate_task(draw_imgs_report.id)
