@@ -48,9 +48,9 @@
             <li><a class="dropdown-item" href="{% url 'main:drawed_list' %}">Отрисовки ценников</a></li>
             <li><a class="dropdown-item dropdown-toggle" href="{% url 'main:chaoses_list' %}">Служебные</a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="http://{{ request.get_host }}:3000/">Grafana</a></li>
-                <li><a class="dropdown-item" href="http://{{ request.get_host }}:4444/">pgAdmin</a></li>
-                <li><a class="dropdown-item" href="http://{{ request.get_host }}:5555/">Flower(мониторинг задач)</a></li>
+                <li><a class="dropdown-item" href="http://{{ request.get_host }}:3000/" target="_blank">Grafana</a></li>
+                <li><a class="dropdown-item" href="http://{{ request.get_host }}:4444/" target="_blank">pgAdmin</a></li>
+                <li><a class="dropdown-item" href="http://{{ request.get_host }}:5555/" target="_blank">Flower(мониторинг задач)</a></li>
               </ul>
             </li>
           </ul>
