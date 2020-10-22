@@ -30,6 +30,8 @@
             <b>Тип отрисовки ценников:</b> {% if object.draw_imgs_type == 'sum' %}СУМ{% elif object.draw_imgs_type == 'highlight' %}HighLight{% endif %}<br>
             <b>Статус:</b> {{ object.status }}<br>
         </p>
+        {% if object.chaos.grafana_dashboard_url %}<a href="{{ object.chaos.grafana_dashboard_url }}?orgId=1&from={{ object.create_date_time|date:"U" }}000&to={% if object.date_time_finish%}{{ object.date_time_finish|date:"U" }}000{% else %}now{% endif %}" class="btn btn-primary" role="button" target="_blank">Графики (Grafana)</a>{% endif %}
+        </p>
         <form action="{% url 'main:export_report_data_to_xlsx' object.pk %}">
             <button type="submit" class="btn btn-success">Общий отчет в Excel</button>
         </form>

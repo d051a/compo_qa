@@ -67,6 +67,7 @@ class Chaos(models.Model):
                                                  protocol='IPv4', unpack_ipv4=False, blank=True, null=True)
     bat_reserved = models.BooleanField('Отслеживать bat_reserved', default=False, blank=True, null=True)
     dat_file = models.FileField('.dat файл выгрузки товаров и цен', blank=True, null=True)
+    grafana_dashboard_url = models.CharField('URL дашборда в Grafana', max_length=200, blank=True, null=True)
 
     class Meta:
         ordering = ["name"]

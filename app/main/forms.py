@@ -51,7 +51,7 @@ class ChaosEditForm(ChaosForm):
         model = Chaos
         fields = ['name', 'ip', 'port', 'ssh_port', 'login',
                   'password', 'description', 'config', 'monitoring_config_params',
-                  'multimeter_ip', 'bat_reserved', 'dat_file']
+                  'multimeter_ip', 'bat_reserved', 'grafana_dashboard_url', 'dat_file', ]
         TRUE_FALSE_CHOICES = (
             (True, 'Да'),
             (False, 'Нет')
@@ -68,7 +68,8 @@ class ChaosEditForm(ChaosForm):
             'monitoring_config_params': forms.TextInput(attrs={'class': 'form-control'}),
             'multimeter_ip': forms.TextInput(attrs={'class': 'form-control'}),
             'bat_reserved': forms.Select(choices=TRUE_FALSE_CHOICES, attrs={'class': 'form-control'}),
-            'dat_file': forms.ClearableFileInput(attrs={'class': 'form-control-file'})
+            'dat_file': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+            'grafana_dashboard_url': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
 

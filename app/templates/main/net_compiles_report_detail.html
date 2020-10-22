@@ -26,6 +26,8 @@
             <b>Предельное время сборки сети (мин):</b> {{ object.net_compile_limit_mins }}<br>
             <b>Статус:</b> {{ object.status }}<br>
         </p>
+        {% if object.chaos.grafana_dashboard_url %}<a href="{{ object.chaos.grafana_dashboard_url }}?orgId=1&from={{ object.create_date_time|date:"U" }}000&to={% if object.date_time_finish%}{{ object.date_time_finish|date:"U" }}000{% else %}now{% endif %}" class="btn btn-primary" role="button" target="_blank">Графики (Grafana)</a>{% endif %}
+        </p>
         <table id="net_compile_stats" class="datatable row-border" style="width:100;">
             <thead>
                 <tr>
