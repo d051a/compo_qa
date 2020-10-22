@@ -30,7 +30,7 @@ $(document).ready(function() {
           infoFiltered:   "(Отфильтровано из _MAX_ позиций)",
           infoPostFix:    "",
           loadingRecords: "Chargement en cours...",
-          zeroRecords:    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+          zeroRecords:    "Нет данных",
           emptyTable:     "Нет данных",
           paginate: {
                 first:      "Первый",
@@ -63,7 +63,7 @@ $(document).ready(function() {
           infoFiltered:   "(Отфильтровано из _MAX_ позиций)",
           infoPostFix:    "",
           loadingRecords: "Chargement en cours...",
-          zeroRecords:    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+          zeroRecords:    "Нет данных",
           emptyTable:     "Нет данных",
           paginate: {
                 first:      "Первый",

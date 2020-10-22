@@ -29,13 +29,13 @@
                 <tr>
                     <th>-</th>
                     <th>Имя</th>
-                    <th>IP-адрес</th>
+                    <th>СУМ</th>
+                    <th>get_statistics</th>
                     <th>Статус</th>
                     <th>ESL (всего)</th>
                     <th>Images succeeded</th>
                     <th>ESL отрисовано (%)</th>
                     <th>Сборка сети (%)</th>
-{#                    <th>Описание</th>#}
                     <th>Вольтаж</th>
                     <th>bat_reserved</th>
                     <th>Конфиг</th>
@@ -53,15 +53,15 @@
                       {% elif chaos.status == 'OK' %}
                           class="table-success"
                       {% endif %}>
-                    <td>{{ forloop.counter }}</td>
-                    <td><a href="{% url 'main:chaos_detail' chaos.pk %}">{{ chaos.name }}</a></td>
-                    <td>{{ chaos.ip }}</td>
+                    <td align="center">{{ forloop.counter }}</td>
+                    <td align="center"><a href="{% url 'main:chaos_detail' chaos.pk %}">{{ chaos.name }}</a></td>
+                    <td align="center"><a href="http://{{ chaos.ip }}" target="_blank">{{ chaos.ip }}</a></td>
+                    <td align="center"><a href="http://{{ chaos.ip }}:{{ chaos.port }}/get_statistics" target="_blank">get_stats</a></td>
                     <td align="center">{{ chaos.status }}</td>
                     <td align="center">{{ chaos.esl_total }}</td>
                     <td align="center">{{ chaos.images_succeeded }}</td>
                     <td align="center">{{ chaos.draw_percent }}</td>
                     <td align="center">{{ chaos.net_percent }}</td>
-{#                    <td>{% if chaos.description %}{{ chaos.description }}{% endif %}</td>#}
                     <td align="center">{% if chaos.multimeter_ip %}<img src="/staticfiles/base_svg/bolt.svg" alt="" width=20>{% else %}-{% endif %}</td>
                     <td align="center">{% if chaos.bat_reserved %}<img src="/staticfiles/base_svg/check.svg" alt="" width=20>{% else %}-{% endif %}</td>
                     <td align="center"><span class="badge badge-pill badge-danger">{{ chaos.compired_config_errs }}</span> <span class="badge badge-pill badge-warning">{{ chaos.compired_config_warns }}</span></td>
