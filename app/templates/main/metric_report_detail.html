@@ -23,10 +23,11 @@
             <b>Дата и время начала снятия метрик:</b> {{ object.create_date_time }}<br>
             <b>Дата и время окончания снятия метрик:</b> {{ object.date_time_finish }}<br>
             <b>Количество сборок сети:</b> {{ object.net_compile_amount }}<br>
-            <b>Количество отрисовок ценников:</b> {{ object.draw_imgs_amount }}<br>
+            <b>Количество отрисовок ценников после каждой сборки:</b> {{ object.draw_imgs_amount }}<br>
             <b>Предельное время отрисовки ценников (мин):</b> {{ object.draw_imgs_limit_mins }}<br>
             <b>Предельное время сборки сети (мин):</b> {{ object.net_compile_limit_mins }}<br>
             <b>Фактическое количество ESL:</b> {{ object.fact_total_esl }}<br>
+            <b>Тип отрисовки ценников:</b> {% if object.draw_imgs_type == 'sum' %}СУМ{% elif object.draw_imgs_type == 'highlight' %}HighLight{% endif %}<br>
             <b>Статус:</b> {{ object.status }}<br>
         </p>
         <form action="{% url 'main:export_report_data_to_xlsx' object.pk %}">

@@ -457,7 +457,8 @@ def net_compilation_get_statistics(net_compile_report, db_chaos_object):
         net_compilation_percent = get_net_compilation_percent(current_chaos_statistic_data,
                                                               net_compile_report.fact_total_esl)
 
-        if elapsed_mins >= net_compilation_time_points[compilation_time_current_step]:
+        if elapsed_mins >= net_compilation_time_points[compilation_time_current_step] \
+                and compilation_time_current_step <= len(net_compilation_time_points)-1:
             set_db_object_attribute(net_compile_report,
                                     f't{net_compilation_percent_steps[compilation_time_current_step]}',
                                     current_chaos_statistic_data.get_true_net_compilation_percent())
@@ -543,7 +544,8 @@ def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object):
               f'Отрисовано: {current_chaos_statistic_data.images_succeeded} '
               f'Процент шага: {drawed_percent_points[drawed_percent_current_step]}')
 
-        if elapsed_mins >= drawed_time_points[drawed_time_current_step]:
+        if elapsed_mins >= drawed_time_points[drawed_time_current_step]\
+                and drawed_time_current_step <= len(drawed_time_points)-1:
             set_db_object_attribute(db_draw_imgs_object,
                                     f't{drawed_time_points[drawed_time_current_step]}',
                                     current_chaos_statistic_data.get_drawed_images_percent())

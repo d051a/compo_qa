@@ -72,6 +72,10 @@ def celery_metric_report_task_revoke(request, report_id):
     metrics_report.date_time_finish = timezone.localtime()
     metrics_report.status = status
     metrics_report.save()
+    net_compile_report = NetCompileReport.objects.filter(status='ACTIVE').filter(metric_report=metrics_report)
+    draw_imgs_report = DrawImgsReport.objects.filter(status='ACTIVE').filter(metric_report=metrics_report)
+    net_compile_report.update(date_time_finish=timezone.localtime(), status=status)
+    draw_imgs_report.update(date_time_finish=timezone.localtime(), status=status)
     return HttpResponseRedirect(reverse('main:metrics_list'))
 
 

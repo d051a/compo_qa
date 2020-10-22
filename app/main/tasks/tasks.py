@@ -97,6 +97,8 @@ def run_all_metrics_report_generate_task(id_report):
             elif result == 1:
                 print(f'{datetime} Успешная отрисовка')
                 draw_imgs_count -= 1
+            elif result == 3:
+                print(f'{datetime} Ошибка в процессе выполнения скрипта')
             else:
                 break
     metric_report.date_time_finish = timezone.localtime()
