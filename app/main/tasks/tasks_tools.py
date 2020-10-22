@@ -478,7 +478,7 @@ def net_compilation_get_statistics(net_compile_report, db_chaos_object):
             compilation_percent_current_step += 1
 
         if elapsed_mins > net_compile_limit_mins:
-            status = f'{time_now} Превышено предельное время сборки сети: {net_compile_limit_mins} мин.'
+            status = f'Превышено предельное время сборки сети: {net_compile_limit_mins} мин.'
             save_net_compilation_final_status_and_data(net_compile_report, status, net_compilation_percent)
             return 2
 
