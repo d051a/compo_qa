@@ -10,14 +10,17 @@ from main.tasks.tasks_tools import add_current_statistic_to_db, set_db_object_at
     create_net_compilation_report, create_draw_imgs_report, draw_images_init_sum
 
 
-@app.task(autoretry_for=(Exception,))
+@app.task()
 def run_get_current_stats_task():
     chaoses = Chaos.objects.all()
     for chaos in chaoses:
         statistic = ChaosStatisctic(ip=chaos.ip)
         time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
         if statistic.text != 'None':
-            add_current_statistic_to_db(chaos, statistic)
+            try:
+                add_current_statistic_to_db(chaos, statistic)
+            except Exception as error:
+                print(error)
             chaos.status = 'OK'
             chaos.esl_total = statistic.total_esl
             chaos.images_succeeded = statistic.images_succeeded
@@ -102,6 +105,7 @@ def run_all_metrics_report_generate_task(id_report):
             else:
                 break
     metric_report.date_time_finish = timezone.localtime()
+    metric_report.task_id = ''
     metric_report.status = 'OK'
     metric_report.save()
     return True

@@ -205,7 +205,6 @@ def create_draw_imgs_report(metric_report):
     return draw_imgs_report
 
 
-
 def get_fact_percent(dividend, fact_total_esl):
     fact_percent = (dividend / fact_total_esl) * 100
     return float(f"{fact_percent:.2f}")
@@ -437,16 +436,13 @@ def net_compilation_get_statistics(net_compile_report, db_chaos_object):
 
     while True:
         time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
-        print(f'{time_now} Получение новых данных c {db_chaos_object.ip} о cборке сети!')
+        print(f'Получение новых данных c {db_chaos_object.ip} о cборке сети!')
 
         current_chaos_statistic_data = ChaosStatisctic(ip=db_chaos_object.ip)
         current_time = timezone.localtime()
         elapsed_time = utils.get_time_delta(current_time,
                                             net_compile_report.create_date_time,
                                             "{hours}:{minutes}:{seconds}")
-
-        print(f'{time_now} Прошло минут с начала сборки: {elapsed_mins} '
-              f'Ценников онлайн: {current_chaos_statistic_data.online_esl} Предельное время: {net_compile_limit_mins}')
 
         if net_compile_report.metric_report:
             add_current_statistic_to_db(db_chaos_object,
@@ -458,6 +454,11 @@ def net_compilation_get_statistics(net_compile_report, db_chaos_object):
 
         net_compilation_percent = get_net_compilation_percent(current_chaos_statistic_data,
                                                               net_compile_report.fact_total_esl)
+
+        print(f'Прошло минут с начала сборки: {elapsed_mins} '
+              f'Ценников онлайн: {current_chaos_statistic_data.online_esl} '
+              f'Предельное время: {net_compile_limit_mins} '
+              f'Текущий % сборки сети: {net_compilation_percent}')
 
         if elapsed_mins >= net_compilation_time_points[compilation_time_current_step] \
                 and compilation_time_current_step <= len(net_compilation_time_points)-1:
