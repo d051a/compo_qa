@@ -3,6 +3,33 @@ from django.core.validators import RegexValidator
 from django.utils import timezone
 
 
+# class Version(models.Model):
+#     title = models.CharField('Именование версии', max_length=50, blank=True, null=True)
+#     chaos = models.ForeignKey('Chaos', on_delete=models.CASCADE, verbose_name='Стенд', null=True)
+#     total_esl = models.IntegerField('Количество ценников стенда, шт', blank=True, null=True)
+#     shields_num = models.CharField('Номера щитов', max_length=50, blank=True, null=True)
+#     dd_nums = models.CharField('Количество РУ, шт', max_length=150, blank=True, null=True)
+#     dd_configuration = models.CharField('Конфигурация РУ', max_length=150, blank=True, null=True)
+#     dd_dongles_num = models.IntegerField('Количество донглов на РУ, шт', blank=True, null=True)
+#     hardware_config = models.CharField('Конфигурация системы', max_length=300, blank=True, null=True)
+#     version_sum = models.CharField('Версия СУМ', max_length=30, blank=True, null=True)
+#     version_chaos = models.CharField('Версия Хаоса', max_length=30, blank=True, null=True)
+#     chaos_configuration = models.CharField('Конфигурация Хаоса', max_length=100, blank=True, null=True)
+#     tree_floor_num = models.IntegerField('Число этажей дерева', blank=True, null=True)
+#     version_driver = models.CharField('Версия драйвера', max_length=30, blank=True, null=True)
+#     version_esl_firmware = models.CharField('Версия прошивки ЭЦ', max_length=30, blank=True, null=True)
+#     version_esl_hw = models.CharField('HW версия ЭЦ', max_length=30, blank=True, null=True)
+#     version_dongles_hw = models.CharField('HW версия донглов', max_length=30, blank=True, null=True)
+#
+#     class Meta:
+#         ordering = ["-pk"]
+#         verbose_name = "Версия"
+#         verbose_name_plural = "Версии"
+#
+#     def __str__(self):
+#         return f'{self.title}'
+
+
 class Statistic(models.Model):
     chaos = models.ForeignKey('Chaos', on_delete=models.CASCADE, verbose_name='Хаос', null=True)
     metric_report = models.ForeignKey('MetricReport', on_delete=models.CASCADE, verbose_name='Отчет метрик', null=True)
@@ -55,7 +82,8 @@ class Chaos(models.Model):
     images_succeeded = models.CharField('Images succeeded', max_length=20, blank=True, null=True)
     net_percent = models.CharField('Сборка сети (%)', max_length=50, blank=True, null=True)
     draw_percent = models.CharField('Отрисовка (%)', max_length=50, blank=True, null=True)
-    date_time_update = models.DateTimeField('Время обновления данных', default=timezone.localtime, blank=True, null=True)
+    date_time_update = models.DateTimeField('Время обновления данных',
+                                            default=timezone.localtime, blank=True, null=True)
     config = models.TextField('Текущий конфиг хаоса', blank=True, null=True)
     monitoring_config_params = models.TextField('Отслеживаемые поля конфига', blank=True, null=True)
     compired_config = models.TextField('Результат сравнения конфигов', blank=True, null=True)
@@ -152,7 +180,6 @@ class NetCompileReport(models.Model):
     success_percent = models.FloatField('Считать сборку успешной при, %', default=100, blank=True, null=True)
     task_id = models.CharField('Celery task ID', max_length=200, blank=True, null=True)
 
-
     class Meta:
         ordering = ["-pk"]
         verbose_name = "Отчет сборки сети"
@@ -182,8 +209,10 @@ class MetricReport(models.Model):
                              validators=[RegexValidator(regex='^[WBR]{3}$',
                                                         message='Длина строки должна равняться любым 3 символам: R,B,W',
                                                         code='nomatch')],)
-    net_inactive_time = models.IntegerField('Предельное время бездействия сборки сети', default=30, blank=True, null=True)
-    draw_inactive_time = models.IntegerField('Предельное время бездействия отрисовки', default=30, blank=True, null=True)
+    net_inactive_time = models.IntegerField('Предельное время бездействия сборки сети',
+                                            default=30, blank=True, null=True)
+    draw_inactive_time = models.IntegerField('Предельное время бездействия отрисовки',
+                                             default=30, blank=True, null=True)
     net_success_percent = models.FloatField('Считать сборку сети успешной при, %', default=100.0, blank=True, null=True)
     draw_success_percent = models.FloatField('Считать отрисовку успешной при, %', default=100.0, blank=True, null=True)
     task_id = models.CharField('Celery task ID', max_length=200, blank=True, null=True)

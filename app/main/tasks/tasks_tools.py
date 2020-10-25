@@ -182,6 +182,7 @@ def create_net_compilation_report(metric_report):
         fact_total_esl=metric_report.fact_total_esl,
         net_compile_limit_mins=metric_report.net_compile_limit_mins,
         net_compile_amount=metric_report.net_compile_amount,
+        success_percent=metric_report.net_success_percent,
         status='ACTIVE',
     )
     net_compilation_report.save()
@@ -432,6 +433,7 @@ def net_compilation_get_statistics(net_compile_report, db_chaos_object):
     elapsed_mins = 0
     start_time = timezone.localtime()
     net_compile_limit_mins = net_compile_report.net_compile_limit_mins
+    net_compile_success_percent = net_compile_report.success_percent
 
     while True:
         time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
@@ -478,9 +480,13 @@ def net_compilation_get_statistics(net_compile_report, db_chaos_object):
             compilation_percent_current_step += 1
 
         if elapsed_mins > net_compile_limit_mins:
-            status = f'Превышено предельное время сборки сети: {net_compile_limit_mins} мин.'
-            save_net_compilation_final_status_and_data(net_compile_report, status, net_compilation_percent)
-            return 2
+            if net_compilation_percent >= net_compile_success_percent:
+                save_net_compilation_final_status_and_data(net_compile_report, 'OK', net_compilation_percent)
+                return True
+            else:
+                status = f'Превышено предельное время сборки сети: {net_compile_limit_mins} мин.'
+                save_net_compilation_final_status_and_data(net_compile_report, status, net_compilation_percent)
+                return 2
 
         compilation_percent_last_step = len(net_compilation_percent_steps) - 1
         if net_compilation_percent == 100 or compilation_percent_current_step >= compilation_percent_last_step:

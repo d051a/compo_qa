@@ -3,6 +3,46 @@ from django.forms import ModelForm
 from main.models import MetricReport, Chaos, DrawImgsReport, NetCompileReport
 
 
+# class VersionForm(ModelForm):
+#     class Meta:
+#         model = Version
+#         fields = [
+#             'title',
+#             'chaos',
+#             'total_esl',
+#             'shields_num',
+#             'dd_nums',
+#             'dd_configuration',
+#             'dd_dongles_num',
+#             'hardware_config',
+#             'version_sum',
+#             'version_chaos',
+#             'chaos_configuration',
+#             'tree_floor_num',
+#             'version_driver',
+#             'version_esl_firmware',
+#             'version_esl_hw',
+#             'version_dongles_hw',
+#         ]
+#         widgets = {
+#             'title': forms.TextInput(attrs={'class': 'form-control'}),
+#             'total_esl': forms.TextInput(attrs={'class': 'form-control'}),
+#             'shields_num': forms.TextInput(attrs={'class': 'form-control'}),
+#             'dd_nums': forms.TextInput(attrs={'class': 'form-control'}),
+#             'dd_configuration': forms.TextInput(attrs={'class': 'form-control'}),
+#             'dd_dongles_num': forms.TextInput(attrs={'class': 'form-control'}),
+#             'hardware_config': forms.TextInput(attrs={'class': 'form-control'}),
+#             'version_sum': forms.TextInput(attrs={'class': 'form-control'}),
+#             'version_chaos': forms.TextInput(attrs={'class': 'form-control'}),
+#             'chaos_configuration': forms.TextInput(attrs={'class': 'form-control'}),
+#             'tree_floor_num': forms.TextInput(attrs={'class': 'form-control'}),
+#             'version_driver': forms.TextInput(attrs={'class': 'form-control'}),
+#             'version_esl_firmware': forms.TextInput(attrs={'class': 'form-control'}),
+#             'version_esl_hw': forms.TextInput(attrs={'class': 'form-control'}),
+#             'version_dongles_hw': forms.TextInput(attrs={'class': 'form-control'}),
+#         }
+
+
 class MetricReportForm(ModelForm):
     class Meta:
         model = MetricReport
@@ -14,6 +54,7 @@ class MetricReportForm(ModelForm):
                   'color',
                   'draw_imgs_type',
                   'net_compile_limit_mins',
+                  'net_success_percent',
                   ]
         DRAW_IMGS_TYPE_CHOICES = (
             ('highlight', 'HighLight'),
@@ -27,7 +68,8 @@ class MetricReportForm(ModelForm):
             'net_compile_limit_mins': forms.NumberInput(attrs={'class': 'form-control'}),
             'draw_imgs_limit_mins': forms.NumberInput(attrs={'class': 'form-control'}),
             'color': forms.TextInput(attrs={'class': 'form-control'}),
-            'draw_imgs_type': forms.Select(choices=DRAW_IMGS_TYPE_CHOICES, attrs={'class': 'form-control'})
+            'draw_imgs_type': forms.Select(choices=DRAW_IMGS_TYPE_CHOICES, attrs={'class': 'form-control'}),
+            'net_success_percent': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
 
@@ -104,11 +146,12 @@ class NetCompileReportForm(ModelForm):
                   'metric_report',
                   'fact_total_esl',
                   'net_compile_limit_mins',
+                  'success_percent',
                   ]
         widgets = {
             'chaos': forms.Select(attrs={'class': 'form-control'}),
             'fact_total_esl': forms.TextInput(attrs={'class': 'form-control'}),
             'net_compile_limit_mins': forms.TextInput(attrs={'class': 'form-control'}),
             'metric_report': forms.HiddenInput(),
-
+            'success_percent': forms.NumberInput(attrs={'class': 'form-control'}),
         }
