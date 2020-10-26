@@ -582,7 +582,7 @@ def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object):
     return True
 
 
-def draw_images_init_sum(chaos):
+def draw_images_init_sum(chaos, db_draw_imgs_object):
     def get_remote_dir_files_list(chaos, remote_dir):
         print(f'INFO: получение списка файлов на устройстве {chaos.ip}...')
         files_list_command = f"ls -p {remote_dir} | grep -v /"
@@ -633,22 +633,31 @@ def draw_images_init_sum(chaos):
     local_dat_new_file_path = f'{local_dat_file_dir}{dat_file_name_wo_expansion}_tmp.dat'
     remote_dat_file_path = remote_directory + dat_file_name
 
-    change_prices_result = dat_file_change_prices(local_dat_file_full_path, local_dat_new_file_path)
-    if not change_prices_result:
+    if not reset_send_queue(chaos.ip):
+        status = f'FAIL: 'f'Не удалось сбросить очередь отрисовки перед запуском отрисовки'
+        db_draw_imgs_object.status = status
+        db_draw_imgs_object.task_id = ''
+        db_draw_imgs_object.date_time_finish = timezone.localtime()
+        db_draw_imgs_object.save()
         return False
+
+    if not dat_file_change_prices(local_dat_file_full_path, local_dat_new_file_path):
+        return False
+
     files_list = get_remote_dir_files_list(chaos, remote_directory)
     filtered_files = check_exist_files_by_name(files_list, dat_file_name_wo_expansion)
-    remove_files_result = remove_files_on_host_by_filename(chaos, remote_directory, filtered_files)
-    if not remove_files_result:
+
+    if not remove_files_on_host_by_filename(chaos, remote_directory, filtered_files):
         return False
-    copy_dat_file_result = utils.copy_file_over_ssh(chaos.ip, chaos.login, chaos.password, chaos.ssh_port,
-                                                    local_dat_new_file_path, remote_dat_file_path)
-    if not copy_dat_file_result:
+
+    if not utils.copy_file_over_ssh(chaos.ip, chaos.login, chaos.password, chaos.ssh_port,
+                                    local_dat_new_file_path, remote_dat_file_path):
         return False
+
     os.remove(local_dat_new_file_path)
     time.sleep(5)
-    make_flg_file_result = make_flg_on_remote_host(chaos, remote_directory, dat_file_name_wo_expansion)
-    if not make_flg_file_result:
+
+    if not make_flg_on_remote_host(chaos, remote_directory, dat_file_name_wo_expansion):
         return False
     return True
 

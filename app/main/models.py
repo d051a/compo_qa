@@ -12,6 +12,7 @@ from django.utils import timezone
 #     dd_configuration = models.CharField('Конфигурация РУ', max_length=150, blank=True, null=True)
 #     dd_dongles_num = models.IntegerField('Количество донглов на РУ, шт', blank=True, null=True)
 #     hardware_config = models.CharField('Конфигурация системы', max_length=300, blank=True, null=True)
+
 #     version_sum = models.CharField('Версия СУМ', max_length=30, blank=True, null=True)
 #     version_chaos = models.CharField('Версия Хаоса', max_length=30, blank=True, null=True)
 #     chaos_configuration = models.CharField('Конфигурация Хаоса', max_length=100, blank=True, null=True)

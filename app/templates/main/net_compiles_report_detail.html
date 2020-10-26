@@ -24,6 +24,7 @@
             <b>Дата и время начала сборки сети:</b> {{ object.create_date_time }}<br>
             <b>Дата и время окончания сборки сети:</b> {{ object.date_time_finish }}<br>
             <b>Предельное время сборки сети (мин):</b> {{ object.net_compile_limit_mins }}<br>
+            <b>Сборка сети считается успешной после:</b> {{ object.success_percent }}%<br>
             <b>Статус:</b> {{ object.status }}<br>
         </p>
         {% if object.chaos.grafana_dashboard_url %}<a href="{{ object.chaos.grafana_dashboard_url }}?orgId=1&from={{ object.create_date_time|date:"U" }}000&to={% if object.date_time_finish%}{{ object.date_time_finish|date:"U" }}000{% else %}now{% endif %}" class="btn btn-primary" role="button" target="_blank">Графики (Grafana)</a>{% endif %}
