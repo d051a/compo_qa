@@ -326,15 +326,53 @@ def start_chaos_webcore(device_credentials):
     ssh_port = device_credentials['port']
     time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
 
-    print(f'{time_now} Инициация запуска chaos_webcore ')
+    print(f'{time_now} Инициация запуска chaos_webcore')
     run_command = utils.run_remote_command(device_ssh_address, ssh_user_name, ssh_user_password, ssh_port,
                                            f'echo {ssh_user_password}|sudo -S sudo systemctl start chaos_webcore')
     time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
     if run_command == ('', ''):
-        print(f'{time_now} chaos_webcore успешно запущен')
+        print(f'{time_now} Сервис chaos_webcore успешно запущен')
         return True
     else:
-        print(f'{time_now} chaos_webcore не запущен. Что-то пошло не так. ERROR: {run_command[1]}')
+        print(f'{time_now} Сервис chaos_webcore не запущен. Что-то пошло не так. ERROR: {run_command[1]}')
+        return run_command[1]
+
+
+def start_storesvc_service(device_credentials):
+    device_ssh_address = device_credentials['ip']
+    ssh_user_name = device_credentials['login']
+    ssh_user_password = device_credentials['password']
+    ssh_port = device_credentials['port']
+    time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+
+    print(f'{time_now} Инициация запуска службы storesvc ')
+    run_command = utils.run_remote_command(device_ssh_address, ssh_user_name, ssh_user_password, ssh_port,
+                                           f'echo {ssh_user_password}|sudo -S sudo service storesvc start')
+    time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+    if run_command == ('', ''):
+        print(f'{time_now} Служба storesvc успешно запущена')
+        return True
+    else:
+        print(f'{time_now} Служба storesvc не запущена. Что-то пошло не так. ERROR: {run_command[1]}')
+        return run_command[1]
+
+
+def stop_storesvc_service(device_credentials):
+    device_ssh_address = device_credentials['ip']
+    ssh_user_name = device_credentials['login']
+    ssh_user_password = device_credentials['password']
+    ssh_port = device_credentials['port']
+    time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+
+    print(f'{time_now} Инициация остановки службы storesvc ')
+    run_command = utils.run_remote_command(device_ssh_address, ssh_user_name, ssh_user_password, ssh_port,
+                                           f'echo {ssh_user_password}|sudo -S sudo service storesvc stop')
+    time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+    if run_command == ('', ''):
+        print(f'{time_now} Служба storesvc успешно остановлена')
+        return True
+    else:
+        print(f'{time_now} Служба storesvc не остановлена. Что-то пошло не так. ERROR: {run_command[1]}')
         return run_command[1]
 
 
@@ -419,6 +457,7 @@ def net_compilation_init(chaos_credentials, net_compile_report):
         save_net_compilation_final_status_and_data(net_compile_report, status, net_compilation_percent)
         return False
     time.sleep(60)
+    stop_storesvc_service(chaos_credentials)
     start_chaos_webcore(chaos_credentials)
     return True
 
@@ -502,6 +541,8 @@ def net_compilation_get_statistics(net_compile_report, db_chaos_object):
 
 
 def draw_images_init(chaos_credentials, db_draw_imgs_object):
+    start_storesvc_service(chaos_credentials)
+    time.sleep(5)
     if not reset_send_queue(chaos_credentials['ip']):
         status = f'FAIL: 'f'Не удалось сбросить очередь отрисовки перед запуском отрисовки'
         db_draw_imgs_object.status = status
@@ -582,16 +623,19 @@ def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object):
     return True
 
 
-def draw_images_init_sum(chaos, db_draw_imgs_object):
-    def get_remote_dir_files_list(chaos, remote_dir):
-        print(f'INFO: получение списка файлов на устройстве {chaos.ip}...')
+def draw_images_init_sum(chaos, db_draw_imgs_object, chaos_credentials):
+    def get_remote_dir_files_list(device_credentials, remote_dir):
+        print(f"INFO: получение списка файлов на устройстве {chaos_credentials['ip']}...")
         files_list_command = f"ls -p {remote_dir} | grep -v /"
-        response = utils.run_remote_command(chaos.ip, chaos.login, chaos.password, chaos.ssh_port, files_list_command)
+        response = utils.run_remote_command(device_credentials['ip'],
+                                            device_credentials['login'],
+                                            device_credentials['password'],
+                                            device_credentials['port'], files_list_command)
         if not response[0]:
             return []
-        files_list = response[0].split('\n')
-        print(f'INFO: получен список файлов на устройстве {chaos.ip}...')
-        return files_list
+        remote_device_files_list = response[0].split('\n')
+        print(f"INFO: получен список файлов на устройстве {device_credentials['ip']}...")
+        return remote_device_files_list
 
     def check_exist_files_by_name(file_names_list, search_name):
         find_files = []
@@ -601,27 +645,33 @@ def draw_images_init_sum(chaos, db_draw_imgs_object):
                 find_files.append(file_name)
         return find_files
 
-    def remove_files_on_host_by_filename(chaos, remote_dir_path, files_list):
-        print(f'INFO: ининиация удаления файлов на устройстве {chaos.ip}')
+    def remove_files_on_host_by_filename(device_credentials, remote_dir_path, files_list):
+        print(f"INFO: ининиация удаления файлов на устройстве {device_credentials['ip']}")
         try:
             for file_name in files_list:
                 command = f'echo {chaos.password}|sudo -S sudo rm {remote_dir_path + file_name}'
-                response = utils.run_remote_command(chaos.ip, chaos.login, chaos.password, chaos.ssh_port, command)
+                utils.run_remote_command(device_credentials['ip'],
+                                         device_credentials['login'],
+                                         device_credentials['password'],
+                                         device_credentials['port'], command)
             return True
         except Exception as error:
             print('Что-то пошло не так в процессе удаления dat-файлов')
             print(error)
             return False
 
-    def make_flg_on_remote_host(chaos, remote_dir_path, file_name):
+    def make_flg_on_remote_host(device_credentials, remote_dir_path, file_name):
         path_to_flg_file = remote_dir_path + file_name + '.flg'
-        command = f"echo {chaos.password}|sudo -S sudo touch {path_to_flg_file}"
+        command = f"echo {device_credentials['password']}|sudo -S sudo touch {path_to_flg_file}"
         try:
-            response = utils.run_remote_command(chaos.ip, chaos.login, chaos.password, chaos.ssh_port, command)
-            print(f'INFO: успешное создание flg-файла на устройства {chaos.ip}')
+            utils.run_remote_command(device_credentials['ip'],
+                                     device_credentials['login'],
+                                     device_credentials['password'],
+                                     device_credentials['port'], command)
+            print(f"INFO: успешное создание flg-файла на устройства {device_credentials['ip']}")
             return True
         except Exception as error:
-            print(f'INFO: Не удалось создать flg-файла на устройстве {chaos.ip}')
+            print(f"INFO: Не удалось создать flg-файла на устройстве {device_credentials['ip']}")
             print(error)
             return False
 
@@ -632,6 +682,9 @@ def draw_images_init_sum(chaos, db_draw_imgs_object):
     local_dat_file_full_path = local_dat_file_dir + chaos.dat_file.name
     local_dat_new_file_path = f'{local_dat_file_dir}{dat_file_name_wo_expansion}_tmp.dat'
     remote_dat_file_path = remote_directory + dat_file_name
+
+    start_storesvc_service(chaos_credentials)
+    time.sleep(5)
 
     if not reset_send_queue(chaos.ip):
         status = f'FAIL: 'f'Не удалось сбросить очередь отрисовки перед запуском отрисовки'
@@ -644,20 +697,23 @@ def draw_images_init_sum(chaos, db_draw_imgs_object):
     if not dat_file_change_prices(local_dat_file_full_path, local_dat_new_file_path):
         return False
 
-    files_list = get_remote_dir_files_list(chaos, remote_directory)
+    files_list = get_remote_dir_files_list(chaos_credentials, remote_directory)
     filtered_files = check_exist_files_by_name(files_list, dat_file_name_wo_expansion)
 
-    if not remove_files_on_host_by_filename(chaos, remote_directory, filtered_files):
+    if not remove_files_on_host_by_filename(chaos_credentials, remote_directory, filtered_files):
         return False
 
-    if not utils.copy_file_over_ssh(chaos.ip, chaos.login, chaos.password, chaos.ssh_port,
+    if not utils.copy_file_over_ssh(chaos_credentials['ip'],
+                                    chaos_credentials['login'],
+                                    chaos_credentials['password'],
+                                    chaos_credentials['port'],
                                     local_dat_new_file_path, remote_dat_file_path):
         return False
 
     os.remove(local_dat_new_file_path)
     time.sleep(5)
 
-    if not make_flg_on_remote_host(chaos, remote_directory, dat_file_name_wo_expansion):
+    if not make_flg_on_remote_host(chaos_credentials, remote_directory, dat_file_name_wo_expansion):
         return False
     return True
 
