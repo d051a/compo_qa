@@ -47,6 +47,14 @@ def metric_report_export_to_xlsx(request, metric_report_id):
         'currently_scanning',
         'network_mode',
         'connects',
+        'network_mode_percent',
+        'voltage_average',
+        'voltage_current',
+        'voltage_max',
+        'bat_reserved1',
+        'bat_reserved2',
+        'bat_reserved3',
+        'bat_reserved4',
     ]
 
     net_compile_fields_common_report = ['create_date_time', 'elapsed_time', 'final_percent', 't60', 'fact_total_esl',
@@ -54,6 +62,27 @@ def metric_report_export_to_xlsx(request, metric_report_id):
                                        ]
     draw_imgs_fields_common_report = ['p50', 'p75', 'p90', 'p95', 'p96', 'p97', 'p98', 'p99', 'p995', 'p999', 'p100',
                                       'not_drawed_esl',
+                                     ]
+    net_compile_fields_common_extended_report = ['create_date_time', 'elapsed_time', 'final_percent', 'status',
+                                                 'p10', 'p20', 'p30', 'p40', 'p50', 'p60', 'p75', 'p90', 'p95', 'p96',
+                                                 'p97', 'p98', 'p99', 'p995', 'p999', 'p100',
+                                                 't10', 't20', 't30', 't40', 't50', 't60', 't70', 't80', 't90', 't100',
+                                                 't110', 't120', 't130', 't140', 't150',
+                                                 'fact_total_esl',
+                                                 'success_percent',
+                                       ]
+    draw_imgs_fields_common_extended_report = ['create_date_time',
+                                               'date_time_finish',
+                                               'draw_imgs_limit_mins',
+                                               'p10', 'p20', 'p30', 'p40', 'p50', 'p60', 'p75', 'p90', 'p95', 'p96',
+                                               'p97', 'p98', 'p99', 'p995', 'p999', 'p100',
+                                               't10', 't20', 't30', 't40', 't50', 't60', 't70', 't80', 't90', 't100',
+                                               't110', 't120', 't130', 't140', 't150',
+                                               'drawed_esl',
+                                               'not_drawed_esl',
+                                               'final_percent',
+                                               'draw_imgs_type',
+                                               'status',
                                      ]
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -69,9 +98,16 @@ def metric_report_export_to_xlsx(request, metric_report_id):
     workbook = create_excel_cheet(workbook, draw_imgs_reports, draw_imgs_reports_draw_fields, vertical=True)
     workbook = create_excel_cheet(workbook, metrics_report_common_statistic, metrics_report_common_statistic_draw_fields)
     workbook = create_excel_net_draw_cheet(workbook,
+                                           net_compile_reports, net_compile_fields_common_extended_report,
+                                           draw_imgs_reports, draw_imgs_fields_common_extended_report,
+                                           draw_imgs_amount,
+                                           'Сводный отчет (расширенный)',
+                                           vertical=True)
+    workbook = create_excel_net_draw_cheet(workbook,
                                            net_compile_reports, net_compile_fields_common_report,
                                            draw_imgs_reports, draw_imgs_fields_common_report,
                                            draw_imgs_amount,
+                                           'Сводный отчет',
                                            vertical=True)
     workbook.save(response)
     return response
