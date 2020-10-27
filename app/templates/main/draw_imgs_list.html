@@ -18,7 +18,7 @@
 <h3>Отрисовки ценников</h3>
 <div class = "col-md-12">
     <form action="{% url 'main:draw_imgs_add' %}">
-        <button  type="submit" class="btn btn-secondary">Новая отрисовка ценников</button>
+        {% if user.is_authenticated %}<button  type="submit" class="btn btn-secondary">Новая отрисовка ценников</button>{% endif %}
             <p></p>
     </form>
     <table id="report_drawed_list" class="datatable row-border" style="width:100;">

@@ -20,10 +20,11 @@
     <h4>Общий отчет #{{ object.pk }} для {{ object.chaos.name }} ({{ object.chaos.ip }})</h4>
 <div class = "col-md-12">
         <p>
+            <b>Стенд:</b> {{ object.chaos.name }} ({{ object.chaos.ip }})<br>
             <b>Дата и время начала снятия метрик:</b> {{ object.create_date_time }}<br>
             <b>Дата и время окончания снятия метрик:</b> {{ object.date_time_finish }}<br>
             <b>Количество сборок сети:</b> {{ object.net_compile_amount }}<br>
-            <b>Сборка сети считается успешной после:</b> {{ object.success_percent }}%<br>
+            <b>Сборка сети считается успешной после:</b> {{ object.net_success_percent }}%<br>
             <b>Количество отрисовок ценников после каждой сборки:</b> {{ object.draw_imgs_amount }}<br>
             <b>Предельное время отрисовки ценников (мин):</b> {{ object.draw_imgs_limit_mins }}<br>
             <b>Предельное время сборки сети (мин):</b> {{ object.net_compile_limit_mins }}<br>

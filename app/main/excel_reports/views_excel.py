@@ -26,7 +26,7 @@ def metric_report_export_to_xlsx(request, metric_report_id):
                                      'p50', 'p75', 'p90', 'p95', 'p96', 'p97', 'p98', 'p99', 'p100', 'fact_total_esl',
                                      'drawed_esl', 'not_drawed_esl', 'date_time_finish'
                                      ]
-    draw_imgs_stat_fields = ['percent_step', 'drawed_percent', 'elapsed_time', 'images_succeeded', 'online_esl']
+    draw_imgs_stat_fields = ['percent_step', 'elapsed_time', 'images_succeeded']
     net_compile_stat_fields = ['compilation_percent', 'online_esl', 'elapsed_time']
     metrics_report_common_statistic_draw_fields = [
         'date_time',

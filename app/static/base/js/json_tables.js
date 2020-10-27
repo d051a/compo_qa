@@ -38,7 +38,7 @@ $(document).ready(function() {
                 next:       "Следующий",
                 last:       "Последний"
             },},
-                searching: true,
+                searching: false,
     });
 
         $('#all_metrics_list').dataTable({
@@ -51,7 +51,7 @@ $(document).ready(function() {
         "serverSide":     true,
         "ajax": {"url": metric_reports_list_url,
         "data":  {"chaos_pk": chaos_pk, "report_pk": metric_report_pk}},
-        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+        "lengthMenu": [[5, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
         dom: 'Bfrtip',
         buttons: ['pageLength', 'copy', 'csv', 'excel', 'pdf', 'print'],
         language: {
@@ -71,7 +71,7 @@ $(document).ready(function() {
                 next:       "Следующий",
                 last:       "Последний"
             },},
-                searching: true,
+                searching: false,
     });
 
                  $('#report_drawed_list').dataTable({
@@ -105,7 +105,7 @@ $(document).ready(function() {
                         next:       "Следующий",
                         last:       "Последний"
             },},
-                searching: true,
+                searching: false,
     });
 
          $('#report_all_stats_list').dataTable({
@@ -139,7 +139,7 @@ $(document).ready(function() {
                 next:       "Следующий",
                 last:       "Последний"
             },},
-                searching: true,
+                searching: false,
     });
 
         $('#drawed_stats_list').dataTable({
@@ -152,7 +152,7 @@ $(document).ready(function() {
         "serverSide":     true,
         "ajax": {"url": report_drawed_imgs_stats_url,
         "data":  {"report_pk": metric_report_pk}},
-        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+        "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
         dom: 'Bfrtip',
         buttons: ['pageLength', 'copy', 'csv', 'excel', 'pdf', 'print'],
         language: {
@@ -172,7 +172,7 @@ $(document).ready(function() {
                 next:       "Следующий",
                 last:       "Последний"
             },},
-                searching: true,
+                searching: false,
     });
 
         $('#net_compile_stats').dataTable({
@@ -185,7 +185,7 @@ $(document).ready(function() {
         "serverSide":     true,
         "ajax": {"url": net_compile_stats_url,
         "data":  {"report_pk": metric_report_pk}},
-        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+        "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
         dom: 'Bfrtip',
         buttons: ['pageLength', 'copy', 'csv', 'excel', 'pdf', 'print'],
         language: {
@@ -205,7 +205,7 @@ $(document).ready(function() {
                 next:       "Следующий",
                 last:       "Последний"
             },},
-                searching: true,
+                searching: false,
     });
 
                 $('#report_net_compiles_list').dataTable({
@@ -238,7 +238,7 @@ $(document).ready(function() {
                 next:       "Следующий",
                 last:       "Последний"
             },},
-                searching: true,
+                searching: false,
     });
 
 });

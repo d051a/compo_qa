@@ -18,7 +18,7 @@
 <h3>Сборки сети</h3>
 <div class = "col-md-12">
     <form action="{% url 'main:net_compiles_add' %}">
-        <button  type="submit" class="btn btn-secondary">Новая сборка сети</button>
+        {% if user.is_authenticated %}<button  type="submit" class="btn btn-secondary">Новая сборка сети</button>{% endif %}
             <p></p>
     </form>
     <table id="report_net_compiles_list" class="datatable row-border" style="width:100;">

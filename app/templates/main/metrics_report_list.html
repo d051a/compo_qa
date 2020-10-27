@@ -19,7 +19,7 @@
 <h3>Общие отчеты</h3>
 <div class = "col-md-12">
     <form action="{% url 'main:metrics_add' %}">
-        <button  type="submit" class="btn btn-secondary">Новая сборка метрик</button>
+        {% if user.is_authenticated %}<button  type="submit" class="btn btn-secondary">Новая сборка метрик</button>{% endif %}
             <p></p>
     </form>
         <table id="all_metrics_list" class="datatable row-border" style="width:100;">
