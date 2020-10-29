@@ -2,6 +2,8 @@ import requests
 import re
 import datetime
 import paramiko
+import json
+from paramiko.ssh_exception import SSHException
 
 
 class ChaosConnector:
@@ -45,7 +47,8 @@ class ChaosStatisctic:
         try:
             result = re.search(re_pattern, self.text)
             return result.group(1)
-        except:
+        except Exception as error:
+            print(f'__get_stat_attr method error: {error}')
             return ''
 
     @property
@@ -142,7 +145,8 @@ class ChaosStatisctic:
         try:
             queue = [int(queue) for queue in queue_string.split(', ')]
             return queue
-        except:
+        except Exception as error:
+            print(f'images_in_draw_queue function error: {error}')
             return []
 
     @property
@@ -220,7 +224,8 @@ class ChaosStatisctic:
                 node, routes_num = node.split(': ')
                 nodes_routes[node] = int(routes_num)
             return nodes_routes
-        except:
+        except Exception as error:
+            print(f'nodes_routes function error: {error}')
             return {}
 
     @property
@@ -261,7 +266,8 @@ class ChaosStatisctic:
                 node, node_load = node.split(': ')
                 nodes_load[node] = float(node_load[:-2])
             return nodes_load
-        except:
+        except Exception as error:
+            print(f'nodes_load function error: {error}')
             return {}
 
     def get_node_load_percent(self, node_mac) -> str:
@@ -352,20 +358,20 @@ class Utils:
         return output_format.format(**times)
 
     @staticmethod
-    def get_ssh_connection(ip_address: str, username: str, password: str, port: str, connect_try=5) -> paramiko.SSHClient:
-        i = 1
+    def get_ssh_connection(ip_address: str, username: str, password: str, port: str)\
+            -> paramiko.SSHClient:
         while True:
             try:
                 ssh = paramiko.SSHClient()
                 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                # ssh.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
                 ssh.connect(hostname=ip_address, username=username, password=password, port=int(port))
                 return ssh
             except paramiko.AuthenticationException:
                 print('ERROR : Authentication failed because of irrelevant details!')
-            except:
-                print(f'Could not SSH to {ip_address}, waiting for it to start')
-                return None
+            except paramiko.ssh_exception.SSHException as error:
+                print(f'Error: {error}')
+            except (SSHException, OSError) as error:
+                print(f'Could not SSH to {ip_address}, waiting for it to start. Error: {error}')
 
     @staticmethod
     def sftp_transfer_file(ssh: paramiko.SSHClient, localpath_to_file: str, remotepath_to_file: str) -> int:
@@ -375,7 +381,8 @@ class Utils:
             sftp.close()
             ssh.close()
             return 0
-        except:
+        except Exception as error:
+            print('sftp_transfer_file function error: ', error)
             return 1
 
     @staticmethod
@@ -392,9 +399,8 @@ class Utils:
             stdout_error = stderr.readlines()
             stdout_error = "".join(stdout_error)
             return stdout_result, stdout_error
-        except:
-            print(f'Не удалось выполнить команду на удаленном устройства {ip_address}')
-            return None
+        except Exception as error:
+            print(f'Не удалось выполнить команду на удаленном устройства {ip_address} error: {error}')
 
     @staticmethod
     def run_remote_command_no_wait(ip_address: str,
@@ -416,8 +422,8 @@ class Utils:
             ssh = Utils.get_ssh_connection(ip_address, user_name, password, port)
             Utils.sftp_transfer_file(ssh, localpath_to_file, remotepath_to_file)
             return True
-        except:
-            print(f'Что-то пошло не так. Файлы не скопированы!')
+        except Exception as error:
+            print(f'Что-то пошло не так. Файлы не скопированы! copy_file_over_ssh function error: {error}')
             return False
 
     @staticmethod
@@ -452,6 +458,218 @@ class Utils:
         except FileNotFoundError:
             print(f"Файл не был удалён, так как не был найден по указанному пути: '{path_file}'")
 
+
+class ChaosConfigurationInfo:
+    def __init__(self, ip='127.0.0.1', ssh_port=22, chaos_port=19872, login='pi', password='CompoM123'):
+        self.ip_address = ip
+        self.login = login
+        self.ssh_port = ssh_port
+        self.chaos_port = chaos_port
+        self.password = password
+        self.list_node_attributes = self.__get_list_node_attributes()
+        self.chaos_config = self.__get_chaos_config()
+
+    def __get_list_node_attributes(self):
+        try:
+            request = requests.get(
+                f"http://{self.ip_address}:19872/list_node_attributes", timeout=3)
+            response = request.text
+            return response
+        except requests.exceptions.ConnectionError:
+            print(f'Cannot connect to {self.ip_address}')
+        except Exception as e:
+            print(e)
+
+    def __get_chaos_config(self):
+        config_data = Utils.run_remote_command(self.ip_address, self.login, self.password, str(self.ssh_port),
+                                               f'cat /var/Componentality/Chaos/chaos_config.json'
+                                               )
+        if config_data is None:
+            return None
+        try:
+            config_json = json.loads(config_data[0])
+        except json.decoder.JSONDecodeError:
+            time_now = datetime.datetime.now().strftime("%d.%m.%y %H:%M:%S")
+            print(f'{time_now} FAIL: Это не JSON. Что-то пошло не так. Данные не получены...')
+            print(f'STDOUT: {config_data[0]}: STDERR: {config_data[1]}')
+            return None
+        except TypeError:
+            return None
+        return config_json
+
+    @staticmethod
+    def version_hr(ver):
+        v_hex = '%08x' % ver
+        v = '%02d' % int(v_hex[0:2], 16) + '.%02d' % int(v_hex[2:4], 16) + '.%02d' % int(v_hex[4:6], 16) + '.%02d' % int(v_hex[6:8], 16)
+        return v
+
+    @staticmethod
+    def check_device_is_dongle(list_esl):
+        if not list_esl:
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def add_version_data(version_dict, version):
+        if version_dict.get(version, None):
+            version_dict[version] += 1
+        else:
+            version_dict[version] = 1
+
+    def default_devices(self):
+        chaos_config = self.chaos_config
+        if chaos_config == ('', ''):
+            return False
+        names_ports = chaos_config['DEFAULT_RSERVERS']
+        return names_ports
+
+    def get_ips_by_names(self):
+        ip_port = {}
+        for address in self.default_devices():
+            host_name, port = address.split(':')
+            ip = Utils.run_remote_command(
+                self.ip_address,
+                self.login,
+                self.password,
+                str(self.ssh_port),
+                f'net lookup {host_name}')[0].rstrip()
+            if host_name == '127.0.0.1':
+                ip_port[f'{self.ip_address}:{port}'] = ''
+                continue
+            ip_port[f'{ip}:{port}'] = ''
+        return ip_port
+
+    @property
+    def distributing_device_num(self):
+        default_rservers = self.default_devices()
+        if not default_rservers:
+            return '-'
+        else:
+            distributing_device_num = len(set([rserver.split(':')[0] for rserver in default_rservers]))
+            return distributing_device_num
+
+    @property
+    def dongles_num(self):
+        rq_cnt = 100500
+        timeout = 1
+        rservers_names_ports = __class__.default_devices(self)
+        rservers_ips_ports = __class__.get_ips_by_names(self)
+        rserver_dongles_tmp = []
+        for num, server_ip in enumerate(rservers_ips_ports):
+            server_ip = 'http://' + server_ip
+            try:
+                r = requests.post(server_ip, json={'command': 'list-roots', 'request-id': rq_cnt}, timeout=timeout)
+                rq_cnt += 1
+                roots = json.loads(r.text)["roots"]
+                rserver_name_wo_port = rservers_names_ports[num].split(':')[0]
+                rserver_dongles_tmp.append(f'{rserver_name_wo_port}: {len(roots)} шт.   ')
+            except Exception as error:
+                print(f'dongles_num function error: {error}')
+                rserver_name_wo_port = rservers_names_ports[num].split(':')[0]
+                rserver_dongles_tmp.append(f'{rserver_name_wo_port}: n/a')
+        rserver_dongles_string = '\n'.join(rserver_dongles_tmp)
+        return rserver_dongles_string
+
+    @property
+    def version_sum(self):
+        response = requests.post(f'http://{self.ip_address}/api3/login?login=admin&passwd=CompoM123')
+        try:
+            response_json = json.loads(response.text)
+            sum_version = response_json['data']['version']
+        except json.decoder.JSONDecodeError:
+            print(f'FAIL: Это не JSON. Что-то пошло не так. Данные не получены... \n RESPONSE: {response.text}')
+            return ''
+        except KeyError:
+            print(f"Не удалось получить данные из ответа API по ключу ['data']['version'] \n RESPONSE: {response.text}")
+            return ''
+        return sum_version
+
+    @property
+    def release_version(self):
+        current_version = Utils.run_remote_command(self.ip_address, self.login, self.password, str(self.ssh_port),
+                                                   'cd /var/Componentality/Chaos ; git tag --points-at HEAD')
+        if current_version == ('', ''):
+            return ''
+        else:
+            return str(current_version[0]).rstrip()
+
+    @property
+    def tree_floor_num(self):
+        chaos_config = self.chaos_config
+        floor_num = int(chaos_config['DEFAULT_MAXIMUM_ROUTE_LENGTH']) - 1
+        return floor_num
+
+    @property
+    def version_esl_firmware(self):
+        sw_versions = {}
+        hw_versions = {}
+        dongles_versions = {}
+        node_attributes = self.list_node_attributes
+
+        if node_attributes is None:
+            return ''
+        node_attributes_json_data = json.loads(node_attributes)
+        for node in node_attributes_json_data['attr'].keys():
+            try:
+                sw_version = __class__.version_hr(node_attributes_json_data['attr'][node]['node_status']['sw_version'])
+                hw_version = __class__.version_hr(node_attributes_json_data['attr'][node]['node_status']['hw_version'])
+                esl_list = node_attributes_json_data['attr'][node]['ESLs']
+            except KeyError:
+                continue
+            if ChaosConfigurationInfo.check_device_is_dongle(esl_list):
+                ChaosConfigurationInfo.add_version_data(dongles_versions, hw_version)
+            else:
+                ChaosConfigurationInfo.add_version_data(sw_versions, sw_version)
+                ChaosConfigurationInfo.add_version_data(hw_versions, hw_version)
+        firmwares = {'sw_versions': str(sw_versions)[1:-1],
+                     'hw_versions': str(hw_versions)[1:-1],
+                     'dongles_versions': str(dongles_versions)[1:-1],
+                     }
+        return firmwares
+
+    @property
+    def sw_versions(self):
+        sw_versions = self.version_esl_firmware['sw_versions']
+        return sw_versions
+
+    @property
+    def hw_versions(self):
+        sw_versions = self.version_esl_firmware['hw_versions']
+        return sw_versions
+
+    @property
+    def dongles_versions(self):
+        sw_versions = self.version_esl_firmware['dongles_versions']
+        return sw_versions
+
+    def all_params(self):
+        result_info = {'distributing_device_num': self.distributing_device_num,
+                       'dongles_num': self.dongles_num,
+                       'version_sum:': self.version_sum,
+                       'chaos_version': self.release_version,
+                       'chaos_config': self.chaos_config,
+                       'tree_floor_num': self.tree_floor_num,
+                       'driver_version': self.release_version,
+                       'sw_versions': self.sw_versions,
+                       'hw_versions': self.hw_versions,
+                       'dongles_versions': self.dongles_versions,
+                       }
+        print('Количетво РУ, шт', self.distributing_device_num)
+        # print('Конфигурация РУ', self.___)
+        print('Количество донглов на РУ, шт', self.dongles_num)
+        print('Версия СУМ:', self.version_sum)
+        print('Версия Хаоса:', self.release_version)
+        print('Конфигурация Хаоса:', self.chaos_config)
+        print('Число этажей дерева:', self.tree_floor_num)
+        print('Версия драйвера:', self.release_version)
+        print('Версия прошивки ЭЦ:', self.sw_versions)
+        print('HW версия ЭЦ:', self.hw_versions)
+        print('HW версия донглов:', self.dongles_versions)
+        return result_info
+
+    def __str__(self):
+        return str(self.all_params())
 
 def main():
     # statistic = ChaosStatisctic(ip='172.16.26.96')

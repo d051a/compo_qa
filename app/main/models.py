@@ -4,15 +4,16 @@ from django.utils import timezone
 
 
 # class Version(models.Model):
-#     title = models.CharField('Именование версии', max_length=50, blank=True, null=True)
 #     chaos = models.ForeignKey('Chaos', on_delete=models.CASCADE, verbose_name='Стенд', null=True)
+#     metric_report = models.ForeignKey('MetricReport', on_delete=models.CASCADE, verbose_name='Общий отчет', null=True)
+#     netcompile_report = models.ForeignKey('NetCompileReport',
+#                                           on_delete=models.CASCADE, verbose_name='Отчет о сборке сети', null=True)
+#     drawimgs_report = models.ForeignKey('DrawImgsReport',
+#                                         on_delete=models.CASCADE, verbose_name='Отчет об отрисовке', null=True)
 #     total_esl = models.IntegerField('Количество ценников стенда, шт', blank=True, null=True)
-#     shields_num = models.CharField('Номера щитов', max_length=50, blank=True, null=True)
 #     dd_nums = models.CharField('Количество РУ, шт', max_length=150, blank=True, null=True)
 #     dd_configuration = models.CharField('Конфигурация РУ', max_length=150, blank=True, null=True)
 #     dd_dongles_num = models.IntegerField('Количество донглов на РУ, шт', blank=True, null=True)
-#     hardware_config = models.CharField('Конфигурация системы', max_length=300, blank=True, null=True)
-
 #     version_sum = models.CharField('Версия СУМ', max_length=30, blank=True, null=True)
 #     version_chaos = models.CharField('Версия Хаоса', max_length=30, blank=True, null=True)
 #     chaos_configuration = models.CharField('Конфигурация Хаоса', max_length=100, blank=True, null=True)
@@ -97,6 +98,8 @@ class Chaos(models.Model):
     bat_reserved = models.BooleanField('Отслеживать bat_reserved', default=False, blank=True, null=True)
     dat_file = models.FileField('.dat файл выгрузки товаров и цен', blank=True, null=True)
     grafana_dashboard_url = models.CharField('URL дашборда в Grafana', max_length=200, blank=True, null=True)
+    # shields_num = models.CharField('Номера щитов', max_length=50, blank=True, null=True)
+    # hardware_config = models.CharField('Конфигурация системы', max_length=300, blank=True, null=True)
 
     class Meta:
         ordering = ["name"]
