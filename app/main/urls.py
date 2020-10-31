@@ -23,6 +23,7 @@ urlpatterns = [
     path('netcompiles/', views.net_compiles_list, name='net_compiles_list'),
     path('netcompiles/<int:pk>/', views.NetCompileReportDetail.as_view(), name='net_compiles_detail'),
     path('netcompiles/add', views.NetCompiliesReportCreate.as_view(), name='net_compiles_add'),
+    path('configurations/<int:pk>/edit/', views.ConfigurationEdit.as_view(), name='configuration_edit'),
 
     # excel reports generators
     path('metrics/<int:chaos_id>/stats/excel', views_excel.chaos_stats_export_to_xlsx, name='chaos_stats_export_to_xlsx'),

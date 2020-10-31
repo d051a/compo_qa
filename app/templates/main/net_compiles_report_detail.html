@@ -20,15 +20,53 @@
     <h4>Отчет о сборке сети #{{ object.pk }}</h4>
 <div class = "col-md-12">
     <div class = "col-md-12 justify-content-sm-center">
-        <p>
-            <b>Стенд:</b> {{ object.chaos.name }} ({{ object.chaos.ip }})<br>
-            <b>Дата и время начала сборки сети:</b> {{ object.create_date_time }}<br>
-            <b>Дата и время окончания сборки сети:</b> {{ object.date_time_finish }}<br>
-            <b>Предельное время сборки сети (мин):</b> {{ object.net_compile_limit_mins }}<br>
-            <b>Сборка сети считается успешной после:</b> {{ object.success_percent }}%<br>
-            <b>Финальный процент сборки сети:</b> {{ object.final_percent }}%<br>
-            <b>Статус:</b> {{ object.status }}<br>
-        </p>
+        <p></p>
+       <div class="row">
+      <div class="col-3">
+        <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+          <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">Статус выполнения</a>
+          <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">Настройки отчета</a>
+          <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">Конфигурация стенда</a>
+        </div>
+      </div>
+      <div class="col-9">
+        <div class="tab-content" id="v-pills-tabContent">
+          <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+                <b>Стенд:</b> {{ object.chaos.name }} ({{ object.chaos.ip }})<br>
+                <b>Дата и время начала сборки сети:</b> {{ object.create_date_time }}<br>
+                <b>Дата и время окончания сборки сети:</b> {% if object.date_time_finish%}{{ object.date_time_finish }}{% else %}-{% endif %}<br>
+                <b>Финальный процент сборки сети:</b> {% if object.final_percent%}{{ object.final_percent }}%{% else %}-{% endif %}<br>
+                <b>Статус:</b> {% if object.status%}{{ object.status }}{% else %}-{% endif %}<br>
+
+          </div>
+          <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                <p></p>
+                <b>Фактическое количество ESL:</b> {% if object.fact_total_esl%}{{ object.fact_total_esl }}{% else %}н\з{% endif %}<br>
+                <b>Предельное время сборки сети (мин):</b> {{ object.net_compile_limit_mins }}<br>
+                <b>Сборка сети считается успешной после:</b> {{ object.success_percent }}%<br>
+          </div>
+          <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+                <p></p>
+                <b>Версия релиза:</b> {{ object.config.version_num.version_num }}<br>
+                <b>Номера щитов:</b> {{ object.config.shields_num }}<br>
+                <b>Конфигурация системы:</b> {{ object.config.hardware_config }}<br>
+                <b>Количество ценников:</b> {{ object.config.total_esl }}<br>
+                <b>Количество РУ, шт:</b> {{ object.config.dd_nums }}<br>
+                <b>Конфигурация РУ:</b> {{ object.config.dd_configuration }}<br>
+                <b>Количество донглов на РУ, шт:</b> {{ object.config.dd_dongles_num }}<br>
+                <b>Версия СУМ:</b> {{ object.config.version_sum }}<br>
+                <b>Версия Хаоса:</b> {{ object.config.version_chaos }}<br>
+                <b>Конфигурация Хаоса:</b> {% if object.config.chaos_configuration %}<a href="#" data-toggle="modal" data-target="#staticBackdrop">посмотреть</a>{% endif %}<br>
+                <b>Число этажей дерева:</b> {{ object.config.tree_floor_num }}<br>
+                <b>Версия драйвера:</b> {{ object.config.version_driver }}<br>
+                <b>Версия прошивки ЭЦ:</b> {{ object.config.version_esl_firmware }}<br>
+                <b>HW версия ЭЦ:</b> {{ object.config.version_esl_hw }}<br>
+                <b>HW версия донглов:</b> {{ object.config.version_dongles_hw }}<br>
+                {% if object.config.pk %}<a href="{% url 'main:configuration_edit' object.config.pk %}">изменить конфигурацию</a>{% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
         {% if object.chaos.grafana_dashboard_url %}<a href="{{ object.chaos.grafana_dashboard_url }}?orgId=1&from={{ object.create_date_time|date:"U" }}000&to={% if object.date_time_finish%}{{ object.date_time_finish|date:"U" }}000{% else %}now{% endif %}" class="btn btn-primary" role="button" target="_blank">Графики (Grafana)</a>{% endif %}
         </p>
         <table id="net_compile_stats" class="datatable row-border" style="width:100;">

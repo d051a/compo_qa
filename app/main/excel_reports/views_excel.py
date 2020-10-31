@@ -1,5 +1,5 @@
 from main.models import Statistic,  MetricReport, Chaos, DrawImgsReport,\
-    NetCompileReport, DrawImgsStat, NetCompilationStat
+    NetCompileReport, DrawImgsStat, NetCompilationStat, Configuration
 from main.excel_reports.excel_tools import create_excel_cheet, create_excel_cheet_for_stats, create_excel_net_draw_cheet
 from django.http import HttpResponse
 from datetime import datetime
@@ -8,7 +8,7 @@ from main.excel_reports.excel_report_fields import net_compile_short_report_draw
     draw_imgs_stats_short_report_draw_fields, net_compile_reports_draw_fields, draw_imgs_reports_draw_fields,\
     draw_imgs_stat_fields, net_compile_stat_fields, metrics_report_common_statistic_draw_fields,\
     net_compile_fields_common_report, draw_imgs_fields_common_report, net_compile_fields_common_extended_report,\
-    draw_imgs_fields_common_extended_report
+    draw_imgs_fields_common_extended_report, chaos_configuration_fields
 
 
 def metric_report_export_to_xlsx(request, metric_report_id):
@@ -22,6 +22,7 @@ def metric_report_export_to_xlsx(request, metric_report_id):
     net_compile_reports = NetCompileReport.objects.filter(metric_report=metrics_report)
     draw_imgs_reports = DrawImgsReport.objects.filter(metric_report=metrics_report)
     metrics_report_common_statistic = Statistic.objects.filter(metric_report=metrics_report).order_by('date_time')
+    configuration = Configuration.objects.filter(metric_report=metrics_report)
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     )
@@ -49,6 +50,7 @@ def metric_report_export_to_xlsx(request, metric_report_id):
                                            draw_imgs_amount,
                                            'Сводный отчет',
                                            vertical=True)
+    workbook = create_excel_cheet(workbook, configuration, chaos_configuration_fields, vertical=True)
     workbook.save(response)
     return response
 

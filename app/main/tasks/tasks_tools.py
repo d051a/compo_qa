@@ -3,13 +3,16 @@ import requests
 import json
 import pyvisa
 import os
-from main.models import NetCompilationStat, DrawImgsStat, Statistic, NetCompileReport, DrawImgsReport, Chaos
+from main.models import NetCompilationStat, DrawImgsStat, Statistic, NetCompileReport, DrawImgsReport, Chaos,\
+    MetricReport, Configuration, Version
 from datetime import datetime
 from main.chaos_utils import Utils as utils
 from django.utils import timezone
 from main.chaos_utils import ChaosStatisctic
 from conf.settings import BASE_DIR, MEDIA_ROOT
 from main.tasks.change_price import dat_file_change_prices
+from main.chaos_utils import ChaosConfigurationInfo
+from django.db.utils import IntegrityError
 
 
 def check_host_alive(chaos_ip, slave_ip, slave_port):
@@ -560,6 +563,7 @@ def draw_images_init(chaos_credentials, db_draw_imgs_object):
 def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object):
     drawed_percent_points = [10, 20, 30, 40, 50, 60, 75, 90, 95, 96, 97, 98, 99, 99.5, 99.9, 100]
     drawed_time_points = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150]
+    drawed_time_points_last_step = len(drawed_time_points) - 1
     start_time = timezone.localtime()
     elapsed_mins = 0
     drawed_percent_current_step = 0
@@ -592,12 +596,12 @@ def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object):
               f'Отрисовано: {current_chaos_statistic_data.images_succeeded} '
               f'Процент шага: {drawed_percent_points[drawed_percent_current_step]}')
 
-        if elapsed_mins >= drawed_time_points[drawed_time_current_step]\
-                and drawed_time_current_step <= len(drawed_time_points)-1:
-            set_db_object_attribute(db_draw_imgs_object,
-                                    f't{drawed_time_points[drawed_time_current_step]}',
-                                    current_chaos_statistic_data.get_drawed_images_percent())
-            drawed_time_current_step += 1
+        if drawed_time_current_step <= drawed_time_points_last_step:
+            if elapsed_mins >= drawed_time_points[drawed_time_current_step]:
+                set_db_object_attribute(db_draw_imgs_object,
+                                        f't{drawed_time_points[drawed_time_current_step]}',
+                                        current_chaos_statistic_data.get_drawed_images_percent())
+                drawed_time_current_step += 1
 
         if drawed_images_percent >= drawed_percent_points[drawed_percent_current_step]:
             add_draw_images_statistics_to_db(db_chaos_object,
@@ -716,6 +720,59 @@ def draw_images_init_sum(chaos, db_draw_imgs_object, chaos_credentials):
     if not make_flg_on_remote_host(chaos_credentials, remote_directory, dat_file_name_wo_expansion):
         return False
     return True
+
+
+def get_chaos_configuration(chaos_pk, report_object):
+    def get_version(version_num):
+        version_exist = Version.objects.filter(version_num=version_num)
+        if version_exist:
+            return version_exist[0]
+        else:
+            version = Version.objects.create(version_num=version_num)
+            version.save()
+            return version
+
+    chaos = Chaos.objects.get(pk=chaos_pk)
+    chaos_info = ChaosConfigurationInfo(chaos.ip)
+    current_statistics = ChaosStatisctic(chaos.ip)
+
+    try:
+        release_version = get_version(chaos_info.release_version)
+        configuration = Configuration.objects.create(chaos=chaos,
+                                                     netcompile_report=None,
+                                                     metric_report=None,
+                                                     drawimgs_report=None,
+                                                     version_num=release_version,
+                                                     shields_num=chaos.shields_num,
+                                                     hardware_config=chaos.hardware_config,
+                                                     total_esl=current_statistics.total_esl,
+                                                     dd_nums=chaos_info.distributing_device_num,
+                                                     dd_configuration='',
+                                                     dd_dongles_num=chaos_info.dongles_num,
+                                                     version_sum=chaos_info.version_sum,
+                                                     version_chaos=chaos_info.release_version,
+                                                     chaos_configuration=chaos_info.chaos_config,
+                                                     tree_floor_num=chaos_info.tree_floor_num,
+                                                     version_driver=chaos_info.release_version,
+                                                     version_esl_firmware=chaos_info.sw_versions,
+                                                     version_esl_hw=chaos_info.hw_versions,
+                                                     version_dongles_hw=chaos_info.dongles_versions,
+                                                     )
+        if type(report_object) == MetricReport:
+            configuration.metric_report = report_object
+        if type(report_object) == NetCompileReport:
+            configuration.netcompile_report = report_object
+        if type(report_object) == DrawImgsReport:
+            configuration.drawimgs_report = report_object
+        configuration.save()
+        print(f'Успешно создана конфигурация для {chaos.name}({chaos.ip})')
+        return configuration
+    except IntegrityError:
+        print(f'Не удалось связать конфигурацию с отчетом: указанный ID отчета уже связан с другой конфигурацией')
+        return None
+    except Exception as error:
+        print(f'Не удалось создать конфигурацию для {chaos.name}({chaos.ip}). error: {error}')
+        return None
 
 
 if __name__ == '__main__':

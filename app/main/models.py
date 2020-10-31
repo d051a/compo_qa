@@ -3,33 +3,65 @@ from django.core.validators import RegexValidator
 from django.utils import timezone
 
 
-# class Version(models.Model):
-#     chaos = models.ForeignKey('Chaos', on_delete=models.CASCADE, verbose_name='Стенд', null=True)
-#     metric_report = models.ForeignKey('MetricReport', on_delete=models.CASCADE, verbose_name='Общий отчет', null=True)
-#     netcompile_report = models.ForeignKey('NetCompileReport',
-#                                           on_delete=models.CASCADE, verbose_name='Отчет о сборке сети', null=True)
-#     drawimgs_report = models.ForeignKey('DrawImgsReport',
-#                                         on_delete=models.CASCADE, verbose_name='Отчет об отрисовке', null=True)
-#     total_esl = models.IntegerField('Количество ценников стенда, шт', blank=True, null=True)
-#     dd_nums = models.CharField('Количество РУ, шт', max_length=150, blank=True, null=True)
-#     dd_configuration = models.CharField('Конфигурация РУ', max_length=150, blank=True, null=True)
-#     dd_dongles_num = models.IntegerField('Количество донглов на РУ, шт', blank=True, null=True)
-#     version_sum = models.CharField('Версия СУМ', max_length=30, blank=True, null=True)
-#     version_chaos = models.CharField('Версия Хаоса', max_length=30, blank=True, null=True)
-#     chaos_configuration = models.CharField('Конфигурация Хаоса', max_length=100, blank=True, null=True)
-#     tree_floor_num = models.IntegerField('Число этажей дерева', blank=True, null=True)
-#     version_driver = models.CharField('Версия драйвера', max_length=30, blank=True, null=True)
-#     version_esl_firmware = models.CharField('Версия прошивки ЭЦ', max_length=30, blank=True, null=True)
-#     version_esl_hw = models.CharField('HW версия ЭЦ', max_length=30, blank=True, null=True)
-#     version_dongles_hw = models.CharField('HW версия донглов', max_length=30, blank=True, null=True)
-#
-#     class Meta:
-#         ordering = ["-pk"]
-#         verbose_name = "Версия"
-#         verbose_name_plural = "Версии"
-#
-#     def __str__(self):
-#         return f'{self.title}'
+class Version(models.Model):
+    version_num = models.CharField('Номер версии', max_length=30, unique=True, null=True)
+    date_time = models.DateTimeField('Дата и время создания',
+                                     default=timezone.localtime, blank=True, null=True)
+
+    class Meta:
+        ordering = ["-pk"]
+        verbose_name = "Версия"
+        verbose_name_plural = "Версии"
+
+    def __str__(self):
+        return self.version_num
+
+
+class Configuration(models.Model):
+    date_time = models.DateTimeField('Дата и время создания',
+                                     default=timezone.localtime, blank=True, null=True)
+    chaos = models.ForeignKey('Chaos', on_delete=models.CASCADE, verbose_name='Стенд', null=True)
+    metric_report = models.OneToOneField('MetricReport',
+                                         on_delete=models.CASCADE, verbose_name='Общий отчет',
+                                         null=True, blank=True)
+    netcompile_report = models.OneToOneField('NetCompileReport',
+                                             on_delete=models.CASCADE, verbose_name='Отчет о сборке сети',
+                                             null=True, blank=True)
+    drawimgs_report = models.OneToOneField('DrawImgsReport',
+                                           on_delete=models.CASCADE, verbose_name='Отчет об отрисовке',
+                                           null=True, blank=True)
+    version_num = models.ForeignKey('Version', on_delete=models.CASCADE, verbose_name='Версия', null=True)
+    shields_num = models.CharField('Номера щитов', max_length=50, blank=True, null=True)
+    hardware_config = models.CharField('Конфигурация системы', max_length=400, blank=True, null=True)
+    total_esl = models.IntegerField('Количество ценников стенда, шт', blank=True, null=True)
+    dd_nums = models.CharField('Количество РУ, шт', max_length=350, blank=True, null=True)
+    dd_configuration = models.CharField('Конфигурация РУ', max_length=350, blank=True, null=True)
+    dd_dongles_num = models.CharField('Количество донглов на РУ, шт', max_length=150, blank=True, null=True)
+    version_sum = models.CharField('Версия СУМ', max_length=30, blank=True, null=True)
+    version_chaos = models.CharField('Версия Хаоса', max_length=30, blank=True, null=True)
+    chaos_configuration = models.TextField('Конфигурация Хаоса', blank=True, null=True)
+    tree_floor_num = models.IntegerField('Число этажей дерева', blank=True, null=True)
+    version_driver = models.CharField('Версия драйвера', max_length=30, blank=True, null=True)
+    version_esl_firmware = models.CharField('Версия прошивки ЭЦ', max_length=250, blank=True, null=True)
+    version_esl_hw = models.CharField('HW версия ЭЦ', max_length=250, blank=True, null=True)
+    version_dongles_hw = models.CharField('HW версия донглов', max_length=250, blank=True, null=True)
+
+    class Meta:
+        ordering = ["-pk"]
+        verbose_name = "Конфигурация"
+        verbose_name_plural = "Конфигурации"
+
+    def __str__(self):
+        report_title = ''
+        if self.netcompile_report:
+            report_title = f'сборки сети #{self.netcompile_report.pk}'
+        if self.drawimgs_report:
+            report_title = f'отрисовки ценников #{self.drawimgs_report.pk}'
+        # if self.metric_report:
+        #     report_title = f'общего отчета #{self.metric_report.pk}'
+        full_title_string = f"Конфигурация {self.version_num if self.version_num else ''} " \
+            f"{report_title}{'общий отчет #' + str(self.metric_report.pk) if self.metric_report else ''} для {self.chaos.name}"
+        return full_title_string
 
 
 class Statistic(models.Model):
@@ -98,8 +130,8 @@ class Chaos(models.Model):
     bat_reserved = models.BooleanField('Отслеживать bat_reserved', default=False, blank=True, null=True)
     dat_file = models.FileField('.dat файл выгрузки товаров и цен', blank=True, null=True)
     grafana_dashboard_url = models.CharField('URL дашборда в Grafana', max_length=200, blank=True, null=True)
-    # shields_num = models.CharField('Номера щитов', max_length=50, blank=True, null=True)
-    # hardware_config = models.CharField('Конфигурация системы', max_length=300, blank=True, null=True)
+    shields_num = models.CharField('Номера щитов', max_length=50, blank=True, null=True)
+    hardware_config = models.CharField('Конфигурация системы', max_length=300, blank=True, null=True)
 
     class Meta:
         ordering = ["name"]
@@ -183,6 +215,9 @@ class NetCompileReport(models.Model):
     max_inactive_time = models.IntegerField('Предельное время бездействия', default=30, blank=True, null=True)
     success_percent = models.FloatField('Считать сборку успешной при, %', default=100, blank=True, null=True)
     task_id = models.CharField('Celery task ID', max_length=200, blank=True, null=True)
+    config = models.OneToOneField('Configuration',
+                                  on_delete=models.CASCADE, verbose_name='Конфигурация',
+                                  null=True, blank=True)
 
     class Meta:
         ordering = ["-pk"]
@@ -221,6 +256,9 @@ class MetricReport(models.Model):
     draw_success_percent = models.FloatField('Считать отрисовку успешной при, %', default=100.0, blank=True, null=True)
     task_id = models.CharField('Celery task ID', max_length=200, blank=True, null=True)
     draw_imgs_type = models.CharField('Тип отрисовки ценников', max_length=20, blank=True, null=True)
+    config = models.OneToOneField('Configuration',
+                                  on_delete=models.CASCADE, verbose_name='Конфигурация',
+                                  null=True, blank=True)
 
     class Meta:
         ordering = ["-pk"]
@@ -292,6 +330,9 @@ class DrawImgsReport(models.Model):
     success_percent = models.FloatField('Cчитать отрисовку успешной при, %', default=100, blank=True, null=True)
     task_id = models.CharField('Celery task ID', max_length=200, blank=True, null=True)
     draw_imgs_type = models.CharField('Тип отрисовки ценников', max_length=20, blank=True, null=True)
+    config = models.OneToOneField('Configuration',
+                                  on_delete=models.CASCADE, verbose_name='Конфигурация',
+                                  null=True, blank=True)
 
     class Meta:
         ordering = ["-pk"]

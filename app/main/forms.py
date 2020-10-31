@@ -1,46 +1,43 @@
 from django import forms
 from django.forms import ModelForm
-from main.models import MetricReport, Chaos, DrawImgsReport, NetCompileReport
+from main.models import MetricReport, Chaos, DrawImgsReport, NetCompileReport, Configuration
 
 
-# class VersionForm(ModelForm):
-#     class Meta:
-#         model = Version
-#         fields = [
-#             'title',
-#             'chaos',
-#             'total_esl',
-#             'shields_num',
-#             'dd_nums',
-#             'dd_configuration',
-#             'dd_dongles_num',
-#             'hardware_config',
-#             'version_sum',
-#             'version_chaos',
-#             'chaos_configuration',
-#             'tree_floor_num',
-#             'version_driver',
-#             'version_esl_firmware',
-#             'version_esl_hw',
-#             'version_dongles_hw',
-#         ]
-#         widgets = {
-#             'title': forms.TextInput(attrs={'class': 'form-control'}),
-#             'total_esl': forms.TextInput(attrs={'class': 'form-control'}),
-#             'shields_num': forms.TextInput(attrs={'class': 'form-control'}),
-#             'dd_nums': forms.TextInput(attrs={'class': 'form-control'}),
-#             'dd_configuration': forms.TextInput(attrs={'class': 'form-control'}),
-#             'dd_dongles_num': forms.TextInput(attrs={'class': 'form-control'}),
-#             'hardware_config': forms.TextInput(attrs={'class': 'form-control'}),
-#             'version_sum': forms.TextInput(attrs={'class': 'form-control'}),
-#             'version_chaos': forms.TextInput(attrs={'class': 'form-control'}),
-#             'chaos_configuration': forms.TextInput(attrs={'class': 'form-control'}),
-#             'tree_floor_num': forms.TextInput(attrs={'class': 'form-control'}),
-#             'version_driver': forms.TextInput(attrs={'class': 'form-control'}),
-#             'version_esl_firmware': forms.TextInput(attrs={'class': 'form-control'}),
-#             'version_esl_hw': forms.TextInput(attrs={'class': 'form-control'}),
-#             'version_dongles_hw': forms.TextInput(attrs={'class': 'form-control'}),
-#         }
+class ConfigurationForm(ModelForm):
+    class Meta:
+        model = Configuration
+        fields = [
+            'total_esl',
+            'shields_num',
+            'dd_nums',
+            'dd_configuration',
+            'dd_dongles_num',
+            'hardware_config',
+            'version_sum',
+            'version_chaos',
+            'chaos_configuration',
+            'tree_floor_num',
+            'version_driver',
+            'version_esl_firmware',
+            'version_esl_hw',
+            'version_dongles_hw',
+        ]
+        widgets = {
+            'total_esl': forms.TextInput(attrs={'class': 'form-control'}),
+            'shields_num': forms.TextInput(attrs={'class': 'form-control'}),
+            'dd_nums': forms.TextInput(attrs={'class': 'form-control'}),
+            'dd_configuration': forms.TextInput(attrs={'class': 'form-control'}),
+            'dd_dongles_num': forms.TextInput(attrs={'class': 'form-control'}),
+            'hardware_config': forms.TextInput(attrs={'class': 'form-control'}),
+            'version_sum': forms.TextInput(attrs={'class': 'form-control'}),
+            'version_chaos': forms.TextInput(attrs={'class': 'form-control'}),
+            'chaos_configuration': forms.TextInput(attrs={'class': 'form-control'}),
+            'tree_floor_num': forms.TextInput(attrs={'class': 'form-control'}),
+            'version_driver': forms.TextInput(attrs={'class': 'form-control'}),
+            'version_esl_firmware': forms.TextInput(attrs={'class': 'form-control'}),
+            'version_esl_hw': forms.TextInput(attrs={'class': 'form-control'}),
+            'version_dongles_hw': forms.TextInput(attrs={'class': 'form-control'}),
+        }
 
 
 class MetricReportForm(ModelForm):

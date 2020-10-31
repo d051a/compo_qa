@@ -7,7 +7,7 @@ from main.chaos_utils import ChaosStatisctic
 from main.models import NetCompileReport, DrawImgsReport, Chaos, MetricReport
 from main.tasks.tasks_tools import add_current_statistic_to_db, set_db_object_attribute, get_chaos_config,\
     net_compilation_init, net_compilation_get_statistics, draw_images_init, draw_images_get_statistics,\
-    create_net_compilation_report, create_draw_imgs_report, draw_images_init_sum
+    create_net_compilation_report, create_draw_imgs_report, draw_images_init_sum, get_chaos_configuration
 
 
 @app.task()
@@ -43,6 +43,12 @@ def run_net_compilation_task(id_report):
                          'password': db_chaos_object.password,
                          'port': db_chaos_object.ssh_port
                          }
+
+    configuration = get_chaos_configuration(db_chaos_object.pk, net_compile_report)
+    if configuration is not None:
+        net_compile_report.config = configuration
+        net_compile_report.save()
+
     net_compilation_init_result = net_compilation_init(chaos_credentials, net_compile_report)
     if net_compilation_init_result is False:
         return net_compilation_init_result
@@ -59,6 +65,12 @@ def run_drawed_images_report_generate_task(id_report):
                          'password': db_chaos_object.password,
                          'port': db_chaos_object.ssh_port
                          }
+
+    configuration = get_chaos_configuration(db_chaos_object.pk, db_draw_imgs_object)
+    if configuration is not None:
+        db_draw_imgs_object.config = configuration
+        db_draw_imgs_object.save()
+
     if db_draw_imgs_object.draw_imgs_type == 'highlight':
         draw_images_init_result = draw_images_init(chaos_credentials, db_draw_imgs_object)
     elif db_draw_imgs_object.draw_imgs_type == 'sum':
@@ -76,6 +88,11 @@ def run_all_metrics_report_generate_task(id_report):
     metric_report = MetricReport.objects.get(pk=id_report)
     net_compiles_amount = metric_report.net_compile_amount
     draw_imgs_amount = metric_report.draw_imgs_amount
+
+    configuration = get_chaos_configuration(metric_report.chaos.pk, metric_report)
+    if configuration is not None:
+        metric_report.config = configuration
+        metric_report.save()
 
     while net_compiles_amount != 0:
         net_compilation_report = create_net_compilation_report(metric_report)

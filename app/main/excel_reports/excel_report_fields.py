@@ -69,3 +69,20 @@ draw_imgs_fields_common_extended_report = ['create_date_time',
                                            'draw_imgs_type',
                                            'status',
                                            ]
+
+
+chaos_configuration_fields = ['shields_num',
+                              'hardware_config',
+                              'total_esl',
+                              'dd_nums',
+                              'dd_configuration',
+                              'dd_dongles_num',
+                              'version_sum',
+                              'version_chaos',
+                              'chaos_configuration',
+                              'tree_floor_num',
+                              'version_driver',
+                              'version_esl_firmware',
+                              'version_esl_hw',
+                              'version_dongles_hw',
+                              ]

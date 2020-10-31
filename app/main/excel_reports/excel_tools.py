@@ -2,7 +2,7 @@ import django
 import os
 from main.models import DrawImgsStat, NetCompilationStat
 from openpyxl.styles.borders import Border, Side
-from openpyxl.styles import Font
+from openpyxl.styles import Font, Alignment
 
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "conf.settings")
@@ -51,6 +51,7 @@ def generate_table_data(worksheet, reports_list, model_included_columns, vertica
         cell.value = column_title
         cell.border = thin_border
         cell.font = Font(bold=True)
+        cell.alignment = Alignment(horizontal='center')
 
     # заполнение таблицы даными
     for stat in reports_list.values_list():
@@ -63,12 +64,13 @@ def generate_table_data(worksheet, reports_list, model_included_columns, vertica
                 cell = worksheet.cell(row=colon_or_row_num, column=elem_num)
             cell.value = cell_value
             cell.border = thin_border
+            cell.alignment = Alignment(horizontal='left')
     return worksheet
 
 
 def create_excel_cheet(workbook, reports_list, model_included_columns, vertical=False):
     worksheet = workbook.create_sheet(reports_list.model._meta.verbose_name_plural.title(), 0)
-    worksheet_with_data = generate_table_data(worksheet, reports_list, model_included_columns, vertical=False)
+    worksheet_with_data = generate_table_data(worksheet, reports_list, model_included_columns, vertical=vertical)
     # увеличение ширины колонок
     expands_columns_width(worksheet_with_data)
     return workbook
@@ -104,6 +106,7 @@ def create_excel_cheet_for_stats(workbook, reports_list, report_stats_model, pri
             cell.value = column_title
             cell.border = thin_border
             cell.font = Font(bold=True)
+            cell.alignment = Alignment(horizontal='center')
 
         # заполнение таблицы даными
         for statistic_object in statistic_objects.values_list():
@@ -117,6 +120,7 @@ def create_excel_cheet_for_stats(workbook, reports_list, report_stats_model, pri
                     cell = worksheet.cell(row=row_num, column=elem_num)
                 cell.value = cell_value
                 cell.border = thin_border
+                cell.alignment = Alignment(horizontal='left')
 
         # увеличение ширины колонок
         expands_columns_width(worksheet)
@@ -155,6 +159,7 @@ def create_excel_net_draw_cheet(workbook,
         cell.value = column_title
         cell.border = thin_border
         cell.font = Font(bold=True)
+        cell.alignment = Alignment(horizontal='center')
 
     colon_or_row_num += 1
     # заполнение таблицы даными о сборках сети
@@ -166,15 +171,18 @@ def create_excel_net_draw_cheet(workbook,
                                       end_column=colon_or_row_num+draw_imgs_amount-1)
                 cell = worksheet.cell(row=elem_num, column=colon_or_row_num)
                 cell.value = cell_value
+                cell.alignment = Alignment(horizontal='left')
                 for i in range(1, draw_imgs_amount):
                     cell.border = thin_border
                     cell = worksheet.cell(row=elem_num, column=colon_or_row_num+i)
+                    cell.alignment = Alignment(horizontal='left')
             else:
                 cell = worksheet.cell(row=colon_or_row_num, column=elem_num)
                 cell.value = cell_value
                 cell.border = thin_border
                 cell = worksheet.cell(row=colon_or_row_num+1, column=elem_num)
                 cell.border = thin_border
+                cell.alignment = Alignment(horizontal='left')
 
             cell.border = thin_border
         colon_or_row_num += draw_imgs_amount

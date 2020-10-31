@@ -1,12 +1,14 @@
 import json
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
-from main.models import Statistic, MetricReport, Chaos, DrawImgsReport, NetCompileReport
+from main.models import Statistic, MetricReport, Chaos, DrawImgsReport, NetCompileReport, Configuration
 from main.chaos_utils import Utils as utils
 from django.views.generic import DetailView, CreateView, ListView, UpdateView
 from django.urls import reverse_lazy, reverse
-from main.forms import ChaosForm, DrawImgsReportForm, NetCompileReportForm, MetricReportForm, ChaosEditForm
-from main.tasks.tasks import run_drawed_images_report_generate_task, run_net_compilation_task, run_all_metrics_report_generate_task
+from main.forms import ChaosForm, DrawImgsReportForm, NetCompileReportForm, MetricReportForm, ChaosEditForm, \
+    ConfigurationForm
+from main.tasks.tasks import run_drawed_images_report_generate_task, run_net_compilation_task,\
+    run_all_metrics_report_generate_task
 from conf.celery import app
 from django.utils import timezone
 
@@ -233,3 +235,11 @@ class NetCompiliesReportCreate(CreateView):
         net_compilation_report.task_id = task.id
         net_compilation_report.save()
         return redirect_url
+
+
+class ConfigurationEdit(UpdateView):
+    model = Configuration
+    context_object_name = 'Изменение конфигурации'
+    form_class = ConfigurationForm
+    template_name = 'main/configuration_edit.html'
+    success_url = reverse_lazy('main:chaoses_list')
