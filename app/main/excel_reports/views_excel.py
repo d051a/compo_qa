@@ -100,7 +100,7 @@ def draw_imgs_report_export_to_xlsx(request, draw_imgs_report_id):
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     )
-    response['Content-Disposition'] = 'attachment; filename={date}-net_statisctics.xlsx'.format(
+    response['Content-Disposition'] = 'attachment; filename={date}-draw_imgs_report.xlsx'.format(
         date=datetime.now().strftime('%d.%m.%Y_%H.%M.%S'),
     )
 
@@ -135,7 +135,7 @@ def net_compile_report_export_to_xlsx(request, net_compile_id):
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     )
-    response['Content-Disposition'] = 'attachment; filename={date}-net_statisctics.xlsx'.format(
+    response['Content-Disposition'] = 'attachment; filename={date}-net_compile_report.xlsx'.format(
         date=datetime.now().strftime('%d.%m.%Y_%H.%M.%S'),
     )
 
