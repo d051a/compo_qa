@@ -67,8 +67,14 @@
         </div>
       </div>
     </div>
-        {% if object.chaos.grafana_dashboard_url %}<a href="{{ object.chaos.grafana_dashboard_url }}?orgId=1&from={{ object.create_date_time|date:"U" }}000&to={% if object.date_time_finish%}{{ object.date_time_finish|date:"U" }}000{% else %}now{% endif %}" class="btn btn-primary" role="button" target="_blank">Графики (Grafana)</a>{% endif %}
-        </p>
+        <p></p>
+        <div class="btn-group">
+                <form action="{% url 'main:net_compile_stats_export_to_xlsx' object.pk %}">
+                    {% if object.chaos.grafana_dashboard_url %}<a href="{{ object.chaos.grafana_dashboard_url }}?orgId=1&from={{ object.create_date_time|date:"U" }}000&to={% if object.date_time_finish%}{{ object.date_time_finish|date:"U" }}000{% else %}now{% endif %}" class="btn btn-primary" role="button" target="_blank">Графики (Grafana)</a>{% endif %}
+                    <button type="submit" class="btn btn-success">Общий отчет в Excel</button>
+                </form>
+        </div>
+        <p></p>
         <table id="net_compile_stats" class="datatable row-border" style="width:100;">
             <thead>
                 <tr>

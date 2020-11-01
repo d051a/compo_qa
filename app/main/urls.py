@@ -26,8 +26,14 @@ urlpatterns = [
     path('configurations/<int:pk>/edit/', views.ConfigurationEdit.as_view(), name='configuration_edit'),
 
     # excel reports generators
-    path('metrics/<int:chaos_id>/stats/excel', views_excel.chaos_stats_export_to_xlsx, name='chaos_stats_export_to_xlsx'),
-    path('metrics/<int:metric_report_id>/excel', views_excel.metric_report_export_to_xlsx, name='export_report_data_to_xlsx'),
+    path('metrics/<int:chaos_id>/stats/excel',
+         views_excel.chaos_stats_export_to_xlsx, name='chaos_stats_export_to_xlsx'),
+    path('metrics/<int:metric_report_id>/excel',
+         views_excel.metric_report_export_to_xlsx, name='export_report_data_to_xlsx'),
+    path('netcompiles/<int:net_compile_id>/excel',
+         views_excel.net_compile_report_export_to_xlsx, name='net_compile_stats_export_to_xlsx'),
+    path('drawed/<int:draw_imgs_report_id>/excel',
+         views_excel.draw_imgs_report_export_to_xlsx, name='draw_imgs_report_export_to_xlsx'),
 
     # excel json-datatables
     path('metric_reports_list_json/', views_tables.MetricsModelListJson.as_view(), name='metric_reports_list_json'),
