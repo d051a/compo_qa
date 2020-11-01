@@ -73,7 +73,7 @@ class MetricReportForm(ModelForm):
 class ChaosForm(ModelForm):
     class Meta:
         model = Chaos
-        fields = ['name', 'ip', 'port', 'ssh_port', 'login', 'password', 'description']
+        fields = ['name', 'ip', 'port', 'ssh_port', 'login', 'password', 'description', 'shields_num', 'hardware_config']
         widgets = {
             'ip': forms.TextInput(attrs={'class': 'form-control'}),
             'port': forms.TextInput(attrs={'class': 'form-control'}),
@@ -82,6 +82,8 @@ class ChaosForm(ModelForm):
             'login': forms.TextInput(attrs={'class': 'form-control'}),
             'password': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.TextInput(attrs={'class': 'form-control'}),
+            'shields_num': forms.TextInput(attrs={'class': 'form-control'}),
+            'hardware_config': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
 
@@ -89,7 +91,7 @@ class ChaosEditForm(ChaosForm):
     class Meta:
         model = Chaos
         fields = ['name', 'ip', 'port', 'ssh_port', 'login',
-                  'password', 'description', 'config', 'monitoring_config_params',
+                  'password', 'description',  'shields_num', 'hardware_config', 'config', 'monitoring_config_params',
                   'multimeter_ip', 'bat_reserved', 'grafana_dashboard_url', 'dat_file', ]
         TRUE_FALSE_CHOICES = (
             (True, 'Да'),
@@ -109,6 +111,8 @@ class ChaosEditForm(ChaosForm):
             'bat_reserved': forms.Select(choices=TRUE_FALSE_CHOICES, attrs={'class': 'form-control'}),
             'dat_file': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
             'grafana_dashboard_url': forms.TextInput(attrs={'class': 'form-control'}),
+            'shields_num': forms.TextInput(attrs={'class': 'form-control'}),
+            'hardware_config': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
 
