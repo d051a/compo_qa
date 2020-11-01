@@ -48,22 +48,23 @@
             <b>Тип отрисовки ценников:</b> {% if object.draw_imgs_type == 'sum' %}СУМ{% elif object.draw_imgs_type == 'highlight' %}HighLight{% endif %}<br>
       </div>
       <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
-            <b>Версия релиза:</b> {{ object.config.version_num.version_num }}<br>
-            <b>Номера щитов:</b> {{ object.config.shields_num }}<br>
-            <b>Конфигурация системы:</b> {{ object.config.hardware_config }}<br>
-            <b>Количество ценников:</b> {{ object.config.total_esl }}<br>
-            <b>Количество РУ, шт:</b> {{ object.config.dd_nums }}<br>
-            <b>Конфигурация РУ:</b> {{ object.config.dd_configuration }}<br>
-            <b>Количество донглов на РУ, шт:</b> {{ object.config.dd_dongles_num }}<br>
-            <b>Версия СУМ:</b> {{ object.config.version_sum }}<br>
-            <b>Версия Хаоса:</b> {{ object.config.version_chaos }}<br>
-            <b>Конфигурация Хаоса:</b> {% if object.config.chaos_configuration %}<a href="#" data-toggle="modal" data-target="#staticBackdrop">посмотреть</a>{% endif %}<br>
-            <b>Число этажей дерева:</b> {{ object.config.tree_floor_num }}<br>
-            <b>Версия драйвера:</b> {{ object.config.version_driver }}<br>
-            <b>Версия прошивки ЭЦ:</b> {{ object.config.version_esl_firmware }}<br>
-            <b>HW версия ЭЦ:</b> {{ object.config.version_esl_hw }}<br>
-            <b>HW версия донглов:</b> {{ object.config.version_dongles_hw }}<br>
-            {% if object.config.pk %}<a href="{% url 'main:configuration_edit' object.config.pk %}">изменить конфигурацию</a>{% endif %}
+                <p></p>
+                <b>Версия релиза:</b> {% if object.config.version_num.version_num %}{{ object.config.version_num.version_num }}{% else %}-{% endif %}<br>
+                <b>Номера щитов:</b> {% if object.config.shields_num %}{{ object.config.shields_num }}{% else %}-{% endif %}<br>
+                <b>Конфигурация системы:</b> {% if object.config.hardware_config %}{{ object.config.hardware_config }}{% else %}-{% endif %}<br>
+                <b>Количество ценников:</b> {% if object.config.total_esl %}{{ object.config.total_esl }}{% else %}-{% endif %}<br>
+                <b>Количество РУ, шт:</b> {% if object.config.dd_nums %}{{ object.config.dd_nums }}{% else %}-{% endif %}<br>
+                <b>Конфигурация РУ:</b> {% if object.config.dd_configuration %}{{ object.config.dd_configuration }}{% else %}-{% endif %}<br>
+                <b>Количество донглов на РУ, шт:</b> {% if object.config.dd_dongles_num %}{{ object.config.dd_dongles_num }}{% else %}-{% endif %}<br>
+                <b>Версия СУМ:</b> {% if object.config.version_sum %}{{ object.config.version_sum }}{% else %}-{% endif %}<br>
+                <b>Версия Хаоса:</b> {% if object.config.version_chaos %}{{ object.config.version_chaos }}{% else %}-{% endif %}<br>
+                <b>Конфигурация Хаоса:</b> {% if object.config.chaos_configuration %}<a href="#" data-toggle="modal" data-target="#staticBackdrop">посмотреть</a>{% else %}-{% endif %}
+                <b>Число этажей дерева:</b> {% if object.config.tree_floor_num %}{{ object.config.tree_floor_num }}{% else %}-{% endif %}<br>
+                <b>Версия драйвера:</b> {% if object.config.version_driver %}{{ object.config.version_driver }}{% else %}-{% endif %}<br>
+                <b>Версия прошивки ЭЦ:</b> {% if object.config.version_esl_firmware %}{{ object.config.version_esl_firmware }}{% else %}-{% endif %}<br>
+                <b>HW версия ЭЦ:</b> {% if object.config.version_esl_hw %}{{ object.config.version_esl_hw }}{% else %}-{% endif %}<br>
+                <b>HW версия донглов:</b> {% if object.config.version_dongles_hw %}{{ object.config.version_dongles_hw }}{% else %}-{% endif %}<br>
+                {% if object.config.pk %}<a href="{% url 'main:configuration_edit' object.config.pk %}">изменить конфигурацию</a>{% endif %}
       </div>
     </div>
   </div>
