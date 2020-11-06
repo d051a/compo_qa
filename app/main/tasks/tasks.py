@@ -88,6 +88,7 @@ def run_all_metrics_report_generate_task(id_report):
     metric_report = MetricReport.objects.get(pk=id_report)
     net_compiles_amount = metric_report.net_compile_amount
     draw_imgs_amount = metric_report.draw_imgs_amount
+    metric_report_status = 'OK'
 
     configuration = get_chaos_configuration(metric_report.chaos.pk, metric_report)
     if configuration is not None:
@@ -100,6 +101,7 @@ def run_all_metrics_report_generate_task(id_report):
         time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
         if result == 2:
             print(f'{time_now} Превышено предельное время cборки сети.')
+            metric_report_status = 'FAIL'
             net_compiles_amount -= 1
             continue
         if result == 1:
@@ -113,17 +115,19 @@ def run_all_metrics_report_generate_task(id_report):
             time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
             if result == 2:
                 print(f'{time_now} Превышено предельное время отрисовки.')
+                metric_report_status = 'FAIL'
                 draw_imgs_count -= 1
             elif result == 1:
                 print(f'{datetime} Успешная отрисовка')
                 draw_imgs_count -= 1
             elif result == 3:
                 print(f'{datetime} Ошибка в процессе выполнения скрипта')
+                metric_report_status = 'FAIL'
             else:
                 break
     metric_report.date_time_finish = timezone.localtime()
     metric_report.task_id = ''
-    metric_report.status = 'OK'
+    metric_report.status = metric_report_status
     metric_report.save()
     return True
 
