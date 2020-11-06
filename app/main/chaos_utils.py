@@ -349,9 +349,6 @@ class ChaosStatisctic:
             inaccessible_nodes = self.inaccessible_nodes
             nodes_num = self.nodes_num
             net_compilation_percent = ((total_nodes - inaccessible_nodes - nodes_num) / (total_nodes - nodes_num)) * 100
-            # real_total_nodes = total_nodes - nodes_num
-            # net_compilation_percent = ((total_nodes - inaccessible_nodes - nodes_num) / (
-            #             real_total_nodes - nodes_num)) * 100
             return float(net_compilation_percent)
         except ZeroDivisionError:
             return float(0)
