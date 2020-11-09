@@ -1,8 +1,10 @@
 net_compile_short_report_draw_fields = ['create_date_time', 'status', 'date_time_finish', 'name', 'ip',
-                                        'p50', 'p75', 'p90', 'p95', 'p96', 'p97', 'p98', 'p99', 'p100']
+                                        'p50', 'p75', 'p90', 'p95', 'p96', 'p97', 'p98', 'p99', 'p100',
+                                        'voltage_average']
 
 draw_imgs_stats_short_report_draw_fields = ['create_date_time', 'status', 'date_time_finish', 'name', 'ip',
-                                            'p50', 'p75', 'p90', 'p95', 'p96', 'p97', 'p98', 'p99', 'p100']
+                                            'p50', 'p75', 'p90', 'p95', 'p96', 'p97', 'p98', 'p99', 'p100',
+                                            'voltage_average']
 
 net_compile_reports_draw_fields = ['create_date_time', 'status',
                                    'p50', 'p75', 'p90', 'p95', 'p96', 'p97', 'p98', 'p99', 'p100',
@@ -10,7 +12,7 @@ net_compile_reports_draw_fields = ['create_date_time', 'status',
                                    ]
 draw_imgs_reports_draw_fields = ['create_date_time', 'status',
                                  'p50', 'p75', 'p90', 'p95', 'p96', 'p97', 'p98', 'p99', 'p100', 'fact_total_esl',
-                                 'drawed_esl', 'not_drawed_esl', 'date_time_finish'
+                                 'drawed_esl', 'not_drawed_esl', 'date_time_finish',
                                  ]
 draw_imgs_stat_fields = ['percent_step', 'elapsed_time', 'images_succeeded']
 net_compile_stat_fields = ['compilation_percent', 'online_esl', 'elapsed_time']
@@ -43,10 +45,10 @@ metrics_report_common_statistic_draw_fields = ['date_time',
                                                ]
 
 net_compile_fields_common_report = ['create_date_time', 'elapsed_time', 'final_percent', 't60', 'fact_total_esl',
-                                    'status',
+                                    'status', 'voltage_average',
                                     ]
 draw_imgs_fields_common_report = ['p50', 'p75', 'p90', 'p95', 'p96', 'p97', 'p98', 'p99', 'p995', 'p999', 'p100',
-                                  'not_drawed_esl',
+                                  'not_drawed_esl', 'voltage_average',
                                   ]
 net_compile_fields_common_extended_report = ['create_date_time', 'elapsed_time', 'final_percent', 'status',
                                              'p10', 'p20', 'p30', 'p40', 'p50', 'p60', 'p75', 'p90', 'p95', 'p96',
@@ -55,6 +57,7 @@ net_compile_fields_common_extended_report = ['create_date_time', 'elapsed_time',
                                              't110', 't120', 't130', 't140', 't150',
                                              'fact_total_esl',
                                              'success_percent',
+                                             'voltage_average'
                                              ]
 draw_imgs_fields_common_extended_report = ['create_date_time',
                                            'date_time_finish',
@@ -68,6 +71,7 @@ draw_imgs_fields_common_extended_report = ['create_date_time',
                                            'final_percent',
                                            'draw_imgs_type',
                                            'status',
+                                           'voltage_average'
                                            ]
 
 

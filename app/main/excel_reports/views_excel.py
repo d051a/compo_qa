@@ -20,15 +20,24 @@ def metric_report_export_to_xlsx(request, metric_report_id):
     :return:
     """
     metrics_report = MetricReport.objects.get(pk=metric_report_id)
+
+    report_start_time = metrics_report.create_date_time
+    report_finish_time = metrics_report.date_time_finish
+    if report_finish_time is None:
+        report_finish_time = timezone.localtime()
+
     net_compile_reports = NetCompileReport.objects.filter(metric_report=metrics_report)
     draw_imgs_reports = DrawImgsReport.objects.filter(metric_report=metrics_report)
-    metrics_report_common_statistic = Statistic.objects.filter(metric_report=metrics_report).order_by('date_time')
+    metrics_report_common_statistic = Statistic.objects.filter(metric_report=metrics_report).filter(
+        date_time__range=(report_start_time, report_finish_time)).order_by('date_time')
     configuration = Configuration.objects.filter(metric_report=metrics_report)
+
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     )
-    response['Content-Disposition'] = 'attachment; filename={date}-metric_report.xlsx'.format(
+    response['Content-Disposition'] = 'attachment; filename={date}-metric_report_{chaos_name}.xlsx'.format(
         date=datetime.now().strftime('%d.%m.%Y_%H.%M.%S'),
+        chaos_name=metrics_report.chaos.name
     )
     draw_imgs_amount = metrics_report.draw_imgs_amount
     workbook = Workbook()
@@ -69,8 +78,9 @@ def chaos_stats_export_to_xlsx(request, chaos_id):
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     )
-    response['Content-Disposition'] = 'attachment; filename={date}-nets_draws_report.xlsx'.format(
+    response['Content-Disposition'] = 'attachment; filename={date}-nets_draws_report_{chaos_name}.xlsx'.format(
         date=datetime.now().strftime('%d.%m.%Y_%H.%M.%S'),
+        chaos_name=chaos.name
     )
 
     workbook = Workbook()
@@ -100,8 +110,9 @@ def draw_imgs_report_export_to_xlsx(request, draw_imgs_report_id):
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     )
-    response['Content-Disposition'] = 'attachment; filename={date}-draw_imgs_report.xlsx'.format(
+    response['Content-Disposition'] = 'attachment; filename={date}-draw_imgs_report_{chaos_name}.xlsx'.format(
         date=datetime.now().strftime('%d.%m.%Y_%H.%M.%S'),
+        chaos_name=chaos.name
     )
 
     workbook = Workbook()
@@ -135,8 +146,9 @@ def net_compile_report_export_to_xlsx(request, net_compile_id):
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     )
-    response['Content-Disposition'] = 'attachment; filename={date}-net_compile_report.xlsx'.format(
+    response['Content-Disposition'] = 'attachment; filename={date}-net_compile_report_{chaos_name}.xlsx'.format(
         date=datetime.now().strftime('%d.%m.%Y_%H.%M.%S'),
+        chaos_name=chaos.name
     )
 
     workbook = Workbook()

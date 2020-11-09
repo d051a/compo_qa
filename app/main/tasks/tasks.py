@@ -7,7 +7,8 @@ from main.chaos_utils import ChaosStatisctic
 from main.models import NetCompileReport, DrawImgsReport, Chaos, MetricReport
 from main.tasks.tasks_tools import add_current_statistic_to_db, set_db_object_attribute, get_chaos_config,\
     net_compilation_init, net_compilation_get_statistics, draw_images_init, draw_images_get_statistics,\
-    create_net_compilation_report, create_draw_imgs_report, draw_images_init_sum, get_chaos_configuration
+    create_net_compilation_report, create_draw_imgs_report, draw_images_init_sum, get_chaos_configuration,\
+    save_report_voltage_average
 
 
 @app.task()
@@ -98,6 +99,8 @@ def run_all_metrics_report_generate_task(id_report):
     while net_compiles_amount != 0:
         net_compilation_report = create_net_compilation_report(metric_report)
         result = run_net_compilation_task(net_compilation_report.id)
+        save_report_voltage_average(net_compilation_report)
+        save_report_voltage_average(metric_report)
         time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
         if result == 2:
             print(f'{time_now} Превышено предельное время cборки сети.')
@@ -112,6 +115,8 @@ def run_all_metrics_report_generate_task(id_report):
         while draw_imgs_count != 0:
             draw_imgs_report = create_draw_imgs_report(metric_report)
             result = run_drawed_images_report_generate_task(draw_imgs_report.id)
+            save_report_voltage_average(draw_imgs_report)
+            save_report_voltage_average(metric_report)
             time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
             if result == 2:
                 print(f'{time_now} Превышено предельное время отрисовки.')

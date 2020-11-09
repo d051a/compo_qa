@@ -218,6 +218,7 @@ class NetCompileReport(models.Model):
     config = models.OneToOneField('Configuration',
                                   on_delete=models.CASCADE, verbose_name='Конфигурация',
                                   null=True, blank=True)
+    voltage_average = models.FloatField('Среднее значение потребления в процессе сборки', blank=True, null=True)
 
     class Meta:
         ordering = ["-pk"]
@@ -259,6 +260,7 @@ class MetricReport(models.Model):
     config = models.OneToOneField('Configuration',
                                   on_delete=models.CASCADE, verbose_name='Конфигурация',
                                   null=True, blank=True)
+    voltage_average = models.FloatField('Среднее значение потребления (общее)', blank=True, null=True)
 
     class Meta:
         ordering = ["-pk"]
@@ -333,6 +335,7 @@ class DrawImgsReport(models.Model):
     config = models.OneToOneField('Configuration',
                                   on_delete=models.CASCADE, verbose_name='Конфигурация',
                                   null=True, blank=True)
+    voltage_average = models.FloatField('Среднее значение потребления в процессе отрисовки', blank=True, null=True)
 
     class Meta:
         ordering = ["-pk"]

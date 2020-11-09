@@ -7,12 +7,12 @@ from main.models import NetCompilationStat, DrawImgsStat, Statistic, NetCompileR
     MetricReport, Configuration, Version
 from datetime import datetime
 from main.chaos_utils import Utils as utils
-from django.utils import timezone
-from main.chaos_utils import ChaosStatisctic
+from main.chaos_utils import ChaosStatisctic, ChaosConfigurationInfo
 from conf.settings import BASE_DIR, MEDIA_ROOT
 from main.tasks.change_price import dat_file_change_prices
-from main.chaos_utils import ChaosConfigurationInfo
 from django.db.utils import IntegrityError
+from django.utils import timezone
+from django.db.models import Avg
 
 
 def check_host_alive(chaos_ip, slave_ip, slave_port):
@@ -782,6 +782,23 @@ def get_chaos_configuration(chaos_pk, report_object):
     except Exception as error:
         print(f'Не удалось создать конфигурацию для {chaos.name}({chaos.ip}). error: {error}')
         return None
+
+
+def save_report_voltage_average(report_object):
+    report_start_time = report_object.create_date_time
+    report_finish_time = report_object.date_time_finish
+    if report_finish_time is None:
+        report_finish_time = timezone.localtime()
+    statistics = Statistic.objects.filter(chaos_id=report_object.chaos.id).filter(
+        date_time__range=(report_start_time, report_finish_time))
+    voltage_average = statistics.aggregate(Avg('voltage_average'))['voltage_average__avg']
+    if voltage_average is not None:
+        voltage_average = float('{:.3f}'.format(voltage_average))
+    else:
+        voltage_average = None
+    report_object.voltage_average = voltage_average
+    report_object.save()
+    return
 
 
 if __name__ == '__main__':
