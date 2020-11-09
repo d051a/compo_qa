@@ -475,6 +475,7 @@ def net_compilation_get_statistics(net_compile_report, db_chaos_object):
     start_time = timezone.localtime()
     net_compile_limit_mins = net_compile_report.net_compile_limit_mins
     net_compile_success_percent = net_compile_report.success_percent
+    max_net_compile_percent = 0.0
 
     while True:
         time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
@@ -497,6 +498,9 @@ def net_compilation_get_statistics(net_compile_report, db_chaos_object):
         net_compilation_percent = get_net_compilation_percent(current_chaos_statistic_data,
                                                               net_compile_report.fact_total_esl)
 
+        if net_compilation_percent > max_net_compile_percent:
+            max_net_compile_percent = net_compilation_percent
+
         print(f'Прошло минут с начала сборки: {elapsed_mins} '
               f'Ценников онлайн: {current_chaos_statistic_data.online_esl} '
               f'Предельное время: {net_compile_limit_mins} '
@@ -509,7 +513,7 @@ def net_compilation_get_statistics(net_compile_report, db_chaos_object):
                                     current_chaos_statistic_data.get_true_net_compilation_percent())
             compilation_time_current_step += 1
 
-        if net_compilation_percent >= net_compilation_percent_steps[compilation_percent_current_step]:
+        if max_net_compile_percent >= net_compilation_percent_steps[compilation_percent_current_step]:
             add_net_compilation_statistics_to_db(db_chaos_object,
                                                  net_compile_report,
                                                  current_chaos_statistic_data,
@@ -523,19 +527,19 @@ def net_compilation_get_statistics(net_compile_report, db_chaos_object):
             compilation_percent_current_step += 1
 
         if elapsed_mins > net_compile_limit_mins:
-            if net_compilation_percent >= net_compile_success_percent:
-                save_net_compilation_final_status_and_data(net_compile_report, 'OK', net_compilation_percent)
+            if max_net_compile_percent >= net_compile_success_percent:
+                save_net_compilation_final_status_and_data(net_compile_report, 'OK', max_net_compile_percent)
                 return True
             else:
                 status = f'Превышено предельное время сборки сети: {net_compile_limit_mins} мин.'
-                save_net_compilation_final_status_and_data(net_compile_report, status, net_compilation_percent)
+                save_net_compilation_final_status_and_data(net_compile_report, status, max_net_compile_percent)
                 return 2
 
         compilation_percent_last_step = len(net_compilation_percent_steps) - 1
-        if net_compilation_percent == 100 or compilation_percent_current_step >= compilation_percent_last_step:
+        if max_net_compile_percent == 100 or compilation_percent_current_step >= compilation_percent_last_step:
             net_compile_report.p100 = elapsed_time
             net_compile_report.save()
-            save_net_compilation_final_status_and_data(net_compile_report, 'OK', net_compilation_percent)
+            save_net_compilation_final_status_and_data(net_compile_report, 'OK', max_net_compile_percent)
             break
 
         elapsed_mins = (timezone.localtime() - start_time).total_seconds() / 60
@@ -568,16 +572,21 @@ def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object):
     elapsed_mins = 0
     drawed_percent_current_step = 0
     drawed_time_current_step = 0
+    max_drawed_images_percent = 0.0
     while True:
         time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
         print(f'{time_now} Получение новых данных c {db_chaos_object.ip} об отрисовке ценников...')
         current_chaos_statistic_data = ChaosStatisctic(ip=db_chaos_object.ip)
         fact_total_esl = db_draw_imgs_object.fact_total_esl
-        drawed_images_percent = get_drawed_images_percent(current_chaos_statistic_data, fact_total_esl)
         current_time = timezone.localtime()
         elapsed_time = utils.get_time_delta(current_time,
                                             db_draw_imgs_object.create_date_time,
                                             "{hours}:{minutes}:{seconds}")
+
+        drawed_images_percent = get_drawed_images_percent(current_chaos_statistic_data, fact_total_esl)
+
+        if drawed_images_percent > max_drawed_images_percent:
+            max_drawed_images_percent = drawed_images_percent
 
         if elapsed_mins > db_draw_imgs_object.draw_imgs_limit_mins:
             status = f'FAIL: 'f'Превышено предельное время отрисовки: {db_draw_imgs_object.draw_imgs_limit_mins} мин.'
@@ -603,7 +612,7 @@ def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object):
                                         current_chaos_statistic_data.get_drawed_images_percent())
                 drawed_time_current_step += 1
 
-        if drawed_images_percent >= drawed_percent_points[drawed_percent_current_step]:
+        if max_drawed_images_percent >= drawed_percent_points[drawed_percent_current_step]:
             add_draw_images_statistics_to_db(db_chaos_object,
                                              db_draw_imgs_object,
                                              current_chaos_statistic_data,
@@ -616,7 +625,7 @@ def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object):
             drawed_percent_current_step += 1
 
         drawed_percent_last_step = len(drawed_percent_points) - 1
-        if drawed_images_percent == 100 or drawed_percent_current_step > drawed_percent_last_step:
+        if max_drawed_images_percent == 100 or drawed_percent_current_step > drawed_percent_last_step:
             db_draw_imgs_object.p100 = elapsed_time
             db_draw_imgs_object.save()
             save_draw_imgs_final_status_and_data(db_draw_imgs_object, current_chaos_statistic_data, 'OK')
