@@ -9,13 +9,19 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "conf.settings")
 django.setup()
 
 
-def add_one_cell_data(workbook, worksheet_name, title, data, last_row_num, merge=False, merge_num=None, vertical=False):
+def add_one_cell_data(workbook, worksheet_name, title, data, merge=False, merge_num=None, vertical=False):
+    worksheet = workbook[worksheet_name]
+    if vertical:
+        num_last_row_with_data = worksheet.max_row
+        start_row = num_last_row_with_data + 1
+    else:
+        num_last_column_with_data = worksheet.max_column
+        start_row = num_last_column_with_data + 1
+    colon_or_row_num = 1
+    end_merge_num = colon_or_row_num + merge_num
     thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'),
                          bottom=Side(style='thin'))
-    worksheet = workbook[worksheet_name]
-    colon_or_row_num = 1
-    start_row = last_row_num+1
-    end_merge_column = colon_or_row_num + merge_num
+
     # создание шапки элемента
     if vertical:
         cell = worksheet.cell(row=start_row, column=colon_or_row_num)
@@ -26,16 +32,28 @@ def add_one_cell_data(workbook, worksheet_name, title, data, last_row_num, merge
     cell.font = Font(bold=True)
     cell.alignment = Alignment(horizontal='center')
     # добавление данных и объединение ячеек
+    colon_or_row_num += 1
     if vertical:
-        colon_or_row_num += 1
         if merge:
             worksheet.merge_cells(start_row=start_row, start_column=colon_or_row_num, end_row=start_row,
-                                  end_column=end_merge_column)
+                                  end_column=end_merge_num)
             for i in range(1, merge_num + 1):
                 cell.border = thin_border
                 cell = worksheet.cell(row=start_row, column=colon_or_row_num + i)
                 cell.alignment = Alignment(horizontal='center')
         cell = worksheet.cell(row=start_row, column=colon_or_row_num)
+        cell.value = data
+        cell.border = thin_border
+        cell.alignment = Alignment(horizontal='center')
+    else:
+        if merge:
+            worksheet.merge_cells(start_row=colon_or_row_num, start_column=start_row, end_row=end_merge_num,
+                                  end_column=start_row)
+            for i in range(1, merge_num + 1):
+                cell.border = thin_border
+                cell = worksheet.cell(row=colon_or_row_num + i, column=start_row)
+                cell.alignment = Alignment(horizontal='center')
+        cell = worksheet.cell(row=colon_or_row_num, column=start_row)
         cell.value = data
         cell.border = thin_border
         cell.alignment = Alignment(horizontal='center')
@@ -97,7 +115,7 @@ def generate_table_data(worksheet, reports_list, model_included_columns, vertica
                 cell = worksheet.cell(row=colon_or_row_num, column=elem_num)
             cell.value = cell_value
             cell.border = thin_border
-            cell.alignment = Alignment(horizontal='left')
+            cell.alignment = Alignment(horizontal='center')
     return worksheet
 
 
@@ -153,7 +171,7 @@ def create_excel_cheet_for_stats(workbook, reports_list, report_stats_model, pri
                     cell = worksheet.cell(row=row_num, column=elem_num)
                 cell.value = cell_value
                 cell.border = thin_border
-                cell.alignment = Alignment(horizontal='left')
+                cell.alignment = Alignment(horizontal='center')
 
         # увеличение ширины колонок
         expands_columns_width(worksheet)
@@ -205,25 +223,25 @@ def create_excel_net_draw_cheet(workbook,
                                       end_column=colon_or_row_num+draw_imgs_amount-1)
                 cell = worksheet.cell(row=elem_num, column=colon_or_row_num)
                 cell.value = cell_value
-                cell.alignment = Alignment(horizontal='left')
+                cell.alignment = Alignment(horizontal='center')
                 for i in range(1, draw_imgs_amount):
                     cell.border = thin_border
                     cell = worksheet.cell(row=elem_num, column=colon_or_row_num+i)
-                    cell.alignment = Alignment(horizontal='left')
+                    cell.alignment = Alignment(horizontal='center')
             else:
                 cell = worksheet.cell(row=colon_or_row_num, column=elem_num)
                 cell.value = cell_value
                 cell.border = thin_border
                 cell = worksheet.cell(row=colon_or_row_num+1, column=elem_num)
                 cell.border = thin_border
-                cell.alignment = Alignment(horizontal='left')
+                cell.alignment = Alignment(horizontal='center')
 
             cell.border = thin_border
         colon_or_row_num += draw_imgs_amount
 
     start_row_num = len(net_compile_included_columns) + 1
     generate_table_data(worksheet, draw_imgs_reports, draw_imgs_included_columns,
-                        vertical=True, start_row_num=start_row_num)
+                        vertical=vertical, start_row_num=start_row_num)
     # expands_columns_width(worksheet)
     return workbook
 
