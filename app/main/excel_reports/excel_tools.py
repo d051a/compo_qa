@@ -9,6 +9,39 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "conf.settings")
 django.setup()
 
 
+def add_one_cell_data(workbook, worksheet_name, title, data, last_row_num, merge=False, merge_num=None, vertical=False):
+    thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'),
+                         bottom=Side(style='thin'))
+    worksheet = workbook[worksheet_name]
+    colon_or_row_num = 1
+    start_row = last_row_num+1
+    end_merge_column = colon_or_row_num + merge_num
+    # создание шапки элемента
+    if vertical:
+        cell = worksheet.cell(row=start_row, column=colon_or_row_num)
+    else:
+        cell = worksheet.cell(row=colon_or_row_num, column=start_row)
+    cell.value = title
+    cell.border = thin_border
+    cell.font = Font(bold=True)
+    cell.alignment = Alignment(horizontal='center')
+    # добавление данных и объединение ячеек
+    if vertical:
+        colon_or_row_num += 1
+        if merge:
+            worksheet.merge_cells(start_row=start_row, start_column=colon_or_row_num, end_row=start_row,
+                                  end_column=end_merge_column)
+            for i in range(1, merge_num + 1):
+                cell.border = thin_border
+                cell = worksheet.cell(row=start_row, column=colon_or_row_num + i)
+                cell.alignment = Alignment(horizontal='center')
+        cell = worksheet.cell(row=start_row, column=colon_or_row_num)
+        cell.value = data
+        cell.border = thin_border
+        cell.alignment = Alignment(horizontal='center')
+    return workbook
+
+
 def as_text(value):
     if value is None:
         return ""
@@ -145,6 +178,7 @@ def create_excel_net_draw_cheet(workbook,
     thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'),
                          bottom=Side(style='thin'))
 
+    # фильтр названий для колонок
     for num, field in enumerate(net_compile_included_columns):
         if field in db_model_fields:
             columns.append(net_compile_reports.model._meta.get_field(field).verbose_name)

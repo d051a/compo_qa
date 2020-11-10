@@ -1,6 +1,7 @@
 from main.models import Statistic,  MetricReport, Chaos, DrawImgsReport,\
     NetCompileReport, DrawImgsStat, NetCompilationStat, Configuration
-from main.excel_reports.excel_tools import create_excel_cheet, create_excel_cheet_for_stats, create_excel_net_draw_cheet
+from main.excel_reports.excel_tools import create_excel_cheet, create_excel_cheet_for_stats, create_excel_net_draw_cheet,\
+    add_one_cell_data
 from django.http import HttpResponse
 from datetime import datetime
 from django.utils import timezone
@@ -60,6 +61,15 @@ def metric_report_export_to_xlsx(request, metric_report_id):
                                            draw_imgs_amount,
                                            'Сводный отчет',
                                            vertical=True)
+    worksheet_name = 'Сводный отчет'
+    worksheet = workbook[worksheet_name]
+    num_last_row_with_data = worksheet.max_row
+    merge_cell_num = metrics_report.net_compile_amount * metrics_report.draw_imgs_amount
+    voltage_average = metrics_report.voltage_average
+
+    workbook = add_one_cell_data(workbook, worksheet_name, 'Среднее значение потребления (общее)', voltage_average,
+                                 num_last_row_with_data, merge=True, merge_num=merge_cell_num, vertical=True)
+
     workbook = create_excel_cheet(workbook, configuration, chaos_configuration_fields, vertical=True)
     workbook.save(response)
     return response
