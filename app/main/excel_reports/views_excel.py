@@ -68,7 +68,7 @@ def metric_report_export_to_xlsx(request, metric_report_id):
     workbook = add_one_cell_data(workbook, worksheet_name, 'Среднее значение потребления (общее), mA', voltage_average,
                                  merge=True, merge_num=merge_cell_num, vertical=True)
 
-    workbook = create_excel_cheet(workbook, configuration, chaos_configuration_fields, vertical=True)
+    workbook = create_excel_cheet(workbook, configuration, chaos_configuration_fields, vertical=True, alignment='left')
     workbook.save(response)
     return response
 

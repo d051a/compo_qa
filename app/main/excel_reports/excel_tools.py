@@ -85,7 +85,8 @@ def get_columns_ids(model_included_columns, reports_list):
     return columns, columns_ids
 
 
-def generate_table_data(worksheet, reports_list, model_included_columns, vertical=False, start_row_num=1):
+def generate_table_data(worksheet, reports_list, model_included_columns, vertical=False,
+                        start_row_num=1, alignment='center'):
     columns_and_ids = get_columns_ids(model_included_columns, reports_list)
     columns = columns_and_ids[0]
     columns_ids = columns_and_ids[1]
@@ -115,13 +116,14 @@ def generate_table_data(worksheet, reports_list, model_included_columns, vertica
                 cell = worksheet.cell(row=colon_or_row_num, column=elem_num)
             cell.value = cell_value
             cell.border = thin_border
-            cell.alignment = Alignment(horizontal='center')
+            cell.alignment = Alignment(horizontal=alignment)
     return worksheet
 
 
-def create_excel_cheet(workbook, reports_list, model_included_columns, vertical=False):
+def create_excel_cheet(workbook, reports_list, model_included_columns, vertical=False, alignment='center'):
     worksheet = workbook.create_sheet(reports_list.model._meta.verbose_name_plural.title(), 0)
-    worksheet_with_data = generate_table_data(worksheet, reports_list, model_included_columns, vertical=vertical)
+    worksheet_with_data = generate_table_data(worksheet, reports_list, model_included_columns,
+                                              vertical=vertical, alignment=alignment)
     # увеличение ширины колонок
     expands_columns_width(worksheet_with_data)
     return workbook

@@ -45,10 +45,10 @@ def run_net_compilation_task(id_report):
                          'port': db_chaos_object.ssh_port
                          }
 
-    configuration = get_chaos_configuration(db_chaos_object.pk, net_compile_report)
-    if configuration is not None:
-        net_compile_report.config = configuration
-        net_compile_report.save()
+    get_chaos_configuration(db_chaos_object.pk, net_compile_report)
+    # if configuration is not None:
+    #     net_compile_report.config = configuration
+    #     net_compile_report.save()
 
     net_compilation_init_result = net_compilation_init(chaos_credentials, net_compile_report)
     if net_compilation_init_result is False:
@@ -67,10 +67,10 @@ def run_drawed_images_report_generate_task(id_report):
                          'port': db_chaos_object.ssh_port
                          }
 
-    configuration = get_chaos_configuration(db_chaos_object.pk, db_draw_imgs_object)
-    if configuration is not None:
-        db_draw_imgs_object.config = configuration
-        db_draw_imgs_object.save()
+    get_chaos_configuration(db_chaos_object.pk, db_draw_imgs_object)
+    # if configuration is not None:
+    #     db_draw_imgs_object.config = configuration
+    #     db_draw_imgs_object.save()
 
     if db_draw_imgs_object.draw_imgs_type == 'highlight':
         draw_images_init_result = draw_images_init(chaos_credentials, db_draw_imgs_object)
@@ -91,10 +91,10 @@ def run_all_metrics_report_generate_task(id_report):
     draw_imgs_amount = metric_report.draw_imgs_amount
     metric_report_status = 'OK'
 
-    configuration = get_chaos_configuration(metric_report.chaos.pk, metric_report)
-    if configuration is not None:
-        metric_report.config = configuration
-        metric_report.save()
+    get_chaos_configuration(metric_report.chaos.pk, metric_report)
+    # if configuration is not None:
+    #     metric_report.config = configuration
+    #     metric_report.save()
 
     while net_compiles_amount != 0:
         net_compilation_report = create_net_compilation_report(metric_report)
@@ -115,9 +115,9 @@ def run_all_metrics_report_generate_task(id_report):
         while draw_imgs_count != 0:
             draw_imgs_report = create_draw_imgs_report(metric_report)
             result = run_drawed_images_report_generate_task(draw_imgs_report.id)
+            time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
             save_report_voltage_average(draw_imgs_report)
             save_report_voltage_average(metric_report)
-            time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
             if result == 2:
                 print(f'{time_now} Превышено предельное время отрисовки.')
                 metric_report_status = 'FAIL'

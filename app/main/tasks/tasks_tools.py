@@ -774,7 +774,9 @@ def get_chaos_configuration(chaos_pk, report_object):
         if type(report_object) == DrawImgsReport:
             configuration.drawimgs_report = report_object
         configuration.save()
-        print(f'Успешно создана конфигурация для {chaos.name}({chaos.ip})')
+        print(f'Конфигурация для {chaos.name}({chaos.ip}) успешно создана')
+        report_object.config = configuration
+        report_object.save()
         return configuration
     except IntegrityError:
         print(f'Не удалось связать конфигурацию с отчетом: указанный ID отчета уже связан с другой конфигурацией')
