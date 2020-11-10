@@ -65,7 +65,7 @@ def metric_report_export_to_xlsx(request, metric_report_id):
     merge_cell_num = metrics_report.net_compile_amount * metrics_report.draw_imgs_amount
     voltage_average = metrics_report.voltage_average
 
-    workbook = add_one_cell_data(workbook, worksheet_name, 'Среднее значение потребления (общее)', voltage_average,
+    workbook = add_one_cell_data(workbook, worksheet_name, 'Среднее значение потребления (общее), mA', voltage_average,
                                  merge=True, merge_num=merge_cell_num, vertical=True)
 
     workbook = create_excel_cheet(workbook, configuration, chaos_configuration_fields, vertical=True)
