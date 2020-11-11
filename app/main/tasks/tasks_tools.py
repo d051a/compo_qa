@@ -504,7 +504,9 @@ def net_compilation_get_statistics(net_compile_report, db_chaos_object):
         print(f'Прошло минут с начала сборки: {elapsed_mins} '
               f'Ценников онлайн: {current_chaos_statistic_data.online_esl} '
               f'Предельное время: {net_compile_limit_mins} '
-              f'Текущий % сборки сети: {net_compilation_percent}')
+              f'Текущий % сборки сети: {net_compilation_percent} '
+              f'Максимальный % сборки: {max_net_compile_percent} '
+              f'Шаг % сборки сети {net_compilation_percent_steps[compilation_percent_current_step]} ')
 
         if elapsed_mins >= net_compilation_time_points[compilation_time_current_step] \
                 and compilation_time_current_step <= len(net_compilation_time_points)-1:

@@ -99,8 +99,8 @@ def run_all_metrics_report_generate_task(id_report):
     while net_compiles_amount != 0:
         net_compilation_report = create_net_compilation_report(metric_report)
         result = run_net_compilation_task(net_compilation_report.id)
-        save_report_voltage_average(net_compilation_report)
-        save_report_voltage_average(metric_report)
+        # save_report_voltage_average(net_compilation_report)
+        # save_report_voltage_average(metric_report)
         time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
         if result == 2:
             print(f'{time_now} Превышено предельное время cборки сети.')
@@ -116,8 +116,8 @@ def run_all_metrics_report_generate_task(id_report):
             draw_imgs_report = create_draw_imgs_report(metric_report)
             result = run_drawed_images_report_generate_task(draw_imgs_report.id)
             time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
-            save_report_voltage_average(draw_imgs_report)
-            save_report_voltage_average(metric_report)
+            # save_report_voltage_average(draw_imgs_report)
+            # save_report_voltage_average(metric_report)
             if result == 2:
                 print(f'{time_now} Превышено предельное время отрисовки.')
                 metric_report_status = 'FAIL'
