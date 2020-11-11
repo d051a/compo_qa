@@ -78,11 +78,11 @@ DATABASES = {
 
 # DATABASES = {
 #     'default': {
-#         'NAME': 'compo_db_dev',
+#         'NAME': 'compo_logs_dev',
 #         'ENGINE': 'django.db.backends.postgresql',
 #         'USER': 'compo',
 #         'PASSWORD': 'password',
-#         'HOST': 'db',
+#         'HOST': '127.0.0.1',
 #         'PORT': '5432',
 #      },
 # }

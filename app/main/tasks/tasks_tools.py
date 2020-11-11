@@ -531,10 +531,12 @@ def net_compilation_get_statistics(net_compile_report, db_chaos_object):
         if elapsed_mins > net_compile_limit_mins:
             if max_net_compile_percent >= net_compile_success_percent:
                 save_net_compilation_final_status_and_data(net_compile_report, 'OK', max_net_compile_percent)
+                save_report_voltage_average(net_compile_report)
                 return True
             else:
                 status = f'Превышено предельное время сборки сети: {net_compile_limit_mins} мин.'
                 save_net_compilation_final_status_and_data(net_compile_report, status, max_net_compile_percent)
+                save_report_voltage_average(net_compile_report)
                 return 2
 
         compilation_percent_last_step = len(net_compilation_percent_steps) - 1
@@ -542,6 +544,7 @@ def net_compilation_get_statistics(net_compile_report, db_chaos_object):
             net_compile_report.p100 = elapsed_time
             net_compile_report.save()
             save_net_compilation_final_status_and_data(net_compile_report, 'OK', max_net_compile_percent)
+            save_report_voltage_average(net_compile_report)
             break
 
         elapsed_mins = (timezone.localtime() - start_time).total_seconds() / 60
@@ -631,6 +634,7 @@ def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object):
             db_draw_imgs_object.p100 = elapsed_time
             db_draw_imgs_object.save()
             save_draw_imgs_final_status_and_data(db_draw_imgs_object, current_chaos_statistic_data, 'OK')
+            save_report_voltage_average(db_draw_imgs_object)
             break
 
         elapsed_mins = (timezone.localtime() - start_time).total_seconds() / 60
