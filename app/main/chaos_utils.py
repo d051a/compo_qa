@@ -23,7 +23,12 @@ class TimeoutHTTPAdapter(HTTPAdapter):
         timeout = kwargs.get("timeout")
         if timeout is None:
             kwargs["timeout"] = self.timeout
-        return super().send(request, **kwargs)
+        try:
+            result = super().send(request, **kwargs)
+            return result
+        except requests.exceptions.ConnectTimeout:
+            print('Превышено число попыток подключения к хосту')
+            return None
 
 
 class ChaosConnector:
@@ -725,16 +730,127 @@ class ChaosConfigurationInfo:
         return str(self.all_params())
 
 
+class SumAPIManager:
+    def __init__(self, ip='127.0.0.1', login='admin', password='CompoM123', secure=True):
+        self.ip_address = ip
+        self.login = login
+        self.password = password
+        self.headers = {'Content-Type': 'application/json'}
+        self.cookie = ''
+        self.session_token = ''
+        self.secure = secure
+        self.session = self.__get_session()
+        self.auth = self.__auth()
+
+    def __auth(self):
+        url = self.__get_url('api3/login')
+        try:
+            result = self.session.post(url, params={'login': self.login, 'passwd': self.password}, verify=False)
+            self.session_token = {'data': result.cookies.get('qpstkn')}
+        except AttributeError:
+            result = None
+            self.auth = result
+            return result
+
+        if result.status_code == 200:
+            return result
+        if result.status_code == 502:
+            print('response code: 502. Необходимо включить службу storesvc')
+            return None
+        else:
+            return None
+
+    def __sent_get_request(self, url_path):
+        url = self.__get_url(url_path)
+        if self.auth is None:
+            return None
+        result = self.session.get(url,
+                                  headers=self.headers,
+                                  cookies=self.cookie,
+                                  verify=False)
+        return result
+
+    def __sent_post_request(self, url_path, body):
+        url = self.__get_url(url_path)
+        if self.auth is None:
+            return None
+        result = self.session.post(url,
+                                   json=body,
+                                   headers=self.headers,
+                                   cookies=self.cookie,
+                                   verify=False)
+        return result
+
+    def __sent_delete_request(self, url_path):
+        url = self.__get_url(url_path)
+        if self.auth is None:
+            return None
+        result = self.session.put(url,
+                                  headers=self.headers,
+                                  cookies=self.cookie,
+                                  verify=False)
+        return result
+
+    def __sent_put_request(self, url_path):
+        url = self.__get_url(url_path)
+        if self.auth is None:
+            return None
+        result = self.session.delete(url,
+                                     headers=self.headers,
+                                     cookies=self.cookie,
+                                     verify=False)
+        return result
+
+    def __get_url(self, url_path):
+        if self.secure:
+            protocol = 'https'
+        else:
+            protocol = 'http'
+        url = f'{protocol}://{self.ip_address}/{url_path}'
+        return url
+
+    @staticmethod
+    def __get_session():
+        session = requests.Session()
+        adapter = TimeoutHTTPAdapter(timeout=1)
+        session.mount("https://", adapter)
+        session.mount("http://", adapter)
+        return session
+
+    def get_esls_list(self,):
+        if self.auth is None:
+            return []
+        url_path = 'api3/esl'
+        result = self.__sent_get_request(url_path)
+        return json.loads(result.text)['data']
+
+    def get_controllers_list(self,):
+        if self.auth is None:
+            return []
+        url_path = 'api3/controller'
+        result = self.__sent_get_request(url_path)
+        return json.loads(result.text)['data']
+
+    def __repr__(self):
+        if self.auth:
+            result = f"Успешная авторизация в API СУМ ({self.ip_address}). " \
+                f"status_code: {self.auth.status_code}. api_key: {self.session_token['data']}"
+            return result
+        else:
+            result = f"Не удалось авторизоваться в API СУМ ({self.ip_address})"
+            return result
+
+
 def main():
     chaos_ip = '172.16.25.51'
-    # -------------
+    # -------------Статистика хаоса----------------
     statistic = ChaosStatisctic(ip=chaos_ip)
     print(f'DRAWED: {statistic.get_drawed_images_percent()} drawed: {statistic.images_succeeded}')
     print(f'NETLOG: {statistic.online_esl} {statistic.get_net_compilation_percent()}%')
-    # -------------
+    # -------------------Утилиты-------------------
     utils = Utils()
     print('Текущее время: ', utils.get_time_now())
-    # -------------
+    # -------------Конфигурация хаоса--------------
     chaos_info = ChaosConfigurationInfo(ip=chaos_ip)
     # chaos_info.all_params()
     print('Количетво РУ, шт', chaos_info.distributing_device_num)
@@ -748,7 +864,7 @@ def main():
     print('hw_versions:', chaos_info.hw_versions)
     print('dongles_versions:', chaos_info.dongles_versions)
     # print(chaos_info.all_params())
-
+    # -------------API СУМ--------------
 
 if __name__ == "__main__":
     main()
