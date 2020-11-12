@@ -46,7 +46,6 @@ class MetricReportForm(ModelForm):
         fields = ['chaos',
                   'net_compile_amount',
                   'draw_imgs_amount',
-                  'fact_total_esl',
                   'draw_imgs_limit_mins',
                   'color',
                   'draw_imgs_type',
@@ -61,7 +60,6 @@ class MetricReportForm(ModelForm):
             'chaos': forms.Select(attrs={'class': 'form-control'}),
             'net_compile_amount': forms.NumberInput(attrs={'class': 'form-control'}),
             'draw_imgs_amount': forms.NumberInput(attrs={'class': 'form-control'}),
-            'fact_total_esl': forms.NumberInput(attrs={'class': 'form-control'}),
             'net_compile_limit_mins': forms.NumberInput(attrs={'class': 'form-control'}),
             'draw_imgs_limit_mins': forms.NumberInput(attrs={'class': 'form-control'}),
             'color': forms.TextInput(attrs={'class': 'form-control'}),
@@ -121,7 +119,6 @@ class DrawImgsReportForm(ModelForm):
         model = DrawImgsReport
         fields = ['chaos',
                   'metric_report',
-                  'fact_total_esl',
                   'draw_imgs_limit_mins',
                   'color',
                   'draw_imgs_type'
@@ -132,7 +129,6 @@ class DrawImgsReportForm(ModelForm):
         )
         widgets = {
             'chaos': forms.Select(attrs={'class': 'form-control'}),
-            'fact_total_esl': forms.TextInput(attrs={'class': 'form-control'}),
             'draw_imgs_limit_mins': forms.TextInput(attrs={'class': 'form-control'}),
             'color': forms.TextInput(attrs={'class': 'form-control'}),
             'metric_report': forms.HiddenInput(),
@@ -145,13 +141,11 @@ class NetCompileReportForm(ModelForm):
         model = NetCompileReport
         fields = ['chaos',
                   'metric_report',
-                  'fact_total_esl',
                   'net_compile_limit_mins',
                   'success_percent',
                   ]
         widgets = {
             'chaos': forms.Select(attrs={'class': 'form-control'}),
-            'fact_total_esl': forms.TextInput(attrs={'class': 'form-control'}),
             'net_compile_limit_mins': forms.TextInput(attrs={'class': 'form-control'}),
             'metric_report': forms.HiddenInput(),
             'success_percent': forms.NumberInput(attrs={'class': 'form-control'}),

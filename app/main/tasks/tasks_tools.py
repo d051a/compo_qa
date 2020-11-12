@@ -7,7 +7,7 @@ from main.models import NetCompilationStat, DrawImgsStat, Statistic, NetCompileR
     MetricReport, Configuration, Version
 from datetime import datetime
 from main.chaos_utils import Utils as utils
-from main.chaos_utils import ChaosStatisctic, ChaosConfigurationInfo
+from main.chaos_utils import ChaosStatisctic, ChaosConfigurationInfo, SumAPIManager
 from conf.settings import BASE_DIR, MEDIA_ROOT
 from main.tasks.change_price import dat_file_change_prices
 from django.db.utils import IntegrityError
@@ -223,18 +223,12 @@ def get_net_compilation_percent(curent_stats_data, fact_total_esl):
 
 
 def get_drawed_images_percent(curent_stats_data, fact_total_esl):
-    if fact_total_esl:
-        drawed_images_percent = (curent_stats_data.images_succeeded / fact_total_esl) * 100
-        return float(f"{drawed_images_percent:.2f}")
-    else:
-        drawed_images_percent = curent_stats_data.get_drawed_images_percent()
-        return drawed_images_percent
+    drawed_images_percent = (curent_stats_data.images_succeeded / fact_total_esl) * 100
+    return float(f"{drawed_images_percent:.2f}")
 
 
 def get_not_drawed_images(curent_stats_data, fact_total_esl):
-    not_drawed_images = curent_stats_data.total_esl - curent_stats_data.images_succeeded
-    if fact_total_esl:
-        not_drawed_images = fact_total_esl - curent_stats_data.images_succeeded
+    not_drawed_images = fact_total_esl - curent_stats_data.images_succeeded
     return not_drawed_images
 
 
@@ -245,7 +239,7 @@ def save_draw_imgs_final_status_and_data(db_draw_imgs_object, curent_stats_data,
                                         "{hours}:{minutes}:{seconds}")
     db_draw_imgs_object.elapsed_time = elapsed_time
     db_draw_imgs_object.final_percent = curent_stats_data.get_drawed_images_percent()
-    db_draw_imgs_object.not_drawed_esl = get_not_drawed_images(curent_stats_data, db_draw_imgs_object.fact_total_esl)
+    # db_draw_imgs_object.not_drawed_esl = get_not_drawed_images(curent_stats_data, db_draw_imgs_object.fact_total_esl)
     db_draw_imgs_object.drawed_esl = curent_stats_data.images_succeeded
     db_draw_imgs_object.status = status
     db_draw_imgs_object.task_id = ''
@@ -495,8 +489,7 @@ def net_compilation_get_statistics(net_compile_report, db_chaos_object):
             time.sleep(5)
             continue
 
-        net_compilation_percent = get_net_compilation_percent(current_chaos_statistic_data,
-                                                              net_compile_report.fact_total_esl)
+        net_compilation_percent = current_chaos_statistic_data.get_true_net_compilation_percent()
 
         if net_compilation_percent > max_net_compile_percent:
             max_net_compile_percent = net_compilation_percent
@@ -569,7 +562,7 @@ def draw_images_init(chaos_credentials, db_draw_imgs_object):
     return True
 
 
-def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object):
+def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object, chaos_credentials):
     drawed_percent_points = [10, 20, 30, 40, 50, 60, 75, 90, 95, 96, 97, 98, 99, 99.5, 99.9, 100]
     drawed_time_points = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150]
     drawed_time_points_last_step = len(drawed_time_points) - 1
@@ -578,11 +571,14 @@ def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object):
     drawed_percent_current_step = 0
     drawed_time_current_step = 0
     max_drawed_images_percent = 0.0
+    start_storesvc_service(chaos_credentials)
+    time.sleep(5)
+    api = SumAPIManager(db_chaos_object.ip)
+    fact_total_esl = api.get_esls_list()
     while True:
         time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
         print(f'{time_now} Получение новых данных c {db_chaos_object.ip} об отрисовке ценников...')
         current_chaos_statistic_data = ChaosStatisctic(ip=db_chaos_object.ip)
-        fact_total_esl = db_draw_imgs_object.fact_total_esl
         current_time = timezone.localtime()
         elapsed_time = utils.get_time_delta(current_time,
                                             db_draw_imgs_object.create_date_time,
@@ -595,6 +591,8 @@ def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object):
 
         if elapsed_mins > db_draw_imgs_object.draw_imgs_limit_mins:
             status = f'FAIL: 'f'Превышено предельное время отрисовки: {db_draw_imgs_object.draw_imgs_limit_mins} мин.'
+            db_draw_imgs_object.not_drawed_esl = fact_total_esl - current_chaos_statistic_data.images_succeeded
+            db_draw_imgs_object.save()
             save_draw_imgs_final_status_and_data(
                 db_draw_imgs_object,
                 current_chaos_statistic_data,
@@ -632,6 +630,7 @@ def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object):
         drawed_percent_last_step = len(drawed_percent_points) - 1
         if max_drawed_images_percent == 100 or drawed_percent_current_step > drawed_percent_last_step:
             db_draw_imgs_object.p100 = elapsed_time
+            db_draw_imgs_object.not_drawed_esl = fact_total_esl - current_chaos_statistic_data.images_succeeded
             db_draw_imgs_object.save()
             save_draw_imgs_final_status_and_data(db_draw_imgs_object, current_chaos_statistic_data, 'OK')
             save_report_voltage_average(db_draw_imgs_object)

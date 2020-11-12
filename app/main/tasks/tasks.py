@@ -74,7 +74,7 @@ def run_drawed_images_report_generate_task(id_report):
         return False
     if draw_images_init_result is False:
         return draw_images_init_result
-    draw_images_result = draw_images_get_statistics(db_draw_imgs_object, db_chaos_object)
+    draw_images_result = draw_images_get_statistics(db_draw_imgs_object, db_chaos_object, chaos_credentials)
     return draw_images_result
 
 
