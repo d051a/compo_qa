@@ -574,7 +574,7 @@ def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object, chaos_crede
     start_storesvc_service(chaos_credentials)
     time.sleep(5)
     api = SumAPIManager(db_chaos_object.ip)
-    fact_total_esl = api.get_esls_list()
+    fact_total_esl = len(api.get_esls_list())
     while True:
         time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
         print(f'{time_now} Получение новых данных c {db_chaos_object.ip} об отрисовке ценников...')
