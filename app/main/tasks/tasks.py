@@ -100,6 +100,9 @@ def run_all_metrics_report_generate_task(id_report):
         if result == 1:
             print(f'{time_now} Успешная сборка сети')
             net_compiles_amount -= 1
+        if result == 0:
+            print(f'{time_now} Неудачная сборка сети')
+            net_compiles_amount -= 1
 
         draw_imgs_count = draw_imgs_amount
         while draw_imgs_count != 0:
