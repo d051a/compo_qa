@@ -29,7 +29,6 @@ def insert_data_to_cell(worksheet, cell_value, row_num=1, coll_num=1, bolt=False
     if merge:
         if vertical:
             end_merge_num = coll_num + merge_num - 1
-            print(f'start_row={row_num}, start_column={coll_num}, end_row={row_num},    end_column={end_merge_num}')
             worksheet.merge_cells(start_row=row_num, start_column=coll_num, end_row=row_num,
                                   end_column=end_merge_num)
             for i in range(1, merge_num + 1):
@@ -37,7 +36,6 @@ def insert_data_to_cell(worksheet, cell_value, row_num=1, coll_num=1, bolt=False
                 set_appearance(cell, bolt=bolt)
         else:
             end_merge_num = row_num + merge_num
-            print(f'start_row={row_num}, start_column={coll_num}, end_row={end_merge_num},    end_column={coll_num}')
             worksheet.merge_cells(start_row=row_num, start_column=coll_num, end_row=end_merge_num,
                                   end_column=coll_num)
             for i in range(1, merge_num + 1):
