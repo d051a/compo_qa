@@ -1,7 +1,8 @@
 from main.models import Statistic,  MetricReport, Chaos, DrawImgsReport,\
     NetCompileReport, DrawImgsStat, NetCompilationStat, Configuration
-from main.excel_reports.excel_tools import create_excel_cheet, create_excel_cheet_for_stats, create_excel_net_draw_cheet,\
-    add_one_cell_data
+from main.excel_reports.excel_tools import create_excel_cheet, create_excel_cheet_for_stats, \
+    create_draw_imgs_stats_sheet, create_net_compile_stats_sheet,\
+    create_all_statistics_sheet, create_common_sheet, create_common_expanded_sheet, create_configuration_sheet
 from django.http import HttpResponse
 from datetime import datetime
 from django.utils import timezone
@@ -21,17 +22,13 @@ def metric_report_export_to_xlsx(request, metric_report_id):
     :return:
     """
     metrics_report = MetricReport.objects.get(pk=metric_report_id)
-
-    report_start_time = metrics_report.create_date_time
-    report_finish_time = metrics_report.date_time_finish
-    if report_finish_time is None:
-        report_finish_time = timezone.localtime()
-
     net_compile_reports = NetCompileReport.objects.filter(metric_report=metrics_report)
     draw_imgs_reports = DrawImgsReport.objects.filter(metric_report=metrics_report)
-    metrics_report_common_statistic = Statistic.objects.filter(metric_report=metrics_report).filter(
-        date_time__range=(report_start_time, report_finish_time)).order_by('date_time')
-    configuration = Configuration.objects.filter(metric_report=metrics_report)
+    report_start_time = metrics_report.create_date_time
+    report_finish_time = metrics_report.date_time_finish
+
+    if report_finish_time is None:
+        report_finish_time = timezone.localtime()
 
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -40,35 +37,18 @@ def metric_report_export_to_xlsx(request, metric_report_id):
         date=datetime.now().strftime('%d.%m.%Y_%H.%M.%S'),
         chaos_name=metrics_report.chaos.name
     )
-    draw_imgs_amount = metrics_report.draw_imgs_amount
     workbook = Workbook()
-    workbook = create_excel_cheet_for_stats(workbook, draw_imgs_reports, DrawImgsStat, draw_imgs_stat_fields)
-    workbook = create_excel_cheet_for_stats(workbook, net_compile_reports, NetCompilationStat, net_compile_stat_fields)
-    workbook = create_excel_cheet(workbook, net_compile_reports, net_compile_reports_draw_fields, vertical=True)
-    workbook = create_excel_cheet(workbook, draw_imgs_reports, draw_imgs_reports_draw_fields, vertical=True)
-    workbook = create_excel_cheet(workbook,
-                                  metrics_report_common_statistic,
-                                  metrics_report_common_statistic_draw_fields)
-    workbook = create_excel_net_draw_cheet(workbook,
-                                           net_compile_reports, net_compile_fields_common_extended_report,
-                                           draw_imgs_reports, draw_imgs_fields_common_extended_report,
-                                           draw_imgs_amount,
-                                           'Сводный отчет (расширенный)',
-                                           vertical=True)
-    workbook = create_excel_net_draw_cheet(workbook,
-                                           net_compile_reports, net_compile_fields_common_report,
-                                           draw_imgs_reports, draw_imgs_fields_common_report,
-                                           draw_imgs_amount,
-                                           'Сводный отчет',
-                                           vertical=True)
-    worksheet_name = 'Сводный отчет'
-    merge_cell_num = metrics_report.net_compile_amount * metrics_report.draw_imgs_amount
-    voltage_average = metrics_report.voltage_average
 
-    workbook = add_one_cell_data(workbook, worksheet_name, 'Среднее значение потребления (общее), mA', voltage_average,
-                                 merge=True, merge_num=merge_cell_num, vertical=True)
+    for report in draw_imgs_reports:
+        workbook = create_draw_imgs_stats_sheet(workbook, report, vertical=False)
+    for report in net_compile_reports:
+        workbook = create_net_compile_stats_sheet(workbook, report, vertical=False)
 
-    workbook = create_excel_cheet(workbook, configuration, chaos_configuration_fields, vertical=True, alignment='left')
+    workbook = create_all_statistics_sheet(workbook, metrics_report, report_start_time,
+                                           report_finish_time, vertical=False)
+    workbook = create_common_expanded_sheet(workbook, metrics_report,vertical=True)
+    workbook = create_common_sheet(workbook, metrics_report, vertical=True)
+    workbook = create_configuration_sheet(workbook, metrics_report, vertical=True)
     workbook.save(response)
     return response
 
