@@ -336,6 +336,7 @@ class DrawImgsReport(models.Model):
                                   on_delete=models.CASCADE, verbose_name='Конфигурация',
                                   null=True, blank=True)
     voltage_average = models.FloatField('Среднее значение потребления в процессе отрисовки, mA', blank=True, null=True)
+    images_size_average = models.FloatField('Среднее размер изображений ценников', blank=True, null=True)
 
     class Meta:
         ordering = ["-pk"]

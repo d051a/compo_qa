@@ -374,6 +374,7 @@ def create_common_sheet(workbook, metric_report, server_ip, vertical=False, star
                    'Время отрисовки 100%': partial(add_data_to_cell),
                    'Не отрисовано, шт ': partial(add_data_to_cell),
                    'Среднее значение потребления в процессе отрисовки, mA': partial(add_data_to_cell),
+                   'Средний размер изображений ценников': partial(add_data_to_cell),
                    'Среднее значение потребления (общее), mA': partial(add_data_to_cell),
                    }
 
@@ -431,7 +432,9 @@ def create_common_sheet(workbook, metric_report, server_ip, vertical=False, star
         sheet_datas['Не отрисовано, шт '](worksheet, report.not_drawed_esl, 23, elem_num, vertical=vertical)
         sheet_datas['Среднее значение потребления в процессе отрисовки, mA'](worksheet, report.voltage_average, 24,
                                                                              elem_num, vertical=vertical)
-        sheet_datas['Среднее значение потребления (общее), mA'](worksheet, common_voltage_average, 25, start_position,
+        sheet_datas['Средний размер изображений ценников'](worksheet, report.images_size_average, 25,
+                                                                             elem_num, vertical=vertical)
+        sheet_datas['Среднее значение потребления (общее), mA'](worksheet, common_voltage_average, 26, start_position,
                                                                 merge=True, merge_num=merge_voltage_cell_num,
                                                                 vertical=vertical)
 

@@ -232,7 +232,8 @@ def get_not_drawed_images(curent_stats_data, fact_total_esl):
     return not_drawed_images
 
 
-def save_draw_imgs_final_status_and_data(db_draw_imgs_object, curent_stats_data, status):
+def save_draw_imgs_final_status_and_data(db_draw_imgs_object, curent_stats_data, status, chaos_credentials):
+    draw_imgs_size_average = check_draw_imgs_size_average(chaos_credentials)
     current_time = timezone.localtime()
     elapsed_time = utils.get_time_delta(current_time,
                                         db_draw_imgs_object.create_date_time,
@@ -241,6 +242,7 @@ def save_draw_imgs_final_status_and_data(db_draw_imgs_object, curent_stats_data,
     db_draw_imgs_object.final_percent = curent_stats_data.get_drawed_images_percent()
     # db_draw_imgs_object.not_drawed_esl = get_not_drawed_images(curent_stats_data, db_draw_imgs_object.fact_total_esl)
     db_draw_imgs_object.drawed_esl = curent_stats_data.images_succeeded
+    db_draw_imgs_object.images_size_average = draw_imgs_size_average
     db_draw_imgs_object.status = status
     db_draw_imgs_object.task_id = ''
     db_draw_imgs_object.date_time_finish = timezone.localtime()
@@ -371,6 +373,46 @@ def stop_storesvc_service(device_credentials):
     else:
         print(f'{time_now} Служба storesvc не остановлена. Что-то пошло не так. ERROR: {run_command[1]}')
         return run_command[1]
+
+
+def clear_remote_dir(device_credentials, dir_path):
+    device_ssh_address = device_credentials['ip']
+    ssh_user_name = device_credentials['login']
+    ssh_user_password = device_credentials['password']
+    ssh_port = device_credentials['port']
+    time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+
+    print(f"{time_now} Инициация очистки директории '{dir_path}' на {device_ssh_address}")
+    run_command = utils.run_remote_command(device_ssh_address, ssh_user_name, ssh_user_password, ssh_port,
+                                           f'echo {ssh_user_password}|sudo rm -rf {dir_path}/*')
+    time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+    if run_command == ('', ''):
+        print(f"{time_now} Директория '{dir_path}' успешно очищена")
+        return True
+    else:
+        print(f"{time_now} Во время очистки директории '{dir_path}' что-то пошло не так. Ошибка: {run_command[1]}")
+        return run_command[1]
+
+
+def check_draw_imgs_size_average(device_credentials):
+    device_ssh_address = device_credentials['ip']
+    ssh_user_name = device_credentials['login']
+    ssh_user_password = device_credentials['password']
+    ssh_port = device_credentials['port']
+    time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+
+    print(f"{time_now} Получение среднего значения размера картинок ценников на {device_ssh_address}")
+    run_command = utils.run_remote_command(device_ssh_address, ssh_user_name, ssh_user_password, ssh_port,
+                                           f'echo $(( $(du -sbc /tmp/*.cat3 | tail -1 | cut -f 1) / $(ls /tmp/*.cat3 | wc -l) ))')
+    time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+    draw_imgs_size_average = run_command[0]
+    if draw_imgs_size_average:
+        print(f'Данные получены. Средний размер картинок отрисованных ценников: {draw_imgs_size_average}')
+        return draw_imgs_size_average
+    else:
+        print(f"{time_now} Во время очистки директории  что-то пошло не так. Ошибка: {run_command[1]}")
+        return None
+
 
 
 def sent_request(ip, url_path):
@@ -555,6 +597,8 @@ def draw_images_init(chaos_credentials, db_draw_imgs_object):
         db_draw_imgs_object.date_time_finish = timezone.localtime()
         db_draw_imgs_object.save()
         return False
+    clear_remote_dir(chaos_credentials, '/tmp')
+    time.sleep(5)
     start_drawing_images(chaos_credentials, db_draw_imgs_object.color)
     time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
     print(f'{time_now} Отправка команды на отрисовку...')
@@ -596,7 +640,9 @@ def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object, chaos_crede
             save_draw_imgs_final_status_and_data(
                 db_draw_imgs_object,
                 current_chaos_statistic_data,
-                status)
+                status,
+                chaos_credentials)
+            save_report_voltage_average(db_draw_imgs_object)
             return 2
 
         add_current_statistic_to_db(db_chaos_object,
@@ -632,7 +678,8 @@ def draw_images_get_statistics(db_draw_imgs_object, db_chaos_object, chaos_crede
             db_draw_imgs_object.p100 = elapsed_time
             db_draw_imgs_object.not_drawed_esl = fact_total_esl - current_chaos_statistic_data.images_succeeded
             db_draw_imgs_object.save()
-            save_draw_imgs_final_status_and_data(db_draw_imgs_object, current_chaos_statistic_data, 'OK')
+            save_draw_imgs_final_status_and_data(db_draw_imgs_object, current_chaos_statistic_data,
+                                                 'OK', chaos_credentials)
             save_report_voltage_average(db_draw_imgs_object)
             break
 
@@ -730,7 +777,8 @@ def draw_images_init_sum(chaos, db_draw_imgs_object, chaos_credentials):
 
     os.remove(local_dat_new_file_path)
     time.sleep(5)
-
+    clear_remote_dir(chaos_credentials, '/tmp')
+    time.sleep(5)
     if not make_flg_on_remote_host(chaos_credentials, remote_directory, dat_file_name_wo_expansion):
         return False
     return True
