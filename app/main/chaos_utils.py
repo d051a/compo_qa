@@ -408,11 +408,13 @@ class Utils:
             sftp = ssh.open_sftp()
             sftp.put(localpath_to_file, remotepath_to_file)
             sftp.close()
-            ssh.close()
             return 0
         except Exception as error:
             print('sftp_transfer_file function error: ', error)
             return 1
+        finally:
+            if ssh:
+                ssh.close()
 
     @staticmethod
     def run_remote_command(ip_address: str,
@@ -430,6 +432,9 @@ class Utils:
             return stdout_result, stdout_error
         except Exception as error:
             print(f'Не удалось выполнить команду на удаленном устройства {ip_address} error: {error}')
+        finally:
+            if ssh_connection:
+                ssh_connection.close()
 
     @staticmethod
     def run_remote_command_no_wait(ip_address: str,
@@ -439,6 +444,7 @@ class Utils:
                                    command: str):
         ssh_connection = Utils.get_ssh_connection(ip_address, user_name, password, port)
         ssh_connection.exec_command(command)
+        ssh_connection.close()
 
     @staticmethod
     def copy_file_over_ssh(ip_address: str,
@@ -450,6 +456,7 @@ class Utils:
         try:
             ssh = Utils.get_ssh_connection(ip_address, user_name, password, port)
             Utils.sftp_transfer_file(ssh, localpath_to_file, remotepath_to_file)
+            ssh.close()
             return True
         except Exception as error:
             print(f'Что-то пошло не так. Файлы не скопированы! copy_file_over_ssh function error: {error}')
