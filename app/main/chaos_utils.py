@@ -75,7 +75,7 @@ class ChaosStatisctic:
             result = re.search(re_pattern, self.text)
             return result.group(1)
         except Exception as error:
-            print(f'__get_stat_attr method error: {error}')
+            # print(f'__get_stat_attr method error: {error}')
             return ''
 
     @property
