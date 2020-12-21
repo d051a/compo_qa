@@ -22,8 +22,8 @@ def get_full_voltage_statistics():
         time.sleep(3)
         for chaos in chaoses:
             time.sleep(0.5)
-            # current_voltage = get_current_voltage(chaos.multimeter_ip)
-            current_voltage = get_current_voltage_by_laurent(chaos.multimeter_ip)
+            current_voltage = get_current_voltage(chaos.multimeter_ip)
+            # current_voltage = get_current_voltage_by_laurent(chaos.multimeter_ip)
             if not current_voltage:
                 continue
 
