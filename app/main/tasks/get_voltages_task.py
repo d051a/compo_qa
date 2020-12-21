@@ -11,7 +11,7 @@ django.setup()
 from main.chaos_utils import ChaosStatisctic
 from main.models import Chaos
 from main.tasks.tasks import add_current_statistic_to_db
-from main.tasks.tasks_tools import get_current_voltage
+from main.tasks.tasks_tools import get_current_voltage, get_current_voltage_by_laurent
 
 
 def get_full_voltage_statistics():
@@ -22,7 +22,8 @@ def get_full_voltage_statistics():
         time.sleep(3)
         for chaos in chaoses:
             time.sleep(0.5)
-            current_voltage = get_current_voltage(chaos.multimeter_ip)
+            # current_voltage = get_current_voltage(chaos.multimeter_ip)
+            current_voltage = get_current_voltage_by_laurent(chaos.multimeter_ip)
             if not current_voltage:
                 continue
 

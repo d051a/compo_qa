@@ -475,6 +475,19 @@ def get_current_voltage(multimeter_ip):
     return float(voltage)
 
 
+def get_current_voltage_by_laurent(ip):
+    laurent_url = f'http://{ip}/json_sensor.cgi?psw=Laurent'
+    try:
+        request = requests.get(laurent_url)
+        current_voltage = request.json()['adc'][0]['vlt']
+        return float(current_voltage)
+    except Exception as error:
+        time_now = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+        print(f'{time_now} get_current_voltage_by_laurent function ERROR: {error}')
+        return None
+    pass
+
+
 def net_compilation_init(chaos_credentials, net_compile_report):
     # инициализация сборки сети
     print(f"Инициирована новая сборка сети на устройстве {chaos_credentials['ip']}")
