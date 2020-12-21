@@ -138,7 +138,7 @@ def add_current_statistic_to_db(db_chaos_object, current_chaos_statistic_data, m
         connects=current_chaos_statistic_data.connects,
     )
     if db_chaos_object.multimeter_ip:
-        curent_voltage = get_current_voltage(db_chaos_object.multimeter_ip)
+        curent_voltage = get_current_voltage_by_laurent(db_chaos_object.multimeter_ip)
         if curent_voltage:
             db_statisctic_row.voltage_current = curent_voltage
     db_statisctic_row.save()
